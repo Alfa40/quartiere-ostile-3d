@@ -1,0 +1,748 @@
+[gd_scene load_steps=52 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/enemy.gd" id="3_enemy"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/park_object.gd" id="5_object"]
+[ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
+sky_top_color = Color(0.15, 0.18, 0.35, 1)
+sky_horizon_color = Color(0.45, 0.4, 0.4, 1)
+ground_bottom_color = Color(0.05, 0.05, 0.06, 1)
+ground_horizon_color = Color(0.3, 0.28, 0.28, 1)
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("SkyMat_1")
+
+[sub_resource type="Environment" id="Env_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+ambient_light_source = 3
+ambient_light_color = Color(0.6, 0.6, 0.7, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="WorldBoundaryShape3D" id="FloorShape"]
+plane = Plane(0, 1, 0, 0)
+
+[sub_resource type="PlaneMesh" id="FloorMesh"]
+size = Vector2(40, 40)
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.16, 0.16, 0.18, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="WallMesh"]
+size = Vector3(42, 3, 1)
+
+[sub_resource type="BoxShape3D" id="WallShape"]
+size = Vector3(42, 3, 1)
+
+[sub_resource type="StandardMaterial3D" id="WallMaterial"]
+albedo_color = Color(0.35, 0.18, 0.16, 1)
+roughness = 0.85
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape"]
+radius = 0.5
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh"]
+radius = 0.5
+height = 1.8
+
+[sub_resource type="BoxMesh" id="NoseMesh"]
+size = Vector3(0.22, 0.22, 0.55)
+
+[sub_resource type="StandardMaterial3D" id="PlayerMaterial"]
+albedo_color = Color(0.2, 0.45, 0.95, 1)
+metallic = 0.1
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="PlayerNoseMaterial"]
+albedo_color = Color(0.75, 0.9, 1.0, 1)
+emission_enabled = true
+emission = Color(0.4, 0.7, 1.0, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="StandardMaterial3D" id="EnemyMaterial"]
+albedo_color = Color(0.85, 0.2, 0.2, 1)
+metallic = 0.1
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="EnemyNoseMaterial"]
+albedo_color = Color(1.0, 0.6, 0.3, 1)
+emission_enabled = true
+emission = Color(1.0, 0.5, 0.2, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="SphereShape3D" id="AttackShape"]
+radius = 1.3
+
+[sub_resource type="SphereMesh" id="AttackFlashMesh"]
+radius = 1.3
+height = 2.6
+
+[sub_resource type="StandardMaterial3D" id="AttackFlashMaterial"]
+albedo_color = Color(1.0, 0.95, 0.3, 0.35)
+transparency = 1
+emission_enabled = true
+emission = Color(1.0, 0.9, 0.3, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="CylinderShape3D" id="CestinoShape"]
+radius = 0.5
+height = 0.6
+
+[sub_resource type="CylinderMesh" id="CestinoMesh"]
+top_radius = 0.5
+bottom_radius = 0.5
+height = 0.6
+
+[sub_resource type="StandardMaterial3D" id="CestinoMaterial"]
+albedo_color = Color(0.25, 0.25, 0.27, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="BoxShape3D" id="PanchinaShape"]
+size = Vector3(2.0, 0.5, 0.6)
+
+[sub_resource type="BoxMesh" id="PanchinaMesh"]
+size = Vector3(2.0, 0.5, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="PanchinaMaterial"]
+albedo_color = Color(0.36, 0.24, 0.14, 1)
+roughness = 0.8
+
+[sub_resource type="BoxShape3D" id="CassonettoShape"]
+size = Vector3(1.75, 1.2, 1.0)
+
+[sub_resource type="BoxMesh" id="CassonettoMesh"]
+size = Vector3(1.75, 1.2, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="CassonettoMaterial"]
+albedo_color = Color(0.16, 0.38, 0.2, 1)
+metallic = 0.2
+roughness = 0.7
+
+[sub_resource type="CylinderShape3D" id="BarileShape"]
+radius = 0.5625
+height = 1.0
+
+[sub_resource type="CylinderMesh" id="BarileMesh"]
+top_radius = 0.5625
+bottom_radius = 0.5625
+height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="BarileMaterial"]
+albedo_color = Color(0.55, 0.28, 0.08, 1)
+metallic = 0.4
+roughness = 0.5
+
+[sub_resource type="BoxShape3D" id="RecinzioneShape"]
+size = Vector3(1.6, 1.0, 0.2)
+
+[sub_resource type="BoxMesh" id="RecinzioneMesh"]
+size = Vector3(1.6, 1.0, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="RecinzioneMaterial"]
+albedo_color = Color(0.72, 0.72, 0.7, 1)
+roughness = 0.7
+
+[sub_resource type="CylinderShape3D" id="AlberoShape"]
+radius = 0.5
+height = 1.6
+
+[sub_resource type="CylinderMesh" id="AlberoTrunkMesh"]
+top_radius = 0.15
+bottom_radius = 0.2
+height = 1.4
+
+[sub_resource type="StandardMaterial3D" id="AlberoTrunkMaterial"]
+albedo_color = Color(0.3, 0.2, 0.12, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="AlberoFoliageMesh"]
+radius = 0.9
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="AlberoFoliageMaterial"]
+albedo_color = Color(0.15, 0.45, 0.18, 1)
+roughness = 0.85
+
+[sub_resource type="CylinderShape3D" id="LampioneShape"]
+radius = 0.2
+height = 3.5
+
+[sub_resource type="CylinderMesh" id="LampionePoleMesh"]
+top_radius = 0.1
+bottom_radius = 0.14
+height = 3.5
+
+[sub_resource type="StandardMaterial3D" id="LampionePoleMaterial"]
+albedo_color = Color(0.12, 0.12, 0.14, 1)
+metallic = 0.6
+roughness = 0.4
+
+[sub_resource type="SphereMesh" id="LampioneHeadMesh"]
+radius = 0.25
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="LampioneHeadMaterial"]
+albedo_color = Color(1.0, 0.85, 0.5, 1)
+emission_enabled = true
+emission = Color(1.0, 0.8, 0.4, 1)
+emission_energy_multiplier = 2.5
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_1")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -30, 0)
+light_energy = 1.1
+shadow_enabled = false
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+surface_material_override/0 = SubResource("FloorMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.5, -20.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallNorth"]
+mesh = SubResource("WallMesh")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("WallShape")
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.5, 20.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallSouth"]
+mesh = SubResource("WallMesh")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("WallShape")
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+position = Vector3(20.5, 1.5, 0)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("WallMesh")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("WallShape")
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+position = Vector3(-20.5, 1.5, 0)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("WallMesh")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("WallShape")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+position = Vector3(0, 0, 5)
+collision_layer = 2
+collision_mask = 13
+script = ExtResource("2_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape")
+position = Vector3(0, 0.9, 0)
+
+[node name="FacingPivot" type="Node3D" parent="Player"]
+
+[node name="Body" type="MeshInstance3D" parent="Player/FacingPivot"]
+mesh = SubResource("CapsuleMesh")
+surface_material_override/0 = SubResource("PlayerMaterial")
+position = Vector3(0, 0.9, 0)
+
+[node name="Nose" type="MeshInstance3D" parent="Player/FacingPivot"]
+mesh = SubResource("NoseMesh")
+surface_material_override/0 = SubResource("PlayerNoseMaterial")
+position = Vector3(0, 1.1, -0.55)
+
+[node name="AttackArea" type="Area3D" parent="Player/FacingPivot"]
+position = Vector3(0, 1.0, -1.0)
+collision_layer = 0
+collision_mask = 12
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/FacingPivot/AttackArea"]
+shape = SubResource("AttackShape")
+
+[node name="Flash" type="MeshInstance3D" parent="Player/FacingPivot/AttackArea"]
+mesh = SubResource("AttackFlashMesh")
+surface_material_override/0 = SubResource("AttackFlashMaterial")
+visible = false
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+position = Vector3(0, 9, 7)
+rotation_degrees = Vector3(-52, 0, 0)
+current = true
+fov = 55
+
+[node name="Enemy" type="CharacterBody3D" parent="."]
+position = Vector3(0, 0, -6)
+collision_layer = 4
+collision_mask = 11
+script = ExtResource("3_enemy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy"]
+shape = SubResource("CapsuleShape")
+position = Vector3(0, 0.9, 0)
+
+[node name="FacingPivot" type="Node3D" parent="Enemy"]
+
+[node name="Body" type="MeshInstance3D" parent="Enemy/FacingPivot"]
+mesh = SubResource("CapsuleMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, 0.9, 0)
+
+[node name="Nose" type="MeshInstance3D" parent="Enemy/FacingPivot"]
+mesh = SubResource("NoseMesh")
+surface_material_override/0 = SubResource("EnemyNoseMaterial")
+position = Vector3(0, 1.1, -0.55)
+
+[node name="Enemy2" type="CharacterBody3D" parent="."]
+position = Vector3(-6, 0, -9)
+collision_layer = 4
+collision_mask = 11
+script = ExtResource("3_enemy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy2"]
+shape = SubResource("CapsuleShape")
+position = Vector3(0, 0.9, 0)
+
+[node name="FacingPivot" type="Node3D" parent="Enemy2"]
+
+[node name="Body" type="MeshInstance3D" parent="Enemy2/FacingPivot"]
+mesh = SubResource("CapsuleMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, 0.9, 0)
+
+[node name="Nose" type="MeshInstance3D" parent="Enemy2/FacingPivot"]
+mesh = SubResource("NoseMesh")
+surface_material_override/0 = SubResource("EnemyNoseMaterial")
+position = Vector3(0, 1.1, -0.55)
+
+[node name="Enemy3" type="CharacterBody3D" parent="."]
+position = Vector3(6, 0, -9)
+collision_layer = 4
+collision_mask = 11
+script = ExtResource("3_enemy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy3"]
+shape = SubResource("CapsuleShape")
+position = Vector3(0, 0.9, 0)
+
+[node name="FacingPivot" type="Node3D" parent="Enemy3"]
+
+[node name="Body" type="MeshInstance3D" parent="Enemy3/FacingPivot"]
+mesh = SubResource("CapsuleMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, 0.9, 0)
+
+[node name="Nose" type="MeshInstance3D" parent="Enemy3/FacingPivot"]
+mesh = SubResource("NoseMesh")
+surface_material_override/0 = SubResource("EnemyNoseMaterial")
+position = Vector3(0, 1.1, -0.55)
+
+[node name="Albero1" type="StaticBody3D" parent="."]
+position = Vector3(-14, 0, -14)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 280.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Albero1"]
+shape = SubResource("AlberoShape")
+position = Vector3(0, 0.8, 0)
+
+[node name="Trunk" type="MeshInstance3D" parent="Albero1"]
+mesh = SubResource("AlberoTrunkMesh")
+surface_material_override/0 = SubResource("AlberoTrunkMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="Foliage" type="MeshInstance3D" parent="Albero1"]
+mesh = SubResource("AlberoFoliageMesh")
+surface_material_override/0 = SubResource("AlberoFoliageMaterial")
+position = Vector3(0, 1.9, 0)
+
+[node name="Albero2" type="StaticBody3D" parent="."]
+position = Vector3(14, 0, -14)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 280.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Albero2"]
+shape = SubResource("AlberoShape")
+position = Vector3(0, 0.8, 0)
+
+[node name="Trunk" type="MeshInstance3D" parent="Albero2"]
+mesh = SubResource("AlberoTrunkMesh")
+surface_material_override/0 = SubResource("AlberoTrunkMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="Foliage" type="MeshInstance3D" parent="Albero2"]
+mesh = SubResource("AlberoFoliageMesh")
+surface_material_override/0 = SubResource("AlberoFoliageMaterial")
+position = Vector3(0, 1.9, 0)
+
+[node name="Albero3" type="StaticBody3D" parent="."]
+position = Vector3(-14, 0, 14)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 280.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Albero3"]
+shape = SubResource("AlberoShape")
+position = Vector3(0, 0.8, 0)
+
+[node name="Trunk" type="MeshInstance3D" parent="Albero3"]
+mesh = SubResource("AlberoTrunkMesh")
+surface_material_override/0 = SubResource("AlberoTrunkMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="Foliage" type="MeshInstance3D" parent="Albero3"]
+mesh = SubResource("AlberoFoliageMesh")
+surface_material_override/0 = SubResource("AlberoFoliageMaterial")
+position = Vector3(0, 1.9, 0)
+
+[node name="Albero4" type="StaticBody3D" parent="."]
+position = Vector3(14, 0, 14)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 280.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Albero4"]
+shape = SubResource("AlberoShape")
+position = Vector3(0, 0.8, 0)
+
+[node name="Trunk" type="MeshInstance3D" parent="Albero4"]
+mesh = SubResource("AlberoTrunkMesh")
+surface_material_override/0 = SubResource("AlberoTrunkMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="Foliage" type="MeshInstance3D" parent="Albero4"]
+mesh = SubResource("AlberoFoliageMesh")
+surface_material_override/0 = SubResource("AlberoFoliageMaterial")
+position = Vector3(0, 1.9, 0)
+
+[node name="Lampione1" type="StaticBody3D" parent="."]
+position = Vector3(-8, 0, 2)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 100.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lampione1"]
+shape = SubResource("LampioneShape")
+position = Vector3(0, 1.75, 0)
+
+[node name="Pole" type="MeshInstance3D" parent="Lampione1"]
+mesh = SubResource("LampionePoleMesh")
+surface_material_override/0 = SubResource("LampionePoleMaterial")
+position = Vector3(0, 1.75, 0)
+
+[node name="Head" type="MeshInstance3D" parent="Lampione1"]
+mesh = SubResource("LampioneHeadMesh")
+surface_material_override/0 = SubResource("LampioneHeadMaterial")
+position = Vector3(0, 3.5, 0)
+
+[node name="Light" type="OmniLight3D" parent="Lampione1"]
+position = Vector3(0, 3.5, 0)
+light_color = Color(1.0, 0.85, 0.55, 1)
+light_energy = 1.2
+omni_range = 6.0
+
+[node name="Lampione2" type="StaticBody3D" parent="."]
+position = Vector3(8, 0, 2)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 100.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lampione2"]
+shape = SubResource("LampioneShape")
+position = Vector3(0, 1.75, 0)
+
+[node name="Pole" type="MeshInstance3D" parent="Lampione2"]
+mesh = SubResource("LampionePoleMesh")
+surface_material_override/0 = SubResource("LampionePoleMaterial")
+position = Vector3(0, 1.75, 0)
+
+[node name="Head" type="MeshInstance3D" parent="Lampione2"]
+mesh = SubResource("LampioneHeadMesh")
+surface_material_override/0 = SubResource("LampioneHeadMaterial")
+position = Vector3(0, 3.5, 0)
+
+[node name="Light" type="OmniLight3D" parent="Lampione2"]
+position = Vector3(0, 3.5, 0)
+light_color = Color(1.0, 0.85, 0.55, 1)
+light_energy = 1.2
+omni_range = 6.0
+
+[node name="Lampione3" type="StaticBody3D" parent="."]
+position = Vector3(0, 0, 14)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 100.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lampione3"]
+shape = SubResource("LampioneShape")
+position = Vector3(0, 1.75, 0)
+
+[node name="Pole" type="MeshInstance3D" parent="Lampione3"]
+mesh = SubResource("LampionePoleMesh")
+surface_material_override/0 = SubResource("LampionePoleMaterial")
+position = Vector3(0, 1.75, 0)
+
+[node name="Head" type="MeshInstance3D" parent="Lampione3"]
+mesh = SubResource("LampioneHeadMesh")
+surface_material_override/0 = SubResource("LampioneHeadMaterial")
+position = Vector3(0, 3.5, 0)
+
+[node name="Light" type="OmniLight3D" parent="Lampione3"]
+position = Vector3(0, 3.5, 0)
+light_color = Color(1.0, 0.85, 0.55, 1)
+light_energy = 1.2
+omni_range = 6.0
+
+[node name="Panchina1" type="StaticBody3D" parent="."]
+position = Vector3(-10, 0, 8)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 140.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Panchina1"]
+shape = SubResource("PanchinaShape")
+position = Vector3(0, 0.25, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Panchina1"]
+mesh = SubResource("PanchinaMesh")
+surface_material_override/0 = SubResource("PanchinaMaterial")
+position = Vector3(0, 0.25, 0)
+
+[node name="Panchina2" type="StaticBody3D" parent="."]
+position = Vector3(10, 0, 8)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 140.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Panchina2"]
+shape = SubResource("PanchinaShape")
+position = Vector3(0, 0.25, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Panchina2"]
+mesh = SubResource("PanchinaMesh")
+surface_material_override/0 = SubResource("PanchinaMaterial")
+position = Vector3(0, 0.25, 0)
+
+[node name="Cassonetto1" type="StaticBody3D" parent="."]
+position = Vector3(-16, 0, 0)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 180.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cassonetto1"]
+shape = SubResource("CassonettoShape")
+position = Vector3(0, 0.6, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Cassonetto1"]
+mesh = SubResource("CassonettoMesh")
+surface_material_override/0 = SubResource("CassonettoMaterial")
+position = Vector3(0, 0.6, 0)
+
+[node name="Cassonetto2" type="StaticBody3D" parent="."]
+position = Vector3(16, 0, 0)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 180.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cassonetto2"]
+shape = SubResource("CassonettoShape")
+position = Vector3(0, 0.6, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Cassonetto2"]
+mesh = SubResource("CassonettoMesh")
+surface_material_override/0 = SubResource("CassonettoMaterial")
+position = Vector3(0, 0.6, 0)
+
+[node name="Barile1" type="StaticBody3D" parent="."]
+position = Vector3(-4, 0, -3)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 90.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Barile1"]
+shape = SubResource("BarileShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Barile1"]
+mesh = SubResource("BarileMesh")
+surface_material_override/0 = SubResource("BarileMaterial")
+position = Vector3(0, 0.5, 0)
+
+[node name="Barile2" type="StaticBody3D" parent="."]
+position = Vector3(4, 0, -3)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 90.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Barile2"]
+shape = SubResource("BarileShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Barile2"]
+mesh = SubResource("BarileMesh")
+surface_material_override/0 = SubResource("BarileMaterial")
+position = Vector3(0, 0.5, 0)
+
+[node name="Barile3" type="StaticBody3D" parent="."]
+position = Vector3(0, 0, -14)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 90.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Barile3"]
+shape = SubResource("BarileShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Barile3"]
+mesh = SubResource("BarileMesh")
+surface_material_override/0 = SubResource("BarileMaterial")
+position = Vector3(0, 0.5, 0)
+
+[node name="Cestino1" type="StaticBody3D" parent="."]
+position = Vector3(-3, 0, 10)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 60.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cestino1"]
+shape = SubResource("CestinoShape")
+position = Vector3(0, 0.3, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Cestino1"]
+mesh = SubResource("CestinoMesh")
+surface_material_override/0 = SubResource("CestinoMaterial")
+position = Vector3(0, 0.3, 0)
+
+[node name="Cestino2" type="StaticBody3D" parent="."]
+position = Vector3(3, 0, 10)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 60.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cestino2"]
+shape = SubResource("CestinoShape")
+position = Vector3(0, 0.3, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Cestino2"]
+mesh = SubResource("CestinoMesh")
+surface_material_override/0 = SubResource("CestinoMaterial")
+position = Vector3(0, 0.3, 0)
+
+[node name="Recinzione1" type="StaticBody3D" parent="."]
+position = Vector3(18, 0, -10)
+rotation_degrees = Vector3(0, 90, 0)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 110.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Recinzione1"]
+shape = SubResource("RecinzioneShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Recinzione1"]
+mesh = SubResource("RecinzioneMesh")
+surface_material_override/0 = SubResource("RecinzioneMaterial")
+position = Vector3(0, 0.5, 0)
+
+[node name="Recinzione2" type="StaticBody3D" parent="."]
+position = Vector3(18, 0, -8)
+rotation_degrees = Vector3(0, 90, 0)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 110.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Recinzione2"]
+shape = SubResource("RecinzioneShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Recinzione2"]
+mesh = SubResource("RecinzioneMesh")
+surface_material_override/0 = SubResource("RecinzioneMaterial")
+position = Vector3(0, 0.5, 0)
+
+[node name="Recinzione3" type="StaticBody3D" parent="."]
+position = Vector3(18, 0, -6)
+rotation_degrees = Vector3(0, 90, 0)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 110.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Recinzione3"]
+shape = SubResource("RecinzioneShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Recinzione3"]
+mesh = SubResource("RecinzioneMesh")
+surface_material_override/0 = SubResource("RecinzioneMaterial")
+position = Vector3(0, 0.5, 0)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
+
+[node name="HPLabel" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 320.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "HP: 100 / 100"
+
+[node name="MessageLabel" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 62.0
+offset_right = 640.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "WASD/joystick muovi — Spazio/pulsante attacca — R riavvia"
+
+[node name="TouchControls" type="Control" parent="HUD"]
+script = ExtResource("6_touch")

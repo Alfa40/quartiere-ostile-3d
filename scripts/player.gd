@@ -1,0 +1,93 @@
+extends CharacterBody3D
+
+const SPEED := 6.0
+const GRAVITY := 20.0
+const ATTACK_DAMAGE := 20.0
+const ATTACK_COOLDOWN := 0.45
+const FLASH_TIME := 0.12
+
+signal hp_changed(current: float, max_hp: float)
+signal died
+
+@onready var facing_pivot: Node3D = $FacingPivot
+@onready var attack_area: Area3D = $FacingPivot/AttackArea
+@onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
+@onready var touch = get_node_or_null("../HUD/TouchControls")
+
+var max_hp := 100.0
+var hp := 100.0
+var facing := Vector3(0, 0, -1)
+var attack_cooldown_timer := 0.0
+var flash_timer := 0.0
+var dead := false
+
+func _ready() -> void:
+	add_to_group("player")
+	hp_changed.emit(hp, max_hp)
+
+func _physics_process(delta: float) -> void:
+	if dead:
+		velocity.y -= GRAVITY * delta
+		move_and_slide()
+		return
+
+	_handle_movement(delta)
+	_handle_attack(delta)
+
+	if is_on_floor():
+		velocity.y = 0.0
+	else:
+		velocity.y -= GRAVITY * delta
+
+	move_and_slide()
+
+func _handle_movement(_delta: float) -> void:
+	var input_dir := Vector3.ZERO
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP):
+		input_dir.z -= 1.0
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
+		input_dir.z += 1.0
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT):
+		input_dir.x -= 1.0
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT):
+		input_dir.x += 1.0
+
+	if touch != null:
+		var tv: Vector2 = touch.move_vector
+		if tv.length() > 0.15:
+			input_dir.x += tv.x
+			input_dir.z += tv.y
+
+	if input_dir.length() > 0.01:
+		input_dir = input_dir.normalized()
+		facing = input_dir
+		facing_pivot.look_at(facing_pivot.global_position + facing, Vector3.UP)
+		velocity.x = facing.x * SPEED
+		velocity.z = facing.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, SPEED * 8.0 * _delta)
+		velocity.z = move_toward(velocity.z, 0.0, SPEED * 8.0 * _delta)
+
+func _handle_attack(delta: float) -> void:
+	attack_cooldown_timer -= delta
+	flash_timer -= delta
+	if flash_timer <= 0.0:
+		attack_flash.visible = false
+
+	var attack_pressed: bool = Input.is_physical_key_pressed(KEY_SPACE) or (touch != null and touch.attack_held)
+	if attack_pressed and attack_cooldown_timer <= 0.0:
+		attack_cooldown_timer = ATTACK_COOLDOWN
+		flash_timer = FLASH_TIME
+		attack_flash.visible = true
+		for body in attack_area.get_overlapping_bodies():
+			if (body.is_in_group("enemies") or body.is_in_group("park_objects")) and body.has_method("take_damage"):
+				body.take_damage(ATTACK_DAMAGE, self)
+
+func take_damage(amount: float, _source = null) -> void:
+	if dead:
+		return
+	hp = max(hp - amount, 0.0)
+	hp_changed.emit(hp, max_hp)
+	if hp <= 0.0:
+		dead = true
+		died.emit()
