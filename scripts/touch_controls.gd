@@ -27,6 +27,8 @@ func _update_layout() -> void:
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:
+	if get_tree().paused:
+		return
 	if event is InputEventScreenTouch:
 		_handle_pointer_down_up(event.index, event.position, event.pressed)
 	elif event is InputEventScreenDrag:
