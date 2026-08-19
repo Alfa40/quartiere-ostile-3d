@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_enemy"]
 
@@ -6,17 +6,33 @@
 radius = 0.5
 height = 1.8
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh"]
-radius = 0.5
-height = 1.8
+[sub_resource type="CapsuleMesh" id="TorsoMesh"]
+radius = 0.27
+height = 0.7
 
-[sub_resource type="BoxMesh" id="NoseMesh"]
-size = Vector3(0.22, 0.22, 0.55)
+[sub_resource type="SphereMesh" id="HeadMesh"]
+radius = 0.16
+height = 0.32
+
+[sub_resource type="CapsuleMesh" id="LegMesh"]
+radius = 0.11
+height = 0.7
+
+[sub_resource type="CapsuleMesh" id="ArmMesh"]
+radius = 0.09
+height = 0.58
+
+[sub_resource type="BoxMesh" id="FaceMesh"]
+size = Vector3(0.14, 0.14, 0.05)
 
 [sub_resource type="StandardMaterial3D" id="EnemyMaterial"]
 albedo_color = Color(0.85, 0.2, 0.2, 1)
 metallic = 0.1
 roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="HeadMaterial"]
+albedo_color = Color(0.82, 0.65, 0.52, 1)
+roughness = 0.6
 
 [sub_resource type="StandardMaterial3D" id="EnemyNoseMaterial"]
 albedo_color = Color(1.0, 0.6, 0.3, 1)
@@ -35,12 +51,51 @@ position = Vector3(0, 0.9, 0)
 
 [node name="FacingPivot" type="Node3D" parent="."]
 
-[node name="Body" type="MeshInstance3D" parent="FacingPivot"]
-mesh = SubResource("CapsuleMesh")
-surface_material_override/0 = SubResource("EnemyMaterial")
-position = Vector3(0, 0.9, 0)
+[node name="VisualRoot" type="Node3D" parent="FacingPivot"]
 
-[node name="Nose" type="MeshInstance3D" parent="FacingPivot"]
-mesh = SubResource("NoseMesh")
+[node name="Torso" type="MeshInstance3D" parent="FacingPivot/VisualRoot"]
+mesh = SubResource("TorsoMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, 1.2, 0)
+
+[node name="Head" type="MeshInstance3D" parent="FacingPivot/VisualRoot"]
+mesh = SubResource("HeadMesh")
+surface_material_override/0 = SubResource("HeadMaterial")
+position = Vector3(0, 1.71, 0)
+
+[node name="Face" type="MeshInstance3D" parent="FacingPivot/VisualRoot"]
+mesh = SubResource("FaceMesh")
 surface_material_override/0 = SubResource("EnemyNoseMaterial")
-position = Vector3(0, 1.1, -0.55)
+position = Vector3(0, 1.71, -0.16)
+
+[node name="LeftHip" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(-0.13, 0.85, 0)
+
+[node name="LeftLeg" type="MeshInstance3D" parent="FacingPivot/VisualRoot/LeftHip"]
+mesh = SubResource("LegMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, -0.35, 0)
+
+[node name="RightHip" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(0.13, 0.85, 0)
+
+[node name="RightLeg" type="MeshInstance3D" parent="FacingPivot/VisualRoot/RightHip"]
+mesh = SubResource("LegMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, -0.35, 0)
+
+[node name="LeftShoulder" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(-0.32, 1.4, 0)
+
+[node name="LeftArm" type="MeshInstance3D" parent="FacingPivot/VisualRoot/LeftShoulder"]
+mesh = SubResource("ArmMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, -0.29, 0)
+
+[node name="RightShoulder" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(0.32, 1.4, 0)
+
+[node name="RightArm" type="MeshInstance3D" parent="FacingPivot/VisualRoot/RightShoulder"]
+mesh = SubResource("ArmMesh")
+surface_material_override/0 = SubResource("EnemyMaterial")
+position = Vector3(0, -0.29, 0)

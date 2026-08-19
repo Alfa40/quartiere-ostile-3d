@@ -14,12 +14,20 @@ signal died
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
 @onready var touch = get_node_or_null("../HUD/TouchControls")
 
+@onready var visual_root: Node3D = $FacingPivot/VisualRoot
+@onready var right_shoulder: Node3D = $FacingPivot/VisualRoot/RightShoulder
+@onready var left_shoulder: Node3D = $FacingPivot/VisualRoot/LeftShoulder
+@onready var left_hip: Node3D = $FacingPivot/VisualRoot/LeftHip
+@onready var right_hip: Node3D = $FacingPivot/VisualRoot/RightHip
+
 var max_hp := 100.0
 var hp := 100.0
 var facing := Vector3(0, 0, -1)
 var attack_cooldown_timer := 0.0
 var flash_timer := 0.0
 var dead := false
+var walk_phase := 0.0
+var arm_tween: Tween = null
 
 func _ready() -> void:
 	add_to_group("player")
@@ -33,6 +41,7 @@ func _physics_process(delta: float) -> void:
 
 	_handle_movement(delta)
 	_handle_attack(delta)
+	_animate_body(delta)
 
 	if is_on_floor():
 		velocity.y = 0.0
@@ -79,9 +88,33 @@ func _handle_attack(delta: float) -> void:
 		attack_cooldown_timer = ATTACK_COOLDOWN
 		flash_timer = FLASH_TIME
 		attack_flash.visible = true
+		_play_attack_swing()
 		for body in attack_area.get_overlapping_bodies():
 			if (body.is_in_group("enemies") or body.is_in_group("park_objects")) and body.has_method("take_damage"):
 				body.take_damage(ATTACK_DAMAGE, self)
+
+func _play_attack_swing() -> void:
+	if arm_tween != null and arm_tween.is_valid():
+		arm_tween.kill()
+	right_shoulder.rotation.x = 0.0
+	arm_tween = create_tween()
+	arm_tween.tween_property(right_shoulder, "rotation:x", deg_to_rad(-110.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	arm_tween.tween_property(right_shoulder, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+func _animate_body(delta: float) -> void:
+	var horiz := Vector2(velocity.x, velocity.z).length()
+	if horiz > 0.3:
+		walk_phase += delta * horiz * 3.0
+		var swing := sin(walk_phase) * 0.45
+		left_hip.rotation.x = swing
+		right_hip.rotation.x = -swing
+		left_shoulder.rotation.x = -swing * 0.6
+		visual_root.position.y = absf(sin(walk_phase)) * 0.05
+	else:
+		left_hip.rotation.x = lerp(left_hip.rotation.x, 0.0, delta * 8.0)
+		right_hip.rotation.x = lerp(right_hip.rotation.x, 0.0, delta * 8.0)
+		left_shoulder.rotation.x = lerp(left_shoulder.rotation.x, 0.0, delta * 8.0)
+		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
 
 func take_damage(amount: float, _source = null) -> void:
 	if dead:

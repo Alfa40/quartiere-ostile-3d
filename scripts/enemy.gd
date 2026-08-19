@@ -10,6 +10,11 @@ const GRAVITY := 20.0
 signal died
 
 @onready var facing_pivot: Node3D = $FacingPivot
+@onready var visual_root: Node3D = $FacingPivot/VisualRoot
+@onready var right_shoulder: Node3D = $FacingPivot/VisualRoot/RightShoulder
+@onready var left_shoulder: Node3D = $FacingPivot/VisualRoot/LeftShoulder
+@onready var left_hip: Node3D = $FacingPivot/VisualRoot/LeftHip
+@onready var right_hip: Node3D = $FacingPivot/VisualRoot/RightHip
 
 var speed := BASE_SPEED
 var max_hp := BASE_MAX_HP
@@ -20,6 +25,8 @@ var attack_cooldown := BASE_ATTACK_COOLDOWN
 var attack_cooldown_timer := 0.0
 var dead := false
 var player: Node3D = null
+var walk_phase := 0.0
+var arm_tween: Tween = null
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -66,6 +73,7 @@ func _physics_process(delta: float) -> void:
 		if attack_cooldown_timer <= 0.0 and player.has_method("take_damage"):
 			player.take_damage(attack_damage, self)
 			attack_cooldown_timer = attack_cooldown
+			_play_attack_swing()
 
 	if is_on_floor():
 		velocity.y = 0.0
@@ -73,6 +81,30 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 
 	move_and_slide()
+	_animate_body(delta)
+
+func _play_attack_swing() -> void:
+	if arm_tween != null and arm_tween.is_valid():
+		arm_tween.kill()
+	right_shoulder.rotation.x = 0.0
+	arm_tween = create_tween()
+	arm_tween.tween_property(right_shoulder, "rotation:x", deg_to_rad(-110.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	arm_tween.tween_property(right_shoulder, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+func _animate_body(delta: float) -> void:
+	var horiz := Vector2(velocity.x, velocity.z).length()
+	if horiz > 0.3:
+		walk_phase += delta * horiz * 3.0
+		var swing := sin(walk_phase) * 0.45
+		left_hip.rotation.x = swing
+		right_hip.rotation.x = -swing
+		left_shoulder.rotation.x = -swing * 0.6
+		visual_root.position.y = absf(sin(walk_phase)) * 0.05
+	else:
+		left_hip.rotation.x = lerp(left_hip.rotation.x, 0.0, delta * 8.0)
+		right_hip.rotation.x = lerp(right_hip.rotation.x, 0.0, delta * 8.0)
+		left_shoulder.rotation.x = lerp(left_shoulder.rotation.x, 0.0, delta * 8.0)
+		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
 
 func take_damage(amount: float, _source = null) -> void:
 	if dead:
