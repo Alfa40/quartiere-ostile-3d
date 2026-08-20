@@ -5,10 +5,10 @@ extends CanvasLayer
 @onready var money_label: Label = $MoneyLabel
 @onready var message_label: Label = $MessageLabel
 @onready var pause_panel: Control = $PausePanel
-@onready var pause_stats_label: Label = $PausePanel/Box/StatsLabel
-@onready var pause_inventory_label: Label = $PausePanel/Box/InventoryLabel
+@onready var pause_stats_label: Label = $PausePanel/Scroll/Box/StatsLabel
+@onready var pause_inventory_label: Label = $PausePanel/Scroll/Box/InventoryLabel
 @onready var gameover_panel: Control = $GameOverPanel
-@onready var gameover_stats_label: Label = $GameOverPanel/Box/StatsLabel
+@onready var gameover_stats_label: Label = $GameOverPanel/Scroll/Box/StatsLabel
 @onready var pause_button: Button = $PauseButton
 
 var main: Node = null
@@ -18,11 +18,11 @@ func _ready() -> void:
 	main = get_parent()
 	pause_panel.visible = false
 	gameover_panel.visible = false
-	$PausePanel/Box/ResumeButton.pressed.connect(_on_resume_pressed)
-	$PausePanel/Box/RestartButton.pressed.connect(_on_restart_pressed)
-	$PausePanel/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
-	$GameOverPanel/Box/RestartButton.pressed.connect(_on_restart_pressed)
-	$GameOverPanel/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
+	$PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
+	$PausePanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)
+	$PausePanel/Scroll/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
+	$GameOverPanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)
+	$GameOverPanel/Scroll/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	pause_button.pressed.connect(toggle_pause)
 
 func _unhandled_input(event: InputEvent) -> void:

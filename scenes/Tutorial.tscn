@@ -12,51 +12,53 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.05, 0.05, 0.07, 1)
 
-[node name="Box" type="VBoxContainer" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -300.0
-offset_right = 280.0
-offset_bottom = 300.0
-theme_override_constants/separation = 22
+[node name="Scroll" type="ScrollContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
 
-[node name="Title" type="Label" parent="Box"]
-theme_override_font_sizes/font_size = 44
+[node name="Box" type="VBoxContainer" parent="Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 44
+
+[node name="Title" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 88
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 horizontal_alignment = 1
 text = "Tutorial"
 
-[node name="Subtitle" type="Label" parent="Box"]
-theme_override_font_sizes/font_size = 18
+[node name="Subtitle" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "Scegli una sezione da provare con obiettivi guidati"
 
-[node name="MoveButton" type="Button" parent="Box"]
-custom_minimum_size = Vector2(0, 72)
-theme_override_font_sizes/font_size = 26
+[node name="MoveButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 144)
+theme_override_font_sizes/font_size = 52
 text = "Movimento"
 
-[node name="AttackButton" type="Button" parent="Box"]
-custom_minimum_size = Vector2(0, 72)
-theme_override_font_sizes/font_size = 26
+[node name="AttackButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 144)
+theme_override_font_sizes/font_size = 52
 text = "Attacco"
 
-[node name="MaterialsButton" type="Button" parent="Box"]
-custom_minimum_size = Vector2(0, 72)
-theme_override_font_sizes/font_size = 26
+[node name="MaterialsButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 144)
+theme_override_font_sizes/font_size = 52
 text = "Materiali"
 
-[node name="GuideButton" type="Button" parent="Box"]
-custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 20
+[node name="GuideButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 112)
+theme_override_font_sizes/font_size = 40
 text = "Guida scritta completa"
 
-[node name="MenuButton" type="Button" parent="Box"]
-custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 20
+[node name="MenuButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 112)
+theme_override_font_sizes/font_size = 40
 text = "Torna al menu"

@@ -84,30 +84,30 @@ script = ExtResource("3_hud")
 [node name="HPLabel" type="Label" parent="HUD"]
 offset_left = 24.0
 offset_top = 20.0
-offset_right = 320.0
-offset_bottom = 60.0
-theme_override_font_sizes/font_size = 26
+offset_right = 560.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "HP: 100 / 100"
 
 [node name="ExitButton" type="Button" parent="HUD"]
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -140.0
+offset_left = -260.0
 offset_top = 20.0
 offset_right = -20.0
-offset_bottom = 72.0
-theme_override_font_sizes/font_size = 22
+offset_bottom = 124.0
+theme_override_font_sizes/font_size = 44
 text = "Esci"
 
 [node name="ObjectiveLabel" type="Label" parent="HUD"]
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -420.0
-offset_top = 20.0
-offset_right = 420.0
-offset_bottom = 90.0
-theme_override_font_sizes/font_size = 26
+offset_left = -480.0
+offset_top = 150.0
+offset_right = 480.0
+offset_bottom = 290.0
+theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(1, 0.95, 0.6, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -116,11 +116,11 @@ text = ""
 [node name="ProgressLabel" type="Label" parent="HUD"]
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -200.0
-offset_top = 94.0
-offset_right = 200.0
-offset_bottom = 124.0
-theme_override_font_sizes/font_size = 18
+offset_left = -260.0
+offset_top = 300.0
+offset_right = 260.0
+offset_bottom = 350.0
+theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 horizontal_alignment = 1
 text = ""
@@ -148,19 +148,20 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -140.0
-offset_right = 260.0
-offset_bottom = 140.0
-theme_override_constants/separation = 26
+offset_left = -400.0
+offset_top = -220.0
+offset_right = 400.0
+offset_bottom = 220.0
+theme_override_constants/separation = 52
 
 [node name="Title" type="Label" parent="HUD/CompletePanel/Box"]
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 80
 theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
 horizontal_alignment = 1
+autowrap_mode = 2
 text = "Sezione completata!"
 
 [node name="BackButton" type="Button" parent="HUD/CompletePanel/Box"]
-custom_minimum_size = Vector2(0, 68)
-theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(0, 136)
+theme_override_font_sizes/font_size = 48
 text = "Torna al tutorial"
