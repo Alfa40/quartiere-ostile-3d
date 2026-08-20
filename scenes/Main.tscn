@@ -841,47 +841,50 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -210.0
-offset_top = -320.0
-offset_right = 210.0
-offset_bottom = 320.0
-theme_override_constants/separation = 12
+offset_left = -320.0
+offset_top = -420.0
+offset_right = 320.0
+offset_bottom = 420.0
+theme_override_constants/separation = 26
 
 [node name="Title" type="Label" parent="HUD/PausePanel/Box"]
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 horizontal_alignment = 1
 text = "Pausa"
 
 [node name="StatsLabel" type="Label" parent="HUD/PausePanel/Box"]
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 horizontal_alignment = 1
 text = ""
 
 [node name="InventoryLabel" type="Label" parent="HUD/PausePanel/Box"]
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.85, 0.95, 0.85, 1)
 horizontal_alignment = 1
 text = ""
 
 [node name="HelpLabel" type="Label" parent="HUD/PausePanel/Box"]
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "WASD/joystick muovi — Spazio/pulsante attacca — Esc/P pausa"
 
 [node name="ResumeButton" type="Button" parent="HUD/PausePanel/Box"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
 text = "Riprendi"
 
 [node name="RestartButton" type="Button" parent="HUD/PausePanel/Box"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
 text = "Ricomincia da zona 1"
 
 [node name="MainMenuButton" type="Button" parent="HUD/PausePanel/Box"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
 text = "Torna al menu principale"
 
 [node name="GameOverPanel" type="Control" parent="HUD"]
@@ -905,28 +908,30 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -190.0
-offset_top = -210.0
-offset_right = 190.0
-offset_bottom = 210.0
-theme_override_constants/separation = 14
+offset_left = -300.0
+offset_top = -280.0
+offset_right = 300.0
+offset_bottom = 280.0
+theme_override_constants/separation = 26
 
 [node name="Title" type="Label" parent="HUD/GameOverPanel/Box"]
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 horizontal_alignment = 1
 text = "Sei stato steso"
 
 [node name="StatsLabel" type="Label" parent="HUD/GameOverPanel/Box"]
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.95, 0.9, 0.9, 1)
 horizontal_alignment = 1
 text = ""
 
 [node name="RestartButton" type="Button" parent="HUD/GameOverPanel/Box"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
 text = "Ricomincia da zona 1"
 
 [node name="MainMenuButton" type="Button" parent="HUD/GameOverPanel/Box"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
 text = "Torna al menu principale"
