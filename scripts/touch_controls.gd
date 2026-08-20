@@ -40,7 +40,7 @@ func _input(event: InputEvent) -> void:
 
 func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 	if pressed:
-		if pos.x < get_viewport_rect().size.x * 0.5 and _joy_touch_index == -2:
+		if _in_joystick_zone(pos) and _joy_touch_index == -2:
 			_joy_touch_index = index
 			_joy_origin = pos
 			move_vector = Vector2.ZERO
@@ -60,12 +60,21 @@ func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 			queue_redraw()
 
 func _handle_pointer_drag(index: int, pos: Vector2) -> void:
-	if index == _joy_touch_index:
-		var delta := pos - _joy_origin
-		if delta.length() > MAX_DRAG:
-			delta = delta.normalized() * MAX_DRAG
-		move_vector = delta / MAX_DRAG
-		queue_redraw()
+	if index != _joy_touch_index:
+		return
+	if not _in_joystick_zone(pos):
+		# A drag that jumps outside the joystick's own half of the screen can
+		# only be a misrouted/phantom event (e.g. the attack button on some
+		# devices) — ignore it instead of letting it corrupt move_vector.
+		return
+	var delta := pos - _joy_origin
+	if delta.length() > MAX_DRAG:
+		delta = delta.normalized() * MAX_DRAG
+	move_vector = delta / MAX_DRAG
+	queue_redraw()
+
+func _in_joystick_zone(pos: Vector2) -> bool:
+	return pos.x < get_viewport_rect().size.x * 0.5
 
 func _draw() -> void:
 	draw_circle(_joy_base_pos, JOY_RADIUS, Color(1, 1, 1, 0.15))
