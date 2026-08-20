@@ -1,0 +1,103 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial.gd" id="1_tutorial"]
+
+[node name="TutorialGuide" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_tutorial")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.07, 1)
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 30.0
+offset_right = -40.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 34
+
+[node name="Title" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+text = "Guida scritta"
+
+[node name="MoveHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.55, 0.75, 1, 1)
+text = "Movimento"
+
+[node name="MoveBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Usa WASD o le frecce direzionali per muoverti. Su telefono, trascina il joystick virtuale in basso a sinistra nella direzione in cui vuoi andare."
+
+[node name="AttackHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.55, 0.5, 1)
+text = "Attacco in mischia"
+
+[node name="AttackBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Premi Spazio (o tieni premuto il pulsante rosso in basso a destra su telefono) per colpire i nemici e gli oggetti che hai intorno con un colpo in mischia."
+
+[node name="MaterialsHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.6, 0.9, 0.6, 1)
+text = "Materiali"
+
+[node name="MaterialsBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Alberi, lampioni, cassonetti, cestini, barili, panchine e recinzioni si possono distruggere a colpi. Ogni oggetto rilascia materiali diversi: legno da alberi e panchine (gli alberi più grandi ne danno di più), metallo da cassonetti/cestini/barili/recinzioni, metallo e cablaggi dai lampioni. I materiali raccolti si vedono nell'inventario, nel menu di pausa."
+
+[node name="MedikitHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.5, 0.5, 1)
+text = "Medikit"
+
+[node name="MedikitBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Quando sconfiggi un nemico, a volte lascia cadere un medikit: camminaci sopra per curarti completamente. Se non lo raccogli in tempo, sparisce dopo qualche secondo."
+
+[node name="MoneyHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
+text = "Soldi e zone"
+
+[node name="MoneyBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Sconfiggere i nemici ti fa guadagnare soldi, mostrati in alto sullo schermo. Il quartiere è diviso in zone: sconfiggi tutti i nemici di un'ondata per avanzare alla zona successiva. Più vai avanti, più nemici valgono soldi, ma sono anche più numerosi, forti e veloci."
+
+[node name="PauseHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
+text = "Pausa"
+
+[node name="PauseBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Premi Esc o P sulla tastiera, oppure il pulsante ⏸ in alto a destra sullo schermo, per mettere in pausa. Da lì puoi vedere le statistiche della partita, il tuo inventario, riprendere o uscire."
+
+[node name="BackButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
+text = "Torna al tutorial"

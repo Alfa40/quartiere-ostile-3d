@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/waypoint.gd" id="1_wp"]
+
+[sub_resource type="CylinderShape3D" id="WPShape"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="TorusMesh" id="WPMesh"]
+inner_radius = 0.6
+outer_radius = 1.0
+
+[sub_resource type="StandardMaterial3D" id="WPMaterial"]
+albedo_color = Color(0.3, 0.9, 1.0, 0.85)
+emission_enabled = true
+emission = Color(0.3, 0.9, 1.0, 1)
+emission_energy_multiplier = 2.0
+transparency = 1
+
+[node name="Waypoint" type="Area3D"]
+script = ExtResource("1_wp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("WPShape")
+position = Vector3(0, 0.3, 0)
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+mesh = SubResource("WPMesh")
+surface_material_override/0 = SubResource("WPMaterial")
+position = Vector3(0, 0.15, 0)

@@ -1,0 +1,54 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
+
+[sub_resource type="CylinderShape3D" id="LampioneShape"]
+radius = 0.2
+height = 3.5
+
+[sub_resource type="CylinderMesh" id="PoleMesh"]
+top_radius = 0.1
+bottom_radius = 0.14
+height = 3.5
+
+[sub_resource type="StandardMaterial3D" id="PoleMaterial"]
+albedo_color = Color(0.12, 0.12, 0.14, 1)
+metallic = 0.6
+roughness = 0.4
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+radius = 0.25
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="HeadMaterial"]
+albedo_color = Color(1.0, 0.85, 0.5, 1)
+emission_enabled = true
+emission = Color(1.0, 0.8, 0.4, 1)
+emission_energy_multiplier = 2.5
+
+[node name="Lampione" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_object")
+max_hp = 100.0
+material_drops = {"metallo": 2, "cablaggi": 1}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("LampioneShape")
+position = Vector3(0, 1.75, 0)
+
+[node name="Pole" type="MeshInstance3D" parent="."]
+mesh = SubResource("PoleMesh")
+surface_material_override/0 = SubResource("PoleMaterial")
+position = Vector3(0, 1.75, 0)
+
+[node name="Head" type="MeshInstance3D" parent="."]
+mesh = SubResource("HeadMesh")
+surface_material_override/0 = SubResource("HeadMaterial")
+position = Vector3(0, 3.5, 0)
+
+[node name="Light" type="OmniLight3D" parent="."]
+position = Vector3(0, 3.5, 0)
+light_color = Color(1.0, 0.85, 0.55, 1)
+light_energy = 1.2
+omni_range = 6.0

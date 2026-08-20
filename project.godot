@@ -21,6 +21,7 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 [autoload]
 
 SaveData="*res://scripts/save_data.gd"
+TutorialState="*res://scripts/tutorial_state.gd"
 
 [rendering]
 

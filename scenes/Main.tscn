@@ -1,7 +1,7 @@
-[gd_scene load_steps=53 format=3]
+[gd_scene load_steps=41 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="5_object"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
@@ -41,58 +41,6 @@ size = Vector3(42, 3, 1)
 [sub_resource type="StandardMaterial3D" id="WallMaterial"]
 albedo_color = Color(0.35, 0.18, 0.16, 1)
 roughness = 0.85
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape"]
-radius = 0.5
-height = 1.8
-
-[sub_resource type="CapsuleMesh" id="TorsoMesh"]
-radius = 0.27
-height = 0.7
-
-[sub_resource type="SphereMesh" id="HeadMesh"]
-radius = 0.16
-height = 0.32
-
-[sub_resource type="CapsuleMesh" id="LegMesh"]
-radius = 0.11
-height = 0.7
-
-[sub_resource type="CapsuleMesh" id="ArmMesh"]
-radius = 0.09
-height = 0.58
-
-[sub_resource type="BoxMesh" id="FaceMesh"]
-size = Vector3(0.14, 0.14, 0.05)
-
-[sub_resource type="StandardMaterial3D" id="PlayerMaterial"]
-albedo_color = Color(0.2, 0.45, 0.95, 1)
-metallic = 0.1
-roughness = 0.4
-
-[sub_resource type="StandardMaterial3D" id="HeadMaterial"]
-albedo_color = Color(0.82, 0.65, 0.52, 1)
-roughness = 0.6
-
-[sub_resource type="StandardMaterial3D" id="PlayerNoseMaterial"]
-albedo_color = Color(0.75, 0.9, 1.0, 1)
-emission_enabled = true
-emission = Color(0.4, 0.7, 1.0, 1)
-emission_energy_multiplier = 1.5
-
-[sub_resource type="SphereShape3D" id="AttackShape"]
-radius = 1.3
-
-[sub_resource type="SphereMesh" id="AttackFlashMesh"]
-radius = 1.3
-height = 2.6
-
-[sub_resource type="StandardMaterial3D" id="AttackFlashMaterial"]
-albedo_color = Color(1.0, 0.95, 0.3, 0.35)
-transparency = 1
-emission_enabled = true
-emission = Color(1.0, 0.9, 0.3, 1)
-emission_energy_multiplier = 1.0
 
 [sub_resource type="CylinderShape3D" id="CestinoShape"]
 radius = 0.5
@@ -260,85 +208,8 @@ surface_material_override/0 = SubResource("WallMaterial")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
 shape = SubResource("WallShape")
 
-[node name="Player" type="CharacterBody3D" parent="."]
+[node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 0, 5)
-collision_layer = 2
-collision_mask = 13
-script = ExtResource("2_player")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-shape = SubResource("CapsuleShape")
-position = Vector3(0, 0.9, 0)
-
-[node name="FacingPivot" type="Node3D" parent="Player"]
-
-[node name="VisualRoot" type="Node3D" parent="Player/FacingPivot"]
-
-[node name="Torso" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot"]
-mesh = SubResource("TorsoMesh")
-surface_material_override/0 = SubResource("PlayerMaterial")
-position = Vector3(0, 1.2, 0)
-
-[node name="Head" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot"]
-mesh = SubResource("HeadMesh")
-surface_material_override/0 = SubResource("HeadMaterial")
-position = Vector3(0, 1.71, 0)
-
-[node name="Face" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot"]
-mesh = SubResource("FaceMesh")
-surface_material_override/0 = SubResource("PlayerNoseMaterial")
-position = Vector3(0, 1.71, -0.16)
-
-[node name="LeftHip" type="Node3D" parent="Player/FacingPivot/VisualRoot"]
-position = Vector3(-0.13, 0.85, 0)
-
-[node name="LeftLeg" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot/LeftHip"]
-mesh = SubResource("LegMesh")
-surface_material_override/0 = SubResource("PlayerMaterial")
-position = Vector3(0, -0.35, 0)
-
-[node name="RightHip" type="Node3D" parent="Player/FacingPivot/VisualRoot"]
-position = Vector3(0.13, 0.85, 0)
-
-[node name="RightLeg" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot/RightHip"]
-mesh = SubResource("LegMesh")
-surface_material_override/0 = SubResource("PlayerMaterial")
-position = Vector3(0, -0.35, 0)
-
-[node name="LeftShoulder" type="Node3D" parent="Player/FacingPivot/VisualRoot"]
-position = Vector3(-0.32, 1.4, 0)
-
-[node name="LeftArm" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot/LeftShoulder"]
-mesh = SubResource("ArmMesh")
-surface_material_override/0 = SubResource("PlayerMaterial")
-position = Vector3(0, -0.29, 0)
-
-[node name="RightShoulder" type="Node3D" parent="Player/FacingPivot/VisualRoot"]
-position = Vector3(0.32, 1.4, 0)
-
-[node name="RightArm" type="MeshInstance3D" parent="Player/FacingPivot/VisualRoot/RightShoulder"]
-mesh = SubResource("ArmMesh")
-surface_material_override/0 = SubResource("PlayerMaterial")
-position = Vector3(0, -0.29, 0)
-
-[node name="AttackArea" type="Area3D" parent="Player/FacingPivot"]
-position = Vector3(0, 1.0, -1.0)
-collision_layer = 0
-collision_mask = 12
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/FacingPivot/AttackArea"]
-shape = SubResource("AttackShape")
-
-[node name="Flash" type="MeshInstance3D" parent="Player/FacingPivot/AttackArea"]
-mesh = SubResource("AttackFlashMesh")
-surface_material_override/0 = SubResource("AttackFlashMaterial")
-visible = false
-
-[node name="Camera3D" type="Camera3D" parent="Player"]
-position = Vector3(0, 9, 7)
-rotation_degrees = Vector3(-52, 0, 0)
-current = true
-fov = 55
 
 [node name="Albero1" type="StaticBody3D" parent="."]
 position = Vector3(-14, 0, -14)

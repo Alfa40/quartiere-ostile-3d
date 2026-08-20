@@ -1,0 +1,166 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/tutorial_play.gd" id="1_play"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/tutorial_hud.gd" id="3_hud"]
+[ext_resource type="Script" path="res://scripts/touch_controls.gd" id="4_touch"]
+
+[sub_resource type="WorldBoundaryShape3D" id="FloorShape"]
+plane = Plane(0, 1, 0, 0)
+
+[sub_resource type="PlaneMesh" id="FloorMesh"]
+size = Vector2(32, 32)
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.16, 0.16, 0.18, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="WallMesh"]
+size = Vector3(34, 3, 1)
+
+[sub_resource type="BoxShape3D" id="WallShape"]
+size = Vector3(34, 3, 1)
+
+[node name="TutorialPlay" type="Node3D"]
+script = ExtResource("1_play")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -30, 0)
+light_energy = 1.1
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+surface_material_override/0 = SubResource("FloorMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.5, -16.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallNorth"]
+mesh = SubResource("WallMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("WallShape")
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.5, 16.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallSouth"]
+mesh = SubResource("WallMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("WallShape")
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+position = Vector3(16.5, 1.5, 0)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("WallMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("WallShape")
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+position = Vector3(-16.5, 1.5, 0)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("WallMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("WallShape")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector3(0, 0, 5)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("3_hud")
+
+[node name="HPLabel" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 320.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "HP: 100 / 100"
+
+[node name="ExitButton" type="Button" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -140.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 22
+text = "Esci"
+
+[node name="ObjectiveLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -420.0
+offset_top = 20.0
+offset_right = 420.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.95, 0.6, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = ""
+
+[node name="ProgressLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 94.0
+offset_right = 200.0
+offset_bottom = 124.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="TouchControls" type="Control" parent="HUD"]
+script = ExtResource("4_touch")
+
+[node name="CompletePanel" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+
+[node name="Dim" type="ColorRect" parent="HUD/CompletePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0.1, 0, 0.65)
+
+[node name="Box" type="VBoxContainer" parent="HUD/CompletePanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -140.0
+offset_right = 260.0
+offset_bottom = 140.0
+theme_override_constants/separation = 26
+
+[node name="Title" type="Label" parent="HUD/CompletePanel/Box"]
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
+horizontal_alignment = 1
+text = "Sezione completata!"
+
+[node name="BackButton" type="Button" parent="HUD/CompletePanel/Box"]
+custom_minimum_size = Vector2(0, 68)
+theme_override_font_sizes/font_size = 24
+text = "Torna al tutorial"
