@@ -2,6 +2,7 @@ extends Control
 
 func _ready() -> void:
 	$Box/StartButton.pressed.connect(_on_start_pressed)
+	$Box/TutorialButton.pressed.connect(_on_tutorial_pressed)
 	_refresh_best_label()
 
 func _refresh_best_label() -> void:
@@ -12,3 +13,6 @@ func _refresh_best_label() -> void:
 
 func _on_start_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+
+func _on_tutorial_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/Tutorial.tscn")
