@@ -104,7 +104,7 @@ func _play_attack_swing() -> void:
 	right_elbow.rotation.x = 0.0
 	arm_tween = create_tween()
 	arm_tween.tween_property(right_shoulder, "rotation:x", deg_to_rad(110.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	arm_tween.parallel().tween_property(right_elbow, "rotation:x", deg_to_rad(-55.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	arm_tween.parallel().tween_property(right_elbow, "rotation:x", deg_to_rad(65.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	arm_tween.tween_property(right_shoulder, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	arm_tween.parallel().tween_property(right_elbow, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
@@ -116,9 +116,9 @@ func _animate_body(delta: float) -> void:
 		left_hip.rotation.x = swing
 		right_hip.rotation.x = -swing
 		left_shoulder.rotation.x = -swing * 0.6
-		left_knee.rotation.x = maxf(0.0, -cos(walk_phase)) * 0.9
-		right_knee.rotation.x = maxf(0.0, cos(walk_phase)) * 0.9
-		left_elbow.rotation.x = maxf(0.0, cos(walk_phase)) * 0.4
+		left_knee.rotation.x = maxf(0.0, cos(walk_phase)) * 0.9
+		right_knee.rotation.x = maxf(0.0, -cos(walk_phase)) * 0.9
+		left_elbow.rotation.x = maxf(0.0, -cos(walk_phase)) * 0.4
 		visual_root.position.y = absf(sin(walk_phase)) * 0.05
 	else:
 		left_hip.rotation.x = lerp(left_hip.rotation.x, 0.0, delta * 8.0)
