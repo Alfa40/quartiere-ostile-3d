@@ -1,10 +1,11 @@
-[gd_scene load_steps=41 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="5_object"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
+[ext_resource type="Script" path="res://scripts/enemy_indicators.gd" id="7_indicators"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.15, 0.18, 0.35, 1)
@@ -680,6 +681,9 @@ text = ""
 
 [node name="TouchControls" type="Control" parent="HUD"]
 script = ExtResource("6_touch")
+
+[node name="EnemyIndicators" type="Control" parent="HUD"]
+script = ExtResource("7_indicators")
 
 [node name="PauseButton" type="Button" parent="HUD"]
 anchor_left = 1.0

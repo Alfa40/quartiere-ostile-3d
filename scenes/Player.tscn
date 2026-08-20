@@ -41,18 +41,18 @@ emission = Color(0.4, 0.7, 1.0, 1)
 emission_energy_multiplier = 1.5
 
 [sub_resource type="SphereShape3D" id="AttackShape"]
-radius = 1.3
+radius = 0.91
 
 [sub_resource type="SphereMesh" id="AttackFlashMesh"]
-radius = 1.3
-height = 2.6
+radius = 0.91
+height = 1.82
 
 [sub_resource type="StandardMaterial3D" id="AttackFlashMaterial"]
-albedo_color = Color(1.0, 0.95, 0.3, 0.35)
+albedo_color = Color(1.0, 0.95, 0.3, 0.18)
 transparency = 1
 emission_enabled = true
 emission = Color(1.0, 0.9, 0.3, 1)
-emission_energy_multiplier = 1.0
+emission_energy_multiplier = 0.6
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -128,7 +128,7 @@ surface_material_override/0 = SubResource("AttackFlashMaterial")
 visible = false
 
 [node name="Camera3D" type="Camera3D" parent="."]
-position = Vector3(0, 9, 7)
+position = Vector3(0, 12.6, 9.8)
 rotation_degrees = Vector3(-52, 0, 0)
 current = true
-fov = 55
+fov = 62
