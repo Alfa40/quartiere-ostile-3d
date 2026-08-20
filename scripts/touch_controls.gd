@@ -13,7 +13,6 @@ var _joy_origin := Vector2.ZERO
 var _attack_touch_index := -2
 var _joy_base_pos := Vector2.ZERO
 var _btn_pos := Vector2.ZERO
-var _real_touch_seen := false
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -31,18 +30,12 @@ func _input(event: InputEvent) -> void:
 	if get_tree().paused:
 		return
 	if event is InputEventScreenTouch:
-		_real_touch_seen = true
 		_handle_pointer_down_up(event.index, event.position, event.pressed)
 	elif event is InputEventScreenDrag:
-		_real_touch_seen = true
 		_handle_pointer_drag(event.index, event.position)
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if _real_touch_seen:
-			return
 		_handle_pointer_down_up(-1, event.position, event.pressed)
 	elif event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0:
-		if _real_touch_seen:
-			return
 		_handle_pointer_drag(-1, event.position)
 
 func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
