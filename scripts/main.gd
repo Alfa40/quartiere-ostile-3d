@@ -33,8 +33,9 @@ const ZONE_NAMES := [
 ]
 
 const SPAWN_POINTS := [
-	Vector3(0, 0, -18), Vector3(-18, 0, -10), Vector3(18, 0, -10),
-	Vector3(-18, 0, 10), Vector3(18, 0, 10), Vector3(0, 0, -12),
+	Vector3(0, 0, -36), Vector3(-36, 0, -20), Vector3(36, 0, -20),
+	Vector3(-36, 0, 20), Vector3(36, 0, 20), Vector3(0, 0, -24),
+	Vector3(-30, 0, 30), Vector3(30, 0, 30),
 ]
 
 @onready var hud = $HUD
