@@ -1,6 +1,14 @@
 extends Node3D
 
 const EnemyScene := preload("res://scenes/Enemy.tscn")
+const MedikitScene := preload("res://scenes/Medikit.tscn")
+const MEDIKIT_CHANCE := 0.16
+
+const MATERIAL_LABELS := {
+	"legno": "Legno",
+	"metallo": "Metallo",
+	"cablaggi": "Cablaggi",
+}
 
 const BASE_ENEMIES := 5
 const PER_ZONE := 2
@@ -35,6 +43,8 @@ var zone := 1
 var money := 0.0
 var enemies_defeated := 0
 var run_start_msec := 0
+var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
+var weapon_name := "Pugni"
 
 var zone_enemies_total := 0
 var zone_enemies_spawned := 0
@@ -47,6 +57,8 @@ func _ready() -> void:
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	player.died.connect(_on_player_died)
 	hud.update_money(money)
+	for obj in get_tree().get_nodes_in_group("park_objects"):
+		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 	_start_zone()
 
 func _start_zone() -> void:
@@ -84,22 +96,43 @@ func _spawn_enemy() -> void:
 	var speed_mult := 1.0 + SPEED_PER_ZONE * (zone - 1)
 	var cooldown: float = max(BASE_ENEMY_COOLDOWN * (1.0 - COOLDOWN_FACTOR_PER_ZONE * (zone - 1)), MIN_COOLDOWN)
 	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown)
-	enemy.died.connect(_on_enemy_died)
+	enemy.died.connect(_on_enemy_died.bind(enemy))
 
 	zone_enemies_spawned += 1
 	zone_enemies_alive += 1
 
-func _on_enemy_died() -> void:
+func _on_enemy_died(enemy: Node3D) -> void:
 	zone_enemies_alive -= 1
 	enemies_defeated += 1
 	var money_mult := 1.0 + MONEY_PER_ZONE * (zone - 1)
 	var reward := roundi(randf_range(10.0, 18.0) * money_mult)
 	money += reward
 	hud.update_money(money)
-	hud.show_message("Nemico sconfitto (+%d€)" % reward)
+
+	var msg := "Nemico sconfitto (+%d€)" % reward
+	if randf() < MEDIKIT_CHANCE:
+		_spawn_medikit(enemy.global_position)
+		msg += " — ha lasciato un medikit"
+	hud.show_message(msg)
 
 	if zone_enemies_spawned >= zone_enemies_total and zone_enemies_alive <= 0 and not zone_transitioning:
 		_complete_zone()
+
+func _spawn_medikit(pos: Vector3) -> void:
+	var medikit = MedikitScene.instantiate()
+	add_child(medikit)
+	medikit.position = pos
+
+func _on_object_destroyed(obj: Node3D) -> void:
+	var drops: Dictionary = obj.material_drops
+	if drops.is_empty():
+		return
+	var parts: Array[String] = []
+	for mat in drops:
+		var amount: int = drops[mat]
+		materials[mat] = materials.get(mat, 0) + amount
+		parts.append("+%d %s" % [amount, MATERIAL_LABELS.get(mat, mat)])
+	hud.show_message(", ".join(parts))
 
 func _complete_zone() -> void:
 	zone_transitioning = true
@@ -118,3 +151,8 @@ func get_stats_text() -> String:
 	var minutes := elapsed_sec / 60
 	var seconds := elapsed_sec % 60
 	return "Zona raggiunta: %d\nSoldi guadagnati: %d€\nNemici sconfitti: %d\nTempo: %02d:%02d" % [zone, int(money), enemies_defeated, minutes, seconds]
+
+func get_inventory_text() -> String:
+	return "Arma equipaggiata: %s\n\nMateriali:\nLegno: %d   Metallo: %d   Cablaggi: %d" % [
+		weapon_name, materials.get("legno", 0), materials.get("metallo", 0), materials.get("cablaggi", 0)
+	]

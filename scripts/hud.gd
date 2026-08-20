@@ -6,8 +6,10 @@ extends CanvasLayer
 @onready var message_label: Label = $MessageLabel
 @onready var pause_panel: Control = $PausePanel
 @onready var pause_stats_label: Label = $PausePanel/Box/StatsLabel
+@onready var pause_inventory_label: Label = $PausePanel/Box/InventoryLabel
 @onready var gameover_panel: Control = $GameOverPanel
 @onready var gameover_stats_label: Label = $GameOverPanel/Box/StatsLabel
+@onready var pause_button: Button = $PauseButton
 
 var main: Node = null
 
@@ -21,6 +23,7 @@ func _ready() -> void:
 	$PausePanel/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	$GameOverPanel/Box/RestartButton.pressed.connect(_on_restart_pressed)
 	$GameOverPanel/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
+	pause_button.pressed.connect(toggle_pause)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -30,18 +33,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			toggle_pause()
 
 func toggle_pause() -> void:
+	if gameover_panel.visible:
+		return
 	set_paused(not get_tree().paused)
 
 func set_paused(value: bool) -> void:
 	get_tree().paused = value
 	pause_panel.visible = value
+	pause_button.visible = not value
 	if value:
 		pause_stats_label.text = main.get_stats_text()
+		pause_inventory_label.text = main.get_inventory_text()
 
 func show_game_over() -> void:
 	get_tree().paused = true
 	gameover_stats_label.text = main.get_stats_text()
 	gameover_panel.visible = true
+	pause_button.visible = false
 
 func _on_resume_pressed() -> void:
 	set_paused(false)

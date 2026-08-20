@@ -124,3 +124,9 @@ func take_damage(amount: float, _source = null) -> void:
 	if hp <= 0.0:
 		dead = true
 		died.emit()
+
+func heal(fraction: float) -> void:
+	if dead:
+		return
+	hp = min(hp + max_hp * fraction, max_hp)
+	hp_changed.emit(hp, max_hp)

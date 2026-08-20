@@ -347,6 +347,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 480.0
+material_drops = {"legno": 6}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero1"]
 shape = SubResource("AlberoShape")
@@ -369,6 +370,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 140.0
+material_drops = {"legno": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero2"]
 shape = SubResource("AlberoShape")
@@ -390,6 +392,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 280.0
+material_drops = {"legno": 4}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero3"]
 shape = SubResource("AlberoShape")
@@ -412,6 +415,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 480.0
+material_drops = {"legno": 6}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero4"]
 shape = SubResource("AlberoShape")
@@ -434,6 +438,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 140.0
+material_drops = {"legno": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero5"]
 shape = SubResource("AlberoShape")
@@ -456,6 +461,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 200.0
+material_drops = {"legno": 3}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero6"]
 shape = SubResource("AlberoShape")
@@ -477,6 +483,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 100.0
+material_drops = {"metallo": 2, "cablaggi": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Lampione1"]
 shape = SubResource("LampioneShape")
@@ -504,6 +511,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 100.0
+material_drops = {"metallo": 2, "cablaggi": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Lampione2"]
 shape = SubResource("LampioneShape")
@@ -531,6 +539,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 100.0
+material_drops = {"metallo": 2, "cablaggi": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Lampione3"]
 shape = SubResource("LampioneShape")
@@ -558,6 +567,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 140.0
+material_drops = {"legno": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Panchina1"]
 shape = SubResource("PanchinaShape")
@@ -574,6 +584,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 140.0
+material_drops = {"legno": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Panchina2"]
 shape = SubResource("PanchinaShape")
@@ -590,6 +601,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 180.0
+material_drops = {"metallo": 3}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cassonetto1"]
 shape = SubResource("CassonettoShape")
@@ -606,6 +618,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 180.0
+material_drops = {"metallo": 3}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cassonetto2"]
 shape = SubResource("CassonettoShape")
@@ -622,6 +635,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 90.0
+material_drops = {"metallo": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Barile1"]
 shape = SubResource("BarileShape")
@@ -638,6 +652,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 90.0
+material_drops = {"metallo": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Barile2"]
 shape = SubResource("BarileShape")
@@ -654,6 +669,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 90.0
+material_drops = {"metallo": 2}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Barile3"]
 shape = SubResource("BarileShape")
@@ -670,6 +686,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 60.0
+material_drops = {"metallo": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cestino1"]
 shape = SubResource("CestinoShape")
@@ -686,6 +703,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 60.0
+material_drops = {"metallo": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cestino2"]
 shape = SubResource("CestinoShape")
@@ -703,6 +721,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 110.0
+material_drops = {"metallo": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Recinzione1"]
 shape = SubResource("RecinzioneShape")
@@ -720,6 +739,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 110.0
+material_drops = {"metallo": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Recinzione2"]
 shape = SubResource("RecinzioneShape")
@@ -737,6 +757,7 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
 max_hp = 110.0
+material_drops = {"metallo": 1}
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Recinzione3"]
 shape = SubResource("RecinzioneShape")
@@ -789,6 +810,16 @@ text = ""
 [node name="TouchControls" type="Control" parent="HUD"]
 script = ExtResource("6_touch")
 
+[node name="PauseButton" type="Button" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -76.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 76.0
+theme_override_font_sizes/font_size = 24
+text = "II"
+
 [node name="PausePanel" type="Control" parent="HUD"]
 anchor_left = 0.0
 anchor_top = 0.0
@@ -810,11 +841,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -190.0
-offset_top = -230.0
-offset_right = 190.0
-offset_bottom = 230.0
-theme_override_constants/separation = 14
+offset_left = -210.0
+offset_top = -320.0
+offset_right = 210.0
+offset_bottom = 320.0
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="HUD/PausePanel/Box"]
 theme_override_font_sizes/font_size = 34
@@ -825,6 +856,12 @@ text = "Pausa"
 [node name="StatsLabel" type="Label" parent="HUD/PausePanel/Box"]
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="InventoryLabel" type="Label" parent="HUD/PausePanel/Box"]
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.85, 0.95, 0.85, 1)
 horizontal_alignment = 1
 text = ""
 

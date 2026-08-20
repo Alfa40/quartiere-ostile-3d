@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/medikit.gd" id="1_medikit"]
+
+[sub_resource type="SphereShape3D" id="PickupShape"]
+radius = 0.5
+
+[sub_resource type="BoxMesh" id="BaseMesh"]
+size = Vector3(0.4, 0.18, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="BaseMaterial"]
+albedo_color = Color(0.95, 0.95, 0.92, 1)
+roughness = 0.5
+
+[sub_resource type="BoxMesh" id="CrossHMesh"]
+size = Vector3(0.28, 0.05, 0.09)
+
+[sub_resource type="BoxMesh" id="CrossVMesh"]
+size = Vector3(0.09, 0.05, 0.28)
+
+[sub_resource type="StandardMaterial3D" id="CrossMaterial"]
+albedo_color = Color(0.9, 0.15, 0.15, 1)
+emission_enabled = true
+emission = Color(0.9, 0.1, 0.1, 1)
+emission_energy_multiplier = 0.6
+
+[node name="Medikit" type="Area3D"]
+script = ExtResource("1_medikit")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("PickupShape")
+position = Vector3(0, 0.35, 0)
+
+[node name="Base" type="MeshInstance3D" parent="."]
+mesh = SubResource("BaseMesh")
+surface_material_override/0 = SubResource("BaseMaterial")
+position = Vector3(0, 0.35, 0)
+
+[node name="CrossH" type="MeshInstance3D" parent="."]
+mesh = SubResource("CrossHMesh")
+surface_material_override/0 = SubResource("CrossMaterial")
+position = Vector3(0, 0.46, 0)
+
+[node name="CrossV" type="MeshInstance3D" parent="."]
+mesh = SubResource("CrossVMesh")
+surface_material_override/0 = SubResource("CrossMaterial")
+position = Vector3(0, 0.46, 0)
