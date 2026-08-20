@@ -46,3 +46,73 @@ text = "Inizia partita"
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 48
 text = "Come si gioca"
+
+[node name="CreatorButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -70.0
+offset_top = -50.0
+offset_right = 70.0
+offset_bottom = -14.0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.4, 0.4, 0.45, 1)
+text = "Creator"
+flat = true
+
+[node name="PasswordPanel" type="Control" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="PasswordPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.75)
+
+[node name="Box" type="VBoxContainer" parent="PasswordPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -170.0
+offset_right = 260.0
+offset_bottom = 170.0
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="PasswordPanel/Box"]
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+text = "Modalità Creator"
+
+[node name="PasswordEdit" type="LineEdit" parent="PasswordPanel/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 24
+secret = true
+placeholder_text = "Password"
+horizontal_alignment = 1
+
+[node name="ErrorLabel" type="Label" parent="PasswordPanel/Box"]
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="ConfirmButton" type="Button" parent="PasswordPanel/Box"]
+custom_minimum_size = Vector2(0, 64)
+theme_override_font_sizes/font_size = 24
+text = "Avanti"
+
+[node name="CancelButton" type="Button" parent="PasswordPanel/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 20
+text = "Annulla"

@@ -130,7 +130,7 @@ func _animate_body(delta: float) -> void:
 		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
 
 func take_damage(amount: float, _source = null) -> void:
-	if dead:
+	if dead or DevMode.enabled:
 		return
 	hp = max(hp - amount, 0.0)
 	hp_changed.emit(hp, max_hp)

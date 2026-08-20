@@ -59,7 +59,8 @@ func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
 
 func _on_main_menu_pressed() -> void:
-	SaveData.report_run(main.zone, int(main.money))
+	if not DevMode.enabled:
+		SaveData.report_run(main.zone, int(main.money))
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
@@ -73,4 +74,7 @@ func update_zone(zone: int, zone_name: String) -> void:
 	zone_label.text = "Zona %d — %s" % [zone, zone_name]
 
 func update_money(amount: float) -> void:
-	money_label.text = "Soldi: %d€" % int(amount)
+	if DevMode.enabled:
+		money_label.text = "Soldi: ∞"
+	else:
+		money_label.text = "Soldi: %d€" % int(amount)

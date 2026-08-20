@@ -55,6 +55,9 @@ var zone_transitioning := false
 
 func _ready() -> void:
 	run_start_msec = Time.get_ticks_msec()
+	if DevMode.enabled:
+		money = 999999.0
+		materials = {"legno": 999999, "metallo": 999999, "cablaggi": 999999}
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	player.died.connect(_on_player_died)
 	hud.update_money(money)
@@ -71,7 +74,8 @@ func _start_zone() -> void:
 	var zone_name: String = ZONE_NAMES[min(zone - 1, ZONE_NAMES.size() - 1)]
 	hud.update_zone(zone, zone_name)
 	hud.show_message("Zona %d iniziata: ripulisci il quartiere!" % zone)
-	SaveData.report_run(zone, int(money))
+	if not DevMode.enabled:
+		SaveData.report_run(zone, int(money))
 
 func _process(delta: float) -> void:
 	if Input.is_physical_key_pressed(KEY_R):
@@ -145,7 +149,8 @@ func _complete_zone() -> void:
 
 func _on_player_died() -> void:
 	hud.show_message("Sei stato steso.")
-	SaveData.report_run(zone, int(money))
+	if not DevMode.enabled:
+		SaveData.report_run(zone, int(money))
 	hud.show_game_over()
 
 func get_stats_text() -> String:
@@ -155,6 +160,8 @@ func get_stats_text() -> String:
 	return "Zona raggiunta: %d\nSoldi guadagnati: %d€\nNemici sconfitti: %d\nTempo: %02d:%02d" % [zone, int(money), enemies_defeated, minutes, seconds]
 
 func get_inventory_text() -> String:
+	if DevMode.enabled:
+		return "Arma equipaggiata: %s\n\nMateriali:\nLegno: ∞   Metallo: ∞   Cablaggi: ∞" % weapon_name
 	return "Arma equipaggiata: %s\n\nMateriali:\nLegno: %d   Metallo: %d   Cablaggi: %d" % [
 		weapon_name, materials.get("legno", 0), materials.get("metallo", 0), materials.get("cablaggi", 0)
 	]

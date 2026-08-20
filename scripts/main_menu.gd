@@ -1,8 +1,16 @@
 extends Control
 
+@onready var password_panel: Control = $PasswordPanel
+@onready var password_edit: LineEdit = $PasswordPanel/Box/PasswordEdit
+@onready var error_label: Label = $PasswordPanel/Box/ErrorLabel
+
 func _ready() -> void:
 	$Box/StartButton.pressed.connect(_on_start_pressed)
 	$Box/TutorialButton.pressed.connect(_on_tutorial_pressed)
+	$CreatorButton.pressed.connect(_on_creator_pressed)
+	$PasswordPanel/Box/ConfirmButton.pressed.connect(_on_confirm_pressed)
+	$PasswordPanel/Box/CancelButton.pressed.connect(_on_cancel_pressed)
+	password_edit.text_submitted.connect(func(_t): _on_confirm_pressed())
 	_refresh_best_label()
 
 func _refresh_best_label() -> void:
@@ -12,7 +20,26 @@ func _refresh_best_label() -> void:
 		$Box/BestLabel.text = "Miglior risultato: Zona %d — %d€ guadagnati" % [SaveData.best_zone, SaveData.best_money]
 
 func _on_start_pressed() -> void:
+	DevMode.enabled = false
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 func _on_tutorial_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Tutorial.tscn")
+
+func _on_creator_pressed() -> void:
+	error_label.text = ""
+	password_edit.text = ""
+	password_panel.visible = true
+	password_edit.grab_focus()
+
+func _on_cancel_pressed() -> void:
+	password_panel.visible = false
+
+func _on_confirm_pressed() -> void:
+	if DevMode.check(password_edit.text):
+		DevMode.enabled = true
+		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	else:
+		error_label.text = "Password errata"
+		password_edit.text = ""
+		password_edit.grab_focus()
