@@ -2,6 +2,7 @@ extends Node3D
 
 const EnemyScene := preload("res://scenes/Enemy.tscn")
 const MedikitScene := preload("res://scenes/Medikit.tscn")
+const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const MATERIAL_LABELS := {
@@ -95,7 +96,8 @@ func _spawn_enemy() -> void:
 	var dmg_mult := 1.0 + DAMAGE_PER_ZONE * (zone - 1)
 	var speed_mult := 1.0 + SPEED_PER_ZONE * (zone - 1)
 	var cooldown: float = max(BASE_ENEMY_COOLDOWN * (1.0 - COOLDOWN_FACTOR_PER_ZONE * (zone - 1)), MIN_COOLDOWN)
-	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown)
+	var archetype_id := EnemyArchetypes.pick(zone)
+	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown, archetype_id)
 	enemy.died.connect(_on_enemy_died.bind(enemy))
 
 	zone_enemies_spawned += 1
