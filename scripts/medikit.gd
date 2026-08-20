@@ -1,6 +1,6 @@
 extends Area3D
 
-const HEAL_FRACTION := 0.25
+const HEAL_FRACTION := 1.0
 const LIFESPAN := 14.0
 
 var life := LIFESPAN
