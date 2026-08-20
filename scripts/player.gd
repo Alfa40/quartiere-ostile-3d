@@ -116,9 +116,9 @@ func _animate_body(delta: float) -> void:
 		left_hip.rotation.x = swing
 		right_hip.rotation.x = -swing
 		left_shoulder.rotation.x = -swing * 0.6
-		left_knee.rotation.x = maxf(0.0, cos(walk_phase)) * 0.9
-		right_knee.rotation.x = maxf(0.0, -cos(walk_phase)) * 0.9
-		left_elbow.rotation.x = maxf(0.0, -cos(walk_phase)) * 0.4
+		left_knee.rotation.x = -maxf(0.0, cos(walk_phase)) * 0.9
+		right_knee.rotation.x = -maxf(0.0, -cos(walk_phase)) * 0.9
+		left_elbow.rotation.x = -maxf(0.0, -cos(walk_phase)) * 0.4
 		visual_root.position.y = absf(sin(walk_phase)) * 0.05
 	else:
 		left_hip.rotation.x = lerp(left_hip.rotation.x, 0.0, delta * 8.0)
