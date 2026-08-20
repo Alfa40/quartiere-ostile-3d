@@ -1,9 +1,9 @@
 extends Control
 
-const JOY_RADIUS := 70.0
-const JOY_KNOB_RADIUS := 30.0
-const BTN_RADIUS := 60.0
-const MAX_DRAG := 70.0
+const JOY_RADIUS := 140.0
+const JOY_KNOB_RADIUS := 60.0
+const BTN_RADIUS := 120.0
+const MAX_DRAG := 140.0
 
 var move_vector := Vector2.ZERO
 var attack_held := false
@@ -22,8 +22,8 @@ func _ready() -> void:
 
 func _update_layout() -> void:
 	var vp := get_viewport_rect().size
-	_joy_base_pos = Vector2(130, vp.y - 150)
-	_btn_pos = Vector2(vp.x - 120, vp.y - 150)
+	_joy_base_pos = Vector2(170, vp.y - 220)
+	_btn_pos = Vector2(vp.x - 170, vp.y - 220)
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:

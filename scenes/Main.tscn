@@ -342,10 +342,11 @@ fov = 55
 
 [node name="Albero1" type="StaticBody3D" parent="."]
 position = Vector3(-14, 0, -14)
+scale = Vector3(1.5, 1.5, 1.5)
 collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
-max_hp = 280.0
+max_hp = 480.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero1"]
 shape = SubResource("AlberoShape")
@@ -363,10 +364,11 @@ position = Vector3(0, 1.9, 0)
 
 [node name="Albero2" type="StaticBody3D" parent="."]
 position = Vector3(14, 0, -14)
+scale = Vector3(0.65, 0.65, 0.65)
 collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
-max_hp = 280.0
+max_hp = 140.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero2"]
 shape = SubResource("AlberoShape")
@@ -405,10 +407,11 @@ position = Vector3(0, 1.9, 0)
 
 [node name="Albero4" type="StaticBody3D" parent="."]
 position = Vector3(14, 0, 14)
+scale = Vector3(1.5, 1.5, 1.5)
 collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_object")
-max_hp = 280.0
+max_hp = 480.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Albero4"]
 shape = SubResource("AlberoShape")
@@ -420,6 +423,50 @@ surface_material_override/0 = SubResource("AlberoTrunkMaterial")
 position = Vector3(0, 0.7, 0)
 
 [node name="Foliage" type="MeshInstance3D" parent="Albero4"]
+mesh = SubResource("AlberoFoliageMesh")
+surface_material_override/0 = SubResource("AlberoFoliageMaterial")
+position = Vector3(0, 1.9, 0)
+
+[node name="Albero5" type="StaticBody3D" parent="."]
+position = Vector3(-8, 0, -17)
+scale = Vector3(0.65, 0.65, 0.65)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 140.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Albero5"]
+shape = SubResource("AlberoShape")
+position = Vector3(0, 0.8, 0)
+
+[node name="Trunk" type="MeshInstance3D" parent="Albero5"]
+mesh = SubResource("AlberoTrunkMesh")
+surface_material_override/0 = SubResource("AlberoTrunkMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="Foliage" type="MeshInstance3D" parent="Albero5"]
+mesh = SubResource("AlberoFoliageMesh")
+surface_material_override/0 = SubResource("AlberoFoliageMaterial")
+position = Vector3(0, 1.9, 0)
+
+[node name="Albero6" type="StaticBody3D" parent="."]
+position = Vector3(8, 0, -17)
+scale = Vector3(0.85, 0.85, 0.85)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_object")
+max_hp = 200.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Albero6"]
+shape = SubResource("AlberoShape")
+position = Vector3(0, 0.8, 0)
+
+[node name="Trunk" type="MeshInstance3D" parent="Albero6"]
+mesh = SubResource("AlberoTrunkMesh")
+surface_material_override/0 = SubResource("AlberoTrunkMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="Foliage" type="MeshInstance3D" parent="Albero6"]
 mesh = SubResource("AlberoFoliageMesh")
 surface_material_override/0 = SubResource("AlberoFoliageMaterial")
 position = Vector3(0, 1.9, 0)
