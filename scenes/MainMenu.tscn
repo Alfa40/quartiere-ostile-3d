@@ -77,42 +77,187 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.75)
 
-[node name="Box" type="VBoxContainer" parent="PasswordPanel"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -170.0
-offset_right = 260.0
-offset_bottom = 170.0
-theme_override_constants/separation = 22
+[node name="Scroll" type="ScrollContainer" parent="PasswordPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 24.0
+offset_right = -40.0
+offset_bottom = -24.0
+horizontal_scroll_mode = 0
 
-[node name="Title" type="Label" parent="PasswordPanel/Box"]
+[node name="Box" type="VBoxContainer" parent="PasswordPanel/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="PasswordPanel/Scroll/Box"]
 theme_override_font_sizes/font_size = 32
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 horizontal_alignment = 1
 text = "Modalità Creator"
 
-[node name="PasswordEdit" type="LineEdit" parent="PasswordPanel/Box"]
+[node name="PasswordEdit" type="LineEdit" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
 theme_override_font_sizes/font_size = 24
 secret = true
 placeholder_text = "Password"
 horizontal_alignment = 1
 
-[node name="ErrorLabel" type="Label" parent="PasswordPanel/Box"]
+[node name="ErrorLabel" type="Label" parent="PasswordPanel/Scroll/Box"]
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 horizontal_alignment = 1
 text = ""
 
-[node name="ConfirmButton" type="Button" parent="PasswordPanel/Box"]
+[node name="Keyboard" type="GridContainer" parent="PasswordPanel/Scroll/Box"]
+size_flags_horizontal = 4
+columns = 9
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="Key_A" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "A"
+
+[node name="Key_B" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "B"
+
+[node name="Key_C" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "C"
+
+[node name="Key_D" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "D"
+
+[node name="Key_E" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "E"
+
+[node name="Key_F" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "F"
+
+[node name="Key_G" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "G"
+
+[node name="Key_H" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "H"
+
+[node name="Key_I" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "I"
+
+[node name="Key_J" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "J"
+
+[node name="Key_K" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "K"
+
+[node name="Key_L" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "L"
+
+[node name="Key_M" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "M"
+
+[node name="Key_N" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "N"
+
+[node name="Key_O" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "O"
+
+[node name="Key_P" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "P"
+
+[node name="Key_Q" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "Q"
+
+[node name="Key_R" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "R"
+
+[node name="Key_S" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "S"
+
+[node name="Key_T" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "T"
+
+[node name="Key_U" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "U"
+
+[node name="Key_V" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "V"
+
+[node name="Key_W" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "W"
+
+[node name="Key_X" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "X"
+
+[node name="Key_Y" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "Y"
+
+[node name="Key_Z" type="Button" parent="PasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "Z"
+
+[node name="BackspaceButton" type="Button" parent="PasswordPanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 22
+text = "⌫ Cancella"
+
+[node name="ConfirmButton" type="Button" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 64)
 theme_override_font_sizes/font_size = 24
 text = "Avanti"
 
-[node name="CancelButton" type="Button" parent="PasswordPanel/Box"]
+[node name="CancelButton" type="Button" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
 theme_override_font_sizes/font_size = 20
 text = "Annulla"
