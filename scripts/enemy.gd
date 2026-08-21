@@ -12,6 +12,9 @@ const RANGED_PREFERRED := 8.0
 const RANGED_MAX := 10.0
 const RANGED_PROJECTILE_SPEED := 13.0
 
+const DETECT_RANGE := 20.0
+const DETECT_RANGE_RANGED := 16.0
+
 const ProjectileScene := preload("res://scenes/Projectile.tscn")
 const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 
@@ -44,6 +47,10 @@ var arm_tween: Tween = null
 
 var erratic_state := "charge"
 var erratic_timer := 0.0
+
+var aware := false
+var wander_dir := Vector3.ZERO
+var wander_timer := 0.0
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -92,6 +99,22 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+	if not aware:
+		var to_player_raw := player.global_position - global_position
+		to_player_raw.y = 0.0
+		var detect_range := DETECT_RANGE_RANGED if behavior == "ranged" else DETECT_RANGE
+		if to_player_raw.length() <= detect_range:
+			aware = true
+		else:
+			_process_wander(delta)
+			if is_on_floor():
+				velocity.y = 0.0
+			else:
+				velocity.y -= GRAVITY * delta
+			move_and_slide()
+			_animate_body(delta)
+			return
+
 	attack_cooldown_timer -= delta
 
 	if behavior == "ranged":
@@ -106,6 +129,26 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_animate_body(delta)
+
+func _process_wander(delta: float) -> void:
+	wander_timer -= delta
+	if wander_timer <= 0.0:
+		if randf() < 0.25:
+			wander_dir = Vector3.ZERO
+			wander_timer = randf_range(0.8, 1.8)
+		else:
+			var angle := randf() * TAU
+			wander_dir = Vector3(cos(angle), 0.0, sin(angle))
+			wander_timer = randf_range(1.5, 3.5)
+
+	var wander_speed := speed * 0.6
+	if wander_dir.length() > 0.01:
+		velocity.x = wander_dir.x * wander_speed
+		velocity.z = wander_dir.z * wander_speed
+		facing_pivot.look_at(facing_pivot.global_position + wander_dir, Vector3.UP)
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, speed * 8.0 * delta)
+		velocity.z = move_toward(velocity.z, 0.0, speed * 8.0 * delta)
 
 func _process_melee(delta: float) -> void:
 	var to_player := player.global_position - global_position
