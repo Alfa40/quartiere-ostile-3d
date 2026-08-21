@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3]
+[gd_scene load_steps=44 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -6,6 +6,25 @@
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="5_object"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
 [ext_resource type="Script" path="res://scripts/enemy_indicators.gd" id="7_indicators"]
+
+[sub_resource type="StyleBoxFlat" id="HealthBarBG"]
+bg_color = Color(0.08, 0.08, 0.08, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 0, 0, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="HealthBarFill"]
+bg_color = Color(0.85, 0.13, 0.13, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.15, 0.18, 0.35, 1)
@@ -1026,38 +1045,52 @@ position = Vector3(0, 0.5, 0)
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("4_hud")
 
-[node name="HPLabel" type="Label" parent="HUD"]
+[node name="HealthBar" type="ProgressBar" parent="HUD"]
 offset_left = 24.0
 offset_top = 20.0
-offset_right = 320.0
-offset_bottom = 60.0
-theme_override_font_sizes/font_size = 28
+offset_right = 544.0
+offset_bottom = 74.0
+theme_override_styles/background = SubResource("HealthBarBG")
+theme_override_styles/fill = SubResource("HealthBarFill")
+min_value = 0.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HPText" type="Label" parent="HUD/HealthBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-text = "HP: 100 / 100"
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100 / 100"
 
 [node name="ZoneLabel" type="Label" parent="HUD"]
 offset_left = 24.0
-offset_top = 58.0
-offset_right = 420.0
-offset_bottom = 86.0
+offset_top = 80.0
+offset_right = 440.0
+offset_bottom = 108.0
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Zona 1 — Ai margini del quartiere"
 
 [node name="MoneyLabel" type="Label" parent="HUD"]
 offset_left = 24.0
-offset_top = 86.0
-offset_right = 300.0
-offset_bottom = 112.0
+offset_top = 108.0
+offset_right = 320.0
+offset_bottom = 134.0
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
 text = "Soldi: 0€"
 
 [node name="MessageLabel" type="Label" parent="HUD"]
 offset_left = 24.0
-offset_top = 116.0
-offset_right = 640.0
-offset_bottom = 150.0
+offset_top = 138.0
+offset_right = 660.0
+offset_bottom = 172.0
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 0.7, 1)
 text = ""

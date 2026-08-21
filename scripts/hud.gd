@@ -1,6 +1,7 @@
 extends CanvasLayer
 
-@onready var hp_label: Label = $HPLabel
+@onready var health_bar: ProgressBar = $HealthBar
+@onready var hp_text: Label = $HealthBar/HPText
 @onready var zone_label: Label = $ZoneLabel
 @onready var money_label: Label = $MoneyLabel
 @onready var message_label: Label = $MessageLabel
@@ -65,7 +66,9 @@ func _on_main_menu_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
 func on_player_hp_changed(current: float, max_hp: float) -> void:
-	hp_label.text = "HP: %d / %d" % [int(current), int(max_hp)]
+	health_bar.max_value = max_hp
+	health_bar.value = current
+	hp_text.text = "%d / %d" % [int(current), int(max_hp)]
 
 func show_message(text: String) -> void:
 	message_label.text = text

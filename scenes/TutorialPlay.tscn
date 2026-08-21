@@ -1,9 +1,28 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/tutorial_play.gd" id="1_play"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/tutorial_hud.gd" id="3_hud"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="4_touch"]
+
+[sub_resource type="StyleBoxFlat" id="HealthBarBG"]
+bg_color = Color(0.08, 0.08, 0.08, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 0, 0, 0.6)
+
+[sub_resource type="StyleBoxFlat" id="HealthBarFill"]
+bg_color = Color(0.85, 0.13, 0.13, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="WorldBoundaryShape3D" id="FloorShape"]
 plane = Plane(0, 1, 0, 0)
@@ -81,14 +100,28 @@ position = Vector3(0, 0, 5)
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("3_hud")
 
-[node name="HPLabel" type="Label" parent="HUD"]
+[node name="HealthBar" type="ProgressBar" parent="HUD"]
 offset_left = 24.0
 offset_top = 20.0
 offset_right = 560.0
 offset_bottom = 90.0
-theme_override_font_sizes/font_size = 52
+theme_override_styles/background = SubResource("HealthBarBG")
+theme_override_styles/fill = SubResource("HealthBarFill")
+min_value = 0.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HPText" type="Label" parent="HUD/HealthBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 34
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-text = "HP: 100 / 100"
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 7
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100 / 100"
 
 [node name="ExitButton" type="Button" parent="HUD"]
 anchor_left = 1.0
