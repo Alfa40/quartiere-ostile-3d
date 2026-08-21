@@ -16,6 +16,9 @@ var main: Node = null
 
 const HEALTH_BAR_HEIGHT_PORTRAIT := 54.0
 const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
+const HEALTH_BAR_LEFT_PORTRAIT := 24.0
+const HEALTH_BAR_LEFT_LANDSCAPE := 74.0
+const HEALTH_BAR_WIDTH := 520.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -36,6 +39,9 @@ func _update_top_hud_layout() -> void:
 	var is_landscape := vp.x > vp.y
 	var height := HEALTH_BAR_HEIGHT_LANDSCAPE if is_landscape else HEALTH_BAR_HEIGHT_PORTRAIT
 	health_bar.offset_bottom = health_bar.offset_top + height
+	var left := HEALTH_BAR_LEFT_LANDSCAPE if is_landscape else HEALTH_BAR_LEFT_PORTRAIT
+	health_bar.offset_left = left
+	health_bar.offset_right = left + HEALTH_BAR_WIDTH
 
 	if is_landscape:
 		var bar_right: float = health_bar.offset_right
