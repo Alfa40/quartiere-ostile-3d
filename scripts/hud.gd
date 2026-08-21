@@ -14,6 +14,9 @@ extends CanvasLayer
 
 var main: Node = null
 
+const HEALTH_BAR_HEIGHT_PORTRAIT := 54.0
+const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	main = get_parent()
@@ -25,6 +28,14 @@ func _ready() -> void:
 	$GameOverPanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)
 	$GameOverPanel/Scroll/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	pause_button.pressed.connect(toggle_pause)
+	get_viewport().size_changed.connect(_update_health_bar_shape)
+	_update_health_bar_shape()
+
+func _update_health_bar_shape() -> void:
+	var vp := get_viewport().get_visible_rect().size
+	var is_landscape := vp.x > vp.y
+	var height := HEALTH_BAR_HEIGHT_LANDSCAPE if is_landscape else HEALTH_BAR_HEIGHT_PORTRAIT
+	health_bar.offset_bottom = health_bar.offset_top + height
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
