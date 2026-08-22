@@ -6,6 +6,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var hp_text: Label = $HealthBar/HPText
 @onready var zone_label: Label = $ZoneLabel
 @onready var money_label: Label = $MoneyLabel
+@onready var ammo_label: Label = $AmmoLabel
 @onready var message_label: Label = $MessageLabel
 @onready var pause_panel: Control = $PausePanel
 @onready var pause_stats_label: Label = $PausePanel/Scroll/Box/StatsLabel
@@ -18,6 +19,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var house_enter_button: Button = $HouseEnterButton
 @onready var throw_type_button: Button = $ThrowTypeButton
 @onready var throw_arm_button: Button = $ThrowArmButton
+@onready var throw_toast_label: Label = $ThrowToastLabel
 @onready var touch_controls = $TouchControls
 @onready var creator_button: Button = $PausePanel/Scroll/Box/CreatorButton
 @onready var dev_tools_box: Control = $PausePanel/Scroll/Box/DevToolsBox
@@ -53,6 +55,12 @@ const TOP_LABEL_FONT_LANDSCAPE := 18
 const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
 const ZONE_COMPLETE_BOX_PORTRAIT := Rect2(-310.0, 140.0, 620.0, 190.0)
 
+const THROW_ARM_DIAMETER := 130.0
+const THROW_TYPE_DIAMETER := 110.0
+const THROW_ARM_IDLE_MODULATE := Color(0.65, 0.65, 0.68, 1.0)
+const THROW_ARM_ACTIVE_MODULATE := Color(1.25, 1.05, 0.55, 1.0)
+var _throw_toast_tween: Tween = null
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	main = get_parent()
@@ -73,6 +81,8 @@ func _ready() -> void:
 	house_enter_button.pressed.connect(func(): house_enter_pressed.emit())
 	throw_type_button.visible = false
 	throw_arm_button.visible = false
+	throw_arm_button.modulate = THROW_ARM_IDLE_MODULATE
+	throw_toast_label.visible = false
 	throw_type_button.pressed.connect(func(): throw_type_pressed.emit())
 	throw_arm_button.pressed.connect(func(): throw_arm_pressed.emit())
 
@@ -101,7 +111,20 @@ func set_throw_buttons_visible(value: bool) -> void:
 		throw_arm_button.visible = value
 
 func update_throw_type_label(label: String) -> void:
-	throw_type_button.text = "Arma: %s" % label
+	var has_throwable: bool = label != "-"
+	throw_arm_button.modulate = THROW_ARM_ACTIVE_MODULATE if has_throwable else THROW_ARM_IDLE_MODULATE
+
+func flash_throw_type_toast(label: String) -> void:
+	var has_throwable: bool = label != "-"
+	if _throw_toast_tween != null and _throw_toast_tween.is_valid():
+		_throw_toast_tween.kill()
+	throw_toast_label.text = "Arma da lancio: %s" % label if has_throwable else "Nessuna arma da lancio"
+	throw_toast_label.visible = true
+	throw_toast_label.modulate.a = 1.0
+	_throw_toast_tween = create_tween()
+	_throw_toast_tween.tween_interval(1.3)
+	_throw_toast_tween.tween_property(throw_toast_label, "modulate:a", 0.0, 0.5)
+	_throw_toast_tween.tween_callback(func(): throw_toast_label.visible = false)
 
 func _process(delta: float) -> void:
 	if zone_complete_active:
@@ -110,24 +133,39 @@ func _process(delta: float) -> void:
 		if zone_complete_time_left <= 0.0:
 			_resolve_zone_choice(true)
 	_update_throw_button_positions()
+	_update_ammo_label()
+
+func _update_ammo_label() -> void:
+	if main == null or main.player == null or main.player.firearm_id == "":
+		ammo_label.text = ""
+		return
+	var p = main.player
+	var mag_size: int = p.firearm_magazine_size
+	var reserve: int = main.get_firearm_reserve_ammo(p.firearm_id) if main.has_method("get_firearm_reserve_ammo") else 0
+	var mags_left: int = int(reserve / max(mag_size, 1))
+	ammo_label.text = "Munizioni: %d/%d · Caricatori: %d" % [p.firearm_ammo_in_mag, mag_size, mags_left]
 
 func _update_throw_button_positions() -> void:
 	if not touch_controls.aim_enabled:
 		return
 	var aim_pos: Vector2 = touch_controls.aim_base_pos
-	var half_w := 100.0
 	var gap := 16.0
 	var joy_top: float = aim_pos.y - touch_controls.JOY_RADIUS
 
-	throw_arm_button.offset_left = aim_pos.x - half_w
-	throw_arm_button.offset_right = aim_pos.x + half_w
+	throw_arm_button.offset_left = aim_pos.x - THROW_ARM_DIAMETER * 0.5
+	throw_arm_button.offset_right = aim_pos.x + THROW_ARM_DIAMETER * 0.5
 	throw_arm_button.offset_bottom = joy_top - gap
-	throw_arm_button.offset_top = throw_arm_button.offset_bottom - 70.0
+	throw_arm_button.offset_top = throw_arm_button.offset_bottom - THROW_ARM_DIAMETER
 
-	throw_type_button.offset_left = aim_pos.x - half_w
-	throw_type_button.offset_right = aim_pos.x + half_w
+	throw_type_button.offset_left = aim_pos.x - THROW_TYPE_DIAMETER * 0.5
+	throw_type_button.offset_right = aim_pos.x + THROW_TYPE_DIAMETER * 0.5
 	throw_type_button.offset_bottom = throw_arm_button.offset_top - gap
-	throw_type_button.offset_top = throw_type_button.offset_bottom - 60.0
+	throw_type_button.offset_top = throw_type_button.offset_bottom - THROW_TYPE_DIAMETER
+
+	throw_toast_label.offset_left = aim_pos.x - 160.0
+	throw_toast_label.offset_right = aim_pos.x + 160.0
+	throw_toast_label.offset_bottom = throw_type_button.offset_top - gap
+	throw_toast_label.offset_top = throw_toast_label.offset_bottom - 50.0
 
 func show_zone_complete_choice() -> void:
 	zone_complete_active = true
@@ -158,6 +196,7 @@ func _update_top_hud_layout() -> void:
 	var top_label_font := TOP_LABEL_FONT_PORTRAIT if is_portrait else TOP_LABEL_FONT_LANDSCAPE
 	zone_label.add_theme_font_size_override("font_size", top_label_font)
 	money_label.add_theme_font_size_override("font_size", top_label_font)
+	ammo_label.add_theme_font_size_override("font_size", top_label_font)
 	message_label.add_theme_font_size_override("font_size", top_label_font)
 
 	UIScale.apply_orientation_scale(pause_panel, is_portrait)
@@ -186,6 +225,12 @@ func _update_top_hud_layout() -> void:
 		money_label.offset_bottom = health_bar.offset_bottom
 		money_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
+		ammo_label.offset_left = bar_right + 570.0
+		ammo_label.offset_right = bar_right + 900.0
+		ammo_label.offset_top = health_bar.offset_top
+		ammo_label.offset_bottom = health_bar.offset_bottom
+		ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
 		message_label.offset_top = health_bar.offset_bottom + 6.0
 		message_label.offset_bottom = message_label.offset_top + 34.0
 	else:
@@ -201,8 +246,14 @@ func _update_top_hud_layout() -> void:
 		money_label.offset_bottom = 172.0
 		money_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
-		message_label.offset_top = 176.0
-		message_label.offset_bottom = 216.0
+		ammo_label.offset_left = 24.0
+		ammo_label.offset_right = 460.0
+		ammo_label.offset_top = 176.0
+		ammo_label.offset_bottom = 220.0
+		ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+
+		message_label.offset_top = 224.0
+		message_label.offset_bottom = 264.0
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:

@@ -4,6 +4,10 @@ const JOY_RADIUS := 140.0
 const JOY_KNOB_RADIUS := 60.0
 const BTN_RADIUS := 120.0
 const MAX_DRAG := 140.0
+# Area di tocco della mira più piccola della metà schermo: lascia spazio ai
+# tasti di attacco e delle armi da lancio vicini senza che vengano rubati
+# dal joystick di mira (lo stesso tipo di bug che c'era col movimento).
+const AIM_ZONE_RADIUS := JOY_RADIUS + 5.0
 
 var move_vector := Vector2.ZERO
 var attack_held := false
@@ -71,7 +75,7 @@ func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 			_attack_touch_index = index
 			attack_held = true
 			queue_redraw()
-		elif aim_enabled and not _in_joystick_zone(pos) and _aim_touch_index == -2:
+		elif _in_aim_zone(pos) and _aim_touch_index == -2:
 			_aim_touch_index = index
 			_aim_origin = pos
 			aim_vector = Vector2.ZERO
@@ -115,6 +119,9 @@ func _handle_pointer_drag(index: int, pos: Vector2) -> void:
 
 func _in_joystick_zone(pos: Vector2) -> bool:
 	return pos.x < get_viewport_rect().size.x * 0.5
+
+func _in_aim_zone(pos: Vector2) -> bool:
+	return aim_enabled and pos.distance_to(aim_base_pos) <= AIM_ZONE_RADIUS
 
 func _draw() -> void:
 	draw_circle(_joy_base_pos, JOY_RADIUS, Color(1, 1, 1, 0.15))

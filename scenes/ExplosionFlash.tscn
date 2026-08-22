@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/explosion_flash.gd" id="1_flash"]
+
+[sub_resource type="CylinderMesh" id="FlashMesh"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.08
+
+[node name="ExplosionFlash" type="Node3D"]
+script = ExtResource("1_flash")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("FlashMesh")
+position = Vector3(0, 0.06, 0)

@@ -897,9 +897,9 @@ func _refresh_throwable_menu() -> void:
 				int(Throwables.final_range(wid, tups)), Throwables.final_draw_time(wid, tups),
 			]
 			if equipped:
-				main_info.text = "%s — Equipaggiata\n%s" % [def.label, stats_line]
-				action_btn.disabled = true
-				action_btn.text = "Equipaggiata"
+				main_info.text = "%s — Equipaggiata (tocca di nuovo per togliere)\n%s" % [def.label, stats_line]
+				action_btn.disabled = false
+				action_btn.text = "Disequipaggia"
 			else:
 				main_info.text = "%s — posseduta\n%s" % [def.label, stats_line]
 				action_btn.disabled = false
@@ -988,7 +988,10 @@ func _on_throwable_action_pressed(wid: String) -> void:
 		if CheckpointData.equipped_throwable == "":
 			CheckpointData.equipped_throwable = wid
 	else:
-		CheckpointData.equipped_throwable = wid
+		if CheckpointData.equipped_throwable == wid:
+			CheckpointData.equipped_throwable = ""
+		else:
+			CheckpointData.equipped_throwable = wid
 	_refresh_throwable_menu()
 
 func _on_buy_throwable_ammo_pressed(wid: String) -> void:

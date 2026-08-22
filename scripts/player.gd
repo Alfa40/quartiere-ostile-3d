@@ -14,8 +14,13 @@ signal died
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
 @onready var firearm_flash: MeshInstance3D = $FacingPivot/FirearmFlash
 @onready var aim_line: MeshInstance3D = $FacingPivot/AimLine
+@onready var melee_bar_fill: MeshInstance3D = $StatusBars/MeleeBar/FillPivot/Fill
+@onready var firearm_bar: Node3D = $StatusBars/FirearmBar
+@onready var firearm_bar_fill: MeshInstance3D = $StatusBars/FirearmBar/FillPivot/Fill
 @onready var touch = get_node_or_null("../HUD/TouchControls")
 @onready var main = get_parent()
+
+const STATUS_BAR_WIDTH := 0.7
 
 @onready var visual_root: Node3D = $FacingPivot/VisualRoot
 @onready var right_shoulder: Node3D = $FacingPivot/VisualRoot/RightShoulder
@@ -208,6 +213,7 @@ func _physics_process(delta: float) -> void:
 	_handle_attack(delta)
 	_handle_firearm(delta)
 	_animate_body(delta)
+	_update_status_bars()
 
 	if is_on_floor():
 		velocity.y = 0.0
@@ -422,6 +428,26 @@ func _animate_body(delta: float) -> void:
 		right_knee.rotation.x = lerp(right_knee.rotation.x, 0.0, delta * 8.0)
 		left_elbow.rotation.x = lerp(left_elbow.rotation.x, 0.0, delta * 8.0)
 		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
+
+func _update_status_bars() -> void:
+	var melee_frac: float = 1.0 - clamp(attack_cooldown_timer / max(attack_cooldown, 0.001), 0.0, 1.0)
+	_set_bar_fill(melee_bar_fill, melee_frac)
+
+	if firearm_id == "":
+		firearm_bar.visible = false
+	else:
+		firearm_bar.visible = true
+		var frac: float
+		if firearm_reloading:
+			frac = 1.0 - clamp(firearm_reload_timer / max(firearm_reload_time, 0.001), 0.0, 1.0)
+		else:
+			frac = 1.0 - clamp(firearm_fire_timer / max(firearm_cooldown, 0.001), 0.0, 1.0)
+		_set_bar_fill(firearm_bar_fill, frac)
+
+func _set_bar_fill(fill: MeshInstance3D, frac: float) -> void:
+	var f: float = clamp(frac, 0.0, 1.0)
+	fill.scale.x = f
+	fill.position.x = STATUS_BAR_WIDTH * f * 0.5
 
 func take_damage(amount: float, _source = null) -> void:
 	if dead or DevMode.enabled:

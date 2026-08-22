@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 
@@ -83,6 +83,34 @@ emission_enabled = true
 emission = Color(1.0, 1.0, 1.0, 1)
 emission_energy_multiplier = 0.9
 shading_mode = 0
+
+[sub_resource type="BoxMesh" id="StatusBarBgMesh"]
+size = Vector3(0.7, 0.09, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StatusBarBgMaterial"]
+albedo_color = Color(0.05, 0.05, 0.06, 0.7)
+transparency = 1
+shading_mode = 0
+billboard_mode = 1
+
+[sub_resource type="BoxMesh" id="StatusBarFillMesh"]
+size = Vector3(0.7, 0.075, 0.03)
+
+[sub_resource type="StandardMaterial3D" id="MeleeBarFillMaterial"]
+albedo_color = Color(1.0, 0.35, 0.25, 0.95)
+emission_enabled = true
+emission = Color(1.0, 0.4, 0.25, 1)
+emission_energy_multiplier = 1.1
+shading_mode = 0
+billboard_mode = 1
+
+[sub_resource type="StandardMaterial3D" id="FirearmBarFillMaterial"]
+albedo_color = Color(0.4, 0.7, 1.0, 0.95)
+emission_enabled = true
+emission = Color(0.45, 0.75, 1.0, 1)
+emission_energy_multiplier = 1.1
+shading_mode = 0
+billboard_mode = 1
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -199,6 +227,36 @@ visible = false
 mesh = SubResource("AimLineMesh")
 surface_material_override/0 = SubResource("AimLineMaterial")
 visible = false
+
+[node name="StatusBars" type="Node3D" parent="."]
+
+[node name="MeleeBar" type="Node3D" parent="StatusBars"]
+position = Vector3(0, 2.28, 0)
+
+[node name="Background" type="MeshInstance3D" parent="StatusBars/MeleeBar"]
+mesh = SubResource("StatusBarBgMesh")
+surface_material_override/0 = SubResource("StatusBarBgMaterial")
+
+[node name="FillPivot" type="Node3D" parent="StatusBars/MeleeBar"]
+position = Vector3(-0.35, 0, 0.005)
+
+[node name="Fill" type="MeshInstance3D" parent="StatusBars/MeleeBar/FillPivot"]
+mesh = SubResource("StatusBarFillMesh")
+surface_material_override/0 = SubResource("MeleeBarFillMaterial")
+
+[node name="FirearmBar" type="Node3D" parent="StatusBars"]
+position = Vector3(0, 2.42, 0)
+
+[node name="Background" type="MeshInstance3D" parent="StatusBars/FirearmBar"]
+mesh = SubResource("StatusBarBgMesh")
+surface_material_override/0 = SubResource("StatusBarBgMaterial")
+
+[node name="FillPivot" type="Node3D" parent="StatusBars/FirearmBar"]
+position = Vector3(-0.35, 0, 0.005)
+
+[node name="Fill" type="MeshInstance3D" parent="StatusBars/FirearmBar/FillPivot"]
+mesh = SubResource("StatusBarFillMesh")
+surface_material_override/0 = SubResource("FirearmBarFillMaterial")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 position = Vector3(0, 12.6, 9.8)

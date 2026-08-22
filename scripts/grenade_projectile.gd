@@ -4,6 +4,10 @@ const GrenadeUtils := preload("res://scripts/grenade_utils.gd")
 const FireZoneScene := preload("res://scenes/FireZone.tscn")
 const BlindZoneScene := preload("res://scenes/BlindZone.tscn")
 const StinkZoneScene := preload("res://scenes/StinkZone.tscn")
+const ExplosionFlashScene := preload("res://scenes/ExplosionFlash.tscn")
+
+const FLASH_COLOR_DAMAGE := Color(1.0, 0.55, 0.2, 0.85)
+const FLASH_COLOR_STUN := Color(0.75, 0.85, 1.0, 0.85)
 
 signal stuck
 
@@ -74,51 +78,64 @@ func _explode() -> void:
 			_explode_cluster()
 		"molotov":
 			GrenadeUtils.explode_damage(get_tree(), global_position, explosion_radius, damage, source)
+			_spawn_flash(global_position, FLASH_COLOR_DAMAGE)
 			_spawn_fire_zone()
 		"fumogena":
 			_spawn_blind_zone()
 		"stordente":
 			_apply_stun_aoe()
+			_spawn_flash(global_position, FLASH_COLOR_STUN)
 		"puzzosa":
 			if damage > 0.0:
 				GrenadeUtils.explode_damage(get_tree(), global_position, explosion_radius, damage, source)
 			_spawn_stink_zone()
 		_:
 			GrenadeUtils.explode_damage(get_tree(), global_position, explosion_radius, damage, source)
+			_spawn_flash(global_position, FLASH_COLOR_DAMAGE)
 	queue_free()
 
 func _explode_cluster() -> void:
 	var center := global_position
 	GrenadeUtils.explode_damage(get_tree(), center, explosion_radius, damage, source)
+	_spawn_flash(center, FLASH_COLOR_DAMAGE)
 	for i in range(cluster_count):
 		var angle := (TAU / float(cluster_count)) * float(i)
 		var offset := Vector3(cos(angle), 0.0, sin(angle)) * cluster_radius
-		GrenadeUtils.explode_damage(get_tree(), center + offset, explosion_radius, damage, source)
+		var sub_pos := center + offset
+		GrenadeUtils.explode_damage(get_tree(), sub_pos, explosion_radius, damage, source)
+		_spawn_flash(sub_pos, FLASH_COLOR_DAMAGE)
+
+func _spawn_flash(pos: Vector3, color: Color) -> void:
+	var flash: Node3D = ExplosionFlashScene.instantiate()
+	flash.radius = explosion_radius
+	flash.color = color
+	get_parent().add_child(flash)
+	flash.global_position = pos
 
 func _spawn_fire_zone() -> void:
 	var zone: Node3D = FireZoneScene.instantiate()
-	get_parent().add_child(zone)
-	zone.global_position = global_position
 	zone.radius = explosion_radius
 	zone.duration = burn_duration
 	zone.dps = burn_dps
 	zone.source = source
+	get_parent().add_child(zone)
+	zone.global_position = global_position
 
 func _spawn_stink_zone() -> void:
 	var zone: Node3D = StinkZoneScene.instantiate()
-	get_parent().add_child(zone)
-	zone.global_position = global_position
 	zone.radius = explosion_radius
 	zone.duration = burn_duration
 	zone.dps = burn_dps
 	zone.source = source
+	get_parent().add_child(zone)
+	zone.global_position = global_position
 
 func _spawn_blind_zone() -> void:
 	var zone: Node3D = BlindZoneScene.instantiate()
-	get_parent().add_child(zone)
-	zone.global_position = global_position
 	zone.radius = explosion_radius
 	zone.duration = burn_duration
+	get_parent().add_child(zone)
+	zone.global_position = global_position
 
 func _apply_stun_aoe() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
