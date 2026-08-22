@@ -1110,7 +1110,7 @@ show_percentage = false
 [node name="HPText" type="Label" parent="HUD/HealthBar"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 29
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
@@ -1123,7 +1123,7 @@ offset_left = 24.0
 offset_top = 80.0
 offset_right = 440.0
 offset_bottom = 108.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 text = "Zona 1 — Ai margini del quartiere"
 
@@ -1132,7 +1132,7 @@ offset_left = 24.0
 offset_top = 108.0
 offset_right = 320.0
 offset_bottom = 134.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
 text = "Soldi: 0€"
 
@@ -1141,7 +1141,7 @@ offset_left = 24.0
 offset_top = 138.0
 offset_right = 660.0
 offset_bottom = 172.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(1, 1, 0.7, 1)
 text = ""
 
@@ -1160,7 +1160,7 @@ offset_left = -160.0
 offset_top = -44.0
 offset_right = 160.0
 offset_bottom = 44.0
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 31
 text = "Entra in casa"
 
 [node name="ThrowTypeButton" type="Button" parent="HUD"]
@@ -1172,7 +1172,7 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 180.0
 offset_bottom = 60.0
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 visible = false
 text = "Arma: -"
 
@@ -1185,7 +1185,7 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 180.0
 offset_bottom = 66.0
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 23
 visible = false
 text = "Lancia"
 
@@ -1196,7 +1196,7 @@ offset_left = -132.0
 offset_top = 20.0
 offset_right = -20.0
 offset_bottom = 132.0
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "II"
 
 [node name="ZoneCompletePanel" type="Control" parent="HUD"]
@@ -1222,13 +1222,13 @@ mouse_filter = 2
 theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="HUD/ZoneCompletePanel/Panel/Box"]
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 29
 theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
 horizontal_alignment = 1
 text = "Zona ripulita!"
 
 [node name="TimerLabel" type="Label" parent="HUD/ZoneCompletePanel/Panel/Box"]
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
 horizontal_alignment = 1
 text = "Ritorno automatico a casa tra 30 s"
@@ -1240,12 +1240,12 @@ theme_override_constants/separation = 14
 
 [node name="HomeButton" type="Button" parent="HUD/ZoneCompletePanel/Panel/Box/ButtonRow"]
 custom_minimum_size = Vector2(170, 56)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 text = "Torna a casa"
 
 [node name="SkipButton" type="Button" parent="HUD/ZoneCompletePanel/Panel/Box/ButtonRow"]
 custom_minimum_size = Vector2(170, 56)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 text = "Prosegui subito"
 
 [node name="PausePanel" type="Control" parent="HUD"]
@@ -1280,25 +1280,25 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 52
 
 [node name="Title" type="Label" parent="HUD/PausePanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 96
+theme_override_font_sizes/font_size = 100
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Pausa"
 
 [node name="StatsLabel" type="Label" parent="HUD/PausePanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 horizontal_alignment = 1
 text = ""
 
 [node name="InventoryLabel" type="Label" parent="HUD/PausePanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 44
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(0.85, 0.95, 0.85, 1)
 horizontal_alignment = 1
 text = ""
 
 [node name="HelpLabel" type="Label" parent="HUD/PausePanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 37
 theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -1306,22 +1306,22 @@ text = "WASD/joystick muovi — Spazio/pulsante attacca — Esc/P pausa"
 
 [node name="ResumeButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Riprendi"
 
 [node name="RestartButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Ricomincia dall'ultimo checkpoint"
 
 [node name="MainMenuButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Torna al menu principale"
 
 [node name="CreatorButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 64)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 23
 theme_override_colors/font_color = Color(0.5, 0.5, 0.55, 1)
 flat = true
 text = "Modalità Creator: OFF"
@@ -1336,12 +1336,12 @@ theme_override_constants/separation = 12
 
 [node name="MinusButton" type="Button" parent="HUD/PausePanel/Scroll/Box/DevToolsBox/ZoneRow"]
 custom_minimum_size = Vector2(70, 64)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 31
 text = "-"
 
 [node name="ZoneValueLabel" type="Label" parent="HUD/PausePanel/Scroll/Box/DevToolsBox/ZoneRow"]
 custom_minimum_size = Vector2(160, 64)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 29
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -1349,17 +1349,17 @@ text = "Zona 1"
 
 [node name="PlusButton" type="Button" parent="HUD/PausePanel/Scroll/Box/DevToolsBox/ZoneRow"]
 custom_minimum_size = Vector2(70, 64)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 31
 text = "+"
 
 [node name="GoButton" type="Button" parent="HUD/PausePanel/Scroll/Box/DevToolsBox/ZoneRow"]
 custom_minimum_size = Vector2(140, 64)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 23
 text = "Vai"
 
 [node name="ClearZoneButton" type="Button" parent="HUD/PausePanel/Scroll/Box/DevToolsBox"]
 custom_minimum_size = Vector2(0, 76)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 25
 text = "Ripulisci zona (dev)"
 
 [node name="CreatorPasswordPanel" type="Control" parent="HUD"]
@@ -1394,20 +1394,20 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 18
 
 [node name="Title" type="Label" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 35
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Modalità Creator"
 
 [node name="PasswordEdit" type="LineEdit" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 27
 secret = true
 placeholder_text = "Password"
 horizontal_alignment = 1
 
 [node name="ErrorLabel" type="Label" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 horizontal_alignment = 1
 text = ""
@@ -1550,17 +1550,17 @@ text = "Z"
 
 [node name="BackspaceButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 25
 text = "⌫ Cancella"
 
 [node name="ConfirmButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 64)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 27
 text = "Avanti"
 
 [node name="CancelButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 23
 text = "Annulla"
 
 [node name="GameOverPanel" type="Control" parent="HUD"]
@@ -1595,23 +1595,23 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 52
 
 [node name="Title" type="Label" parent="HUD/GameOverPanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 96
+theme_override_font_sizes/font_size = 100
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 horizontal_alignment = 1
 text = "Sei stato steso"
 
 [node name="StatsLabel" type="Label" parent="HUD/GameOverPanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(0.95, 0.9, 0.9, 1)
 horizontal_alignment = 1
 text = ""
 
 [node name="RestartButton" type="Button" parent="HUD/GameOverPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Ricomincia dall'ultimo checkpoint"
 
 [node name="MainMenuButton" type="Button" parent="HUD/GameOverPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Torna al menu principale"

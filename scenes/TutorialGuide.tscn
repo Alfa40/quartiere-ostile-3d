@@ -26,111 +26,111 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 68
 
 [node name="Title" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 88
+theme_override_font_sizes/font_size = 92
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Guida scritta"
 
 [node name="MoveHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.55, 0.75, 1, 1)
 text = "Movimento"
 
 [node name="MoveBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Usa WASD o le frecce direzionali per muoverti. Su telefono, trascina il joystick virtuale in basso a sinistra nella direzione in cui vuoi andare."
 
 [node name="AttackHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(1, 0.55, 0.5, 1)
 text = "Attacco in mischia"
 
 [node name="AttackBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Premi Spazio (o tieni premuto il pulsante rosso in basso a destra su telefono) per colpire i nemici e gli oggetti che hai intorno con un colpo in mischia."
 
 [node name="MaterialsHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.6, 0.9, 0.6, 1)
 text = "Materiali"
 
 [node name="MaterialsBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Alberi, lampioni, cassonetti, cestini, barili, panchine e recinzioni si possono distruggere a colpi. Ogni oggetto rilascia materiali diversi: legno da alberi e panchine (gli alberi più grandi ne danno di più), metallo da cassonetti/cestini/barili/recinzioni, metallo e cablaggi dai lampioni. I materiali raccolti si vedono nell'inventario, nel menu di pausa."
 
 [node name="MedikitHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(1, 0.5, 0.5, 1)
 text = "Medikit"
 
 [node name="MedikitBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Quando sconfiggi un nemico, a volte lascia cadere un medikit: camminaci sopra per curarti completamente. Se non lo raccogli in tempo, sparisce dopo qualche secondo."
 
 [node name="MoneyHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
 text = "Soldi e zone"
 
 [node name="MoneyBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Sconfiggere i nemici ti fa guadagnare soldi, mostrati in alto sullo schermo. Il quartiere è diviso in zone: sconfiggi tutti i nemici di un'ondata per avanzare alla zona successiva. Più vai avanti, più nemici valgono soldi, ma sono anche più numerosi, forti e veloci."
 
 [node name="HouseHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.85, 0.7, 0.5, 1)
 text = "La casa e i banchi da lavoro"
 
 [node name="HouseBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Quando ripulisci una zona hai 30 secondi per raccogliere gli ultimi materiali, poi torni automaticamente a casa: puoi anche premere subito \"Torna a casa\" oppure \"Prosegui subito\" per restare in campo e passare alla zona successiva senza tornare a casa. Puoi anche entrare in casa in qualunque momento (ma solo a zona già ripulita) camminando fino alla porta della tenda visibile nel campo da gioco. Dentro casa trovi il banco della casa: nella scheda \"Potenziamenti\" compri scarpe (velocità), salute, saccheggio (più soldi dai nemici), sicurezza (meno furti) e zaino (più materiali); nella scheda \"Banchi da lavoro\" compri nuovi banchi e li posizioni liberamente nella stanza trascinandoli con un dito, con un tasto per ruotarli di 90°."
 
 [node name="WeaponBenchHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.75, 0.8, 1, 1)
 text = "Banco delle armi bianche"
 
 [node name="WeaponBenchBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Una volta posizionato, il banco delle armi bianche apre un menu con le categorie coltelli, spade, mazze, martelli e lance: ogni categoria ha 5 armi via via più forti e più costose. Comprare un'arma la rende disponibile; premendo di nuovo la equipaggi, sostituendo i pugni in combattimento. Ogni arma posseduta ha 4 potenziamenti separati fino a 10 livelli ciascuno: portata (quanto è ampio il colpo), velocità d'attacco (quanto spesso colpisci), danno e velocità di estrazione (quanto sei veloce a impugnarla). Le statistiche attuali dell'arma equipaggiata restano sempre visibili nel menu anche dopo l'acquisto, e ogni riga di potenziamento mostra il valore attuale e quello dopo il prossimo livello, così sai sempre cosa cambia prima di spendere."
 
 [node name="ThrowBenchHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.9, 0.7, 0.55, 1)
 text = "Banco delle armi da lancio"
 
 [node name="ThrowBenchBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Il banco delle armi da lancio ha più categorie. Le armi bianche da lancio colpiscono un solo nemico. Le granate esplosive fanno danno ad area e ognuna si comporta in modo diverso: la molotov esplode e lascia una zona infuocata che continua a fare danno a chiunque ci resti dentro per qualche secondo; la granata normale fa solo danno ad area; la granata appiccicosa si attacca al bersaglio senza esplodere subito, e detona solo quando premi di nuovo il tasto per armare il lancio (nel frattempo puoi continuare a sparare normalmente con l'arma da fuoco); la granata a grappolo, la più costosa, si divide in più esplosioni ravvicinate coprendo un'area molto più ampia. Premi il tasto per armare il lancio, punta con il joystick di mira e rilascia per lanciare nella direzione puntata."
 
 [node name="PauseHeading" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 text = "Pausa"
 
 [node name="PauseBody" type="Label" parent="Scroll/Box"]
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 42
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Premi Esc o P sulla tastiera, oppure il pulsante ⏸ in alto a destra sullo schermo, per mettere in pausa. Da lì puoi vedere le statistiche della partita, il tuo inventario, riprendere o uscire."
 
 [node name="BackButton" type="Button" parent="Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Torna al tutorial"

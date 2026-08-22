@@ -31,7 +31,7 @@ autowrap_mode = 2
 text = "Quartiere Ostile 3D"
 
 [node name="BestLabel" type="Label" parent="Box"]
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -39,12 +39,12 @@ text = "Nessuna partita completata ancora"
 
 [node name="StartButton" type="Button" parent="Box"]
 custom_minimum_size = Vector2(0, 156)
-theme_override_font_sizes/font_size = 60
+theme_override_font_sizes/font_size = 64
 text = "Inizia partita"
 
 [node name="TutorialButton" type="Button" parent="Box"]
 custom_minimum_size = Vector2(0, 136)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 52
 text = "Come si gioca"
 
 [node name="CreatorButton" type="Button" parent="."]
@@ -56,7 +56,7 @@ offset_left = -70.0
 offset_top = -50.0
 offset_right = 70.0
 offset_bottom = -14.0
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 19
 theme_override_colors/font_color = Color(0.4, 0.4, 0.45, 1)
 text = "Creator"
 flat = true
@@ -93,20 +93,20 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 18
 
 [node name="Title" type="Label" parent="PasswordPanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 35
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Modalità Creator"
 
 [node name="PasswordEdit" type="LineEdit" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 27
 secret = true
 placeholder_text = "Password"
 horizontal_alignment = 1
 
 [node name="ErrorLabel" type="Label" parent="PasswordPanel/Scroll/Box"]
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 horizontal_alignment = 1
 text = ""
@@ -249,15 +249,15 @@ text = "Z"
 
 [node name="BackspaceButton" type="Button" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 25
 text = "⌫ Cancella"
 
 [node name="ConfirmButton" type="Button" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 64)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 27
 text = "Avanti"
 
 [node name="CancelButton" type="Button" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 23
 text = "Annulla"
