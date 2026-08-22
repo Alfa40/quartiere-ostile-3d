@@ -108,6 +108,17 @@ theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Una volta posizionato, il banco delle armi bianche apre un menu con le categorie coltelli, spade, mazze, martelli e lance: ogni categoria ha 5 armi via via più forti e più costose. Comprare un'arma la rende disponibile; premendo di nuovo la equipaggi, sostituendo i pugni in combattimento. Ogni arma posseduta ha 4 potenziamenti separati fino a 10 livelli ciascuno: portata (quanto è ampio il colpo), velocità d'attacco (quanto spesso colpisci), danno e velocità di estrazione (quanto sei veloce a impugnarla). Le statistiche attuali dell'arma equipaggiata restano sempre visibili nel menu anche dopo l'acquisto, e ogni riga di potenziamento mostra il valore attuale e quello dopo il prossimo livello, così sai sempre cosa cambia prima di spendere."
 
+[node name="ThrowBenchHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 52
+theme_override_colors/font_color = Color(0.9, 0.7, 0.55, 1)
+text = "Banco delle armi da lancio"
+
+[node name="ThrowBenchBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 38
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Il banco delle armi da lancio ha più categorie. Le armi bianche da lancio colpiscono un solo nemico. Le granate esplosive fanno danno ad area e ognuna si comporta in modo diverso: la molotov esplode e lascia una zona infuocata che continua a fare danno a chiunque ci resti dentro per qualche secondo; la granata normale fa solo danno ad area; la granata appiccicosa si attacca al bersaglio senza esplodere subito, e detona solo quando premi di nuovo il tasto per armare il lancio (nel frattempo puoi continuare a sparare normalmente con l'arma da fuoco); la granata a grappolo, la più costosa, si divide in più esplosioni ravvicinate coprendo un'area molto più ampia. Premi il tasto per armare il lancio, punta con il joystick di mira e rilascia per lanciare nella direzione puntata."
+
 [node name="PauseHeading" type="Label" parent="Scroll/Box"]
 theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)

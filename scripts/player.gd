@@ -49,6 +49,7 @@ const THROW_SPEED := 24.0
 const BULLET_SPEED := 45.0
 const ThrownWeaponScene := preload("res://scenes/ThrownWeapon.tscn")
 const BulletScene := preload("res://scenes/Bullet.tscn")
+const GrenadeScene := preload("res://scenes/Grenade.tscn")
 
 var firearm_id := ""
 var firearm_fire_mode := "auto"
@@ -102,8 +103,15 @@ var throwable_range := 14.0
 var throwable_draw_time := 0.0
 var throw_armed := false
 var throw_cooldown_timer := 0.0
+var throwable_grenade_type := ""
+var throwable_explosion_radius := 3.0
+var throwable_burn_duration := 0.0
+var throwable_burn_dps := 0.0
+var throwable_cluster_count := 0
+var throwable_cluster_radius := 0.0
+var active_sticky_grenade: Node3D = null
 
-func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float) -> void:
+func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0) -> void:
 	throwable_id = id
 	throwable_damage = damage
 	throwable_cooldown = cooldown
@@ -111,12 +119,25 @@ func equip_throwable(id: String, damage: float, cooldown: float, range_val: floa
 	throwable_draw_time = draw_time
 	throw_cooldown_timer = max(throw_cooldown_timer, draw_time)
 	throw_armed = false
+	throwable_grenade_type = grenade_type
+	throwable_explosion_radius = explosion_radius
+	throwable_burn_duration = burn_duration
+	throwable_burn_dps = burn_dps
+	throwable_cluster_count = cluster_count
+	throwable_cluster_radius = cluster_radius
 
 func unequip_throwable() -> void:
 	throwable_id = ""
 	throw_armed = false
+	throwable_grenade_type = ""
 
 func arm_throw() -> void:
+	# Se una granata appiccicosa è già stata lanciata e attende l'ordine di
+	# detonazione, questo stesso tasto la fa esplodere invece di armarne un'altra.
+	if active_sticky_grenade != null and is_instance_valid(active_sticky_grenade):
+		active_sticky_grenade.detonate()
+		active_sticky_grenade = null
+		return
 	if throwable_id == "" or throw_cooldown_timer > 0.0:
 		return
 	if main != null and main.has_method("get_throwable_reserve_ammo") and main.get_throwable_reserve_ammo(throwable_id) <= 0:
@@ -132,14 +153,30 @@ func _throw_weapon(direction: Vector3) -> void:
 	if main != null and main.has_method("consume_throwable_reserve_ammo"):
 		main.consume_throwable_reserve_ammo(throwable_id, 1)
 	throw_cooldown_timer = throwable_cooldown
-	var proj: Area3D = ThrownWeaponScene.instantiate()
-	get_parent().add_child(proj)
+	var proj: Area3D
+	if throwable_grenade_type != "":
+		proj = GrenadeScene.instantiate()
+		get_parent().add_child(proj)
+		proj.grenade_type = throwable_grenade_type
+		proj.explosion_radius = throwable_explosion_radius
+		proj.burn_duration = throwable_burn_duration
+		proj.burn_dps = throwable_burn_dps
+		proj.cluster_count = throwable_cluster_count
+		proj.cluster_radius = throwable_cluster_radius
+		if throwable_grenade_type == "sticky":
+			proj.stuck.connect(_on_grenade_stuck.bind(proj))
+	else:
+		proj = ThrownWeaponScene.instantiate()
+		get_parent().add_child(proj)
 	proj.global_position = global_position + Vector3(0, 1.0, 0) + direction * 1.0
 	proj.travel = direction * THROW_SPEED
 	proj.damage = throwable_damage
 	proj.max_distance = throwable_range
 	proj.source = self
 	_burst_shots_remaining = 0
+
+func _on_grenade_stuck(proj: Node3D) -> void:
+	active_sticky_grenade = proj
 
 func _ready() -> void:
 	add_to_group("player")

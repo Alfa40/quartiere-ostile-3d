@@ -192,6 +192,12 @@ func _apply_throwable_stats() -> void:
 		Throwables.final_cooldown(tid, tups),
 		Throwables.final_range(tid, tups),
 		Throwables.final_draw_time(tid, tups),
+		String(def.get("grenade_type", "")),
+		float(def.get("explosion_radius", 3.0)),
+		float(def.get("burn_duration", 0.0)),
+		float(def.get("burn_dps", 0.0)),
+		int(def.get("cluster_count", 0)),
+		float(def.get("cluster_radius", 0.0)),
 	)
 	hud.update_throw_type_label(String(def.label))
 

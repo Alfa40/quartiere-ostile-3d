@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/fire_zone.gd" id="1_firezone"]
+
+[sub_resource type="CylinderMesh" id="FireZoneMesh"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.06
+
+[sub_resource type="StandardMaterial3D" id="FireZoneMaterial"]
+albedo_color = Color(1.0, 0.4, 0.1, 0.55)
+transparency = 1
+emission_enabled = true
+emission = Color(1.0, 0.5, 0.1, 1)
+emission_energy_multiplier = 1.6
+cull_mode = 2
+
+[node name="FireZone" type="Node3D"]
+script = ExtResource("1_firezone")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("FireZoneMesh")
+surface_material_override/0 = SubResource("FireZoneMaterial")
+position = Vector3(0, 0.05, 0)

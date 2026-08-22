@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/grenade_projectile.gd" id="1_grenade"]
+
+[sub_resource type="CapsuleShape3D" id="GrenadeShape"]
+radius = 0.3
+height = 5.0
+
+[sub_resource type="SphereMesh" id="GrenadeMesh"]
+radius = 0.24
+height = 0.48
+
+[sub_resource type="StandardMaterial3D" id="GrenadeMaterial"]
+albedo_color = Color(0.3, 0.35, 0.28, 1)
+metallic = 0.4
+roughness = 0.5
+emission_enabled = true
+emission = Color(0.55, 0.35, 0.15, 1)
+emission_energy_multiplier = 0.6
+
+[node name="Grenade" type="Area3D"]
+script = ExtResource("1_grenade")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("GrenadeShape")
+position = Vector3(0, -1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("GrenadeMesh")
+surface_material_override/0 = SubResource("GrenadeMaterial")

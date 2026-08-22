@@ -5,13 +5,13 @@ const CATEGORY_ORDER := ["armi_bianche_lancio", "granate_esplosive", "granate_sp
 
 const CATEGORIES := {
 	"armi_bianche_lancio": {"label": "Armi bianche da lancio", "unlocked": true},
-	"granate_esplosive": {"label": "Granate esplosive", "unlocked": false},
+	"granate_esplosive": {"label": "Granate esplosive", "unlocked": true},
 	"granate_speciali": {"label": "Granate speciali", "unlocked": false},
 }
 
 const CATEGORY_WEAPONS := {
 	"armi_bianche_lancio": ["coltello_da_lancio", "pugnale_da_lancio", "accetta_da_lancio", "stella_ninja", "ascia_battaglia_lancio"],
-	"granate_esplosive": [],
+	"granate_esplosive": ["molotov", "granata", "granata_appiccicosa", "granata_a_grappolo"],
 	"granate_speciali": [],
 }
 
@@ -47,6 +47,39 @@ const WEAPONS := {
 		"price_money": 1150, "price_material": "metallo", "price_amount": 30,
 		"damage": 65.0, "throw_cooldown": 0.7, "range": 14.0, "draw_time": 0.20,
 		"ammo_pack_amount": 8, "ammo_pack_price_money": 75,
+	},
+	# Le granate esplosive non colpiscono un solo nemico: esplodono ad area
+	# all'impatto (o a fine gittata) e ognuna ha un comportamento unico
+	# gestito da scripts/grenade_projectile.gd tramite il campo "grenade_type".
+	"molotov": {
+		"label": "Molotov", "category": "granate_esplosive", "tier": 1,
+		"price_money": 500, "price_material": "legno", "price_amount": 20,
+		"damage": 15.0, "throw_cooldown": 1.6, "range": 12.0, "draw_time": 0.3,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 90,
+		"grenade_type": "molotov", "explosion_radius": 3.0,
+		"burn_duration": 5.0, "burn_dps": 8.0,
+	},
+	"granata": {
+		"label": "Granata", "category": "granate_esplosive", "tier": 2,
+		"price_money": 900, "price_material": "metallo", "price_amount": 35,
+		"damage": 55.0, "throw_cooldown": 2.0, "range": 12.0, "draw_time": 0.35,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 120,
+		"grenade_type": "frag", "explosion_radius": 4.0,
+	},
+	"granata_appiccicosa": {
+		"label": "Granata appiccicosa", "category": "granate_esplosive", "tier": 3,
+		"price_money": 1400, "price_material": "metallo", "price_amount": 55,
+		"damage": 75.0, "throw_cooldown": 2.4, "range": 11.0, "draw_time": 0.4,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 160,
+		"grenade_type": "sticky", "explosion_radius": 4.5,
+	},
+	"granata_a_grappolo": {
+		"label": "Granata a grappolo", "category": "granate_esplosive", "tier": 4,
+		"price_money": 2200, "price_material": "metallo", "price_amount": 90,
+		"damage": 35.0, "throw_cooldown": 2.8, "range": 10.0, "draw_time": 0.45,
+		"ammo_pack_amount": 2, "ammo_pack_price_money": 230,
+		"grenade_type": "cluster", "explosion_radius": 2.5,
+		"cluster_count": 4, "cluster_radius": 3.2,
 	},
 }
 
