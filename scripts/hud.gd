@@ -11,8 +11,16 @@ extends CanvasLayer
 @onready var gameover_panel: Control = $GameOverPanel
 @onready var gameover_stats_label: Label = $GameOverPanel/Scroll/Box/StatsLabel
 @onready var pause_button: Button = $PauseButton
+@onready var zone_complete_panel: Control = $ZoneCompletePanel
+@onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Box/TimerLabel
+
+signal go_home_chosen
+signal skip_home_chosen
 
 var main: Node = null
+var zone_complete_active := false
+var zone_complete_time_left := 0.0
+const ZONE_COMPLETE_WAIT := 30.0
 
 const HEALTH_BAR_HEIGHT_PORTRAIT := 54.0
 const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
@@ -33,6 +41,31 @@ func _ready() -> void:
 	pause_button.pressed.connect(toggle_pause)
 	get_viewport().size_changed.connect(_update_top_hud_layout)
 	_update_top_hud_layout()
+	zone_complete_panel.visible = false
+	$ZoneCompletePanel/Box/HomeButton.pressed.connect(func(): _resolve_zone_choice(true))
+	$ZoneCompletePanel/Box/SkipButton.pressed.connect(func(): _resolve_zone_choice(false))
+
+func _process(delta: float) -> void:
+	if zone_complete_active:
+		zone_complete_time_left -= delta
+		zone_complete_timer_label.text = "Ritorno automatico a casa tra %d s" % int(ceil(zone_complete_time_left))
+		if zone_complete_time_left <= 0.0:
+			_resolve_zone_choice(true)
+
+func show_zone_complete_choice() -> void:
+	zone_complete_active = true
+	zone_complete_time_left = ZONE_COMPLETE_WAIT
+	zone_complete_panel.visible = true
+
+func _resolve_zone_choice(go_home: bool) -> void:
+	if not zone_complete_active:
+		return
+	zone_complete_active = false
+	zone_complete_panel.visible = false
+	if go_home:
+		go_home_chosen.emit()
+	else:
+		skip_home_chosen.emit()
 
 func _update_top_hud_layout() -> void:
 	var vp := get_viewport().get_visible_rect().size
@@ -105,6 +138,8 @@ func _on_resume_pressed() -> void:
 	set_paused(false)
 
 func _on_restart_pressed() -> void:
+	if not DevMode.enabled:
+		CheckpointData.load_checkpoint()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 

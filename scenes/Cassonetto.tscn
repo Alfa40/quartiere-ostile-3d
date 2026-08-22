@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
+
+[sub_resource type="BoxShape3D" id="CassonettoShape"]
+size = Vector3(1.75, 1.2, 1.0)
+
+[sub_resource type="BoxMesh" id="CassonettoMesh"]
+size = Vector3(1.75, 1.2, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="CassonettoMaterial"]
+albedo_color = Color(0.16, 0.38, 0.2, 1)
+metallic = 0.2
+roughness = 0.7
+
+[node name="Cassonetto" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_object")
+max_hp = 180.0
+material_drops = {"metallo": 3}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CassonettoShape")
+position = Vector3(0, 0.6, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CassonettoMesh")
+surface_material_override/0 = SubResource("CassonettoMaterial")
+position = Vector3(0, 0.6, 0)

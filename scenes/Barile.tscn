@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
+
+[sub_resource type="CylinderShape3D" id="BarileShape"]
+radius = 0.5625
+height = 1.0
+
+[sub_resource type="CylinderMesh" id="BarileMesh"]
+top_radius = 0.5625
+bottom_radius = 0.5625
+height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="BarileMaterial"]
+albedo_color = Color(0.55, 0.28, 0.08, 1)
+metallic = 0.4
+roughness = 0.5
+
+[node name="Barile" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_object")
+max_hp = 90.0
+material_drops = {"metallo": 2}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BarileShape")
+position = Vector3(0, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BarileMesh")
+surface_material_override/0 = SubResource("BarileMaterial")
+position = Vector3(0, 0.5, 0)

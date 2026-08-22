@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-const SPEED := 6.0
+const BASE_SPEED := 6.0
 const GRAVITY := 20.0
 const ATTACK_DAMAGE := 20.0
 const ATTACK_COOLDOWN := 0.45
@@ -13,6 +13,7 @@ signal died
 @onready var attack_area: Area3D = $FacingPivot/AttackArea
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
 @onready var touch = get_node_or_null("../HUD/TouchControls")
+@onready var main = get_parent()
 
 @onready var visual_root: Node3D = $FacingPivot/VisualRoot
 @onready var right_shoulder: Node3D = $FacingPivot/VisualRoot/RightShoulder
@@ -26,6 +27,7 @@ signal died
 
 var max_hp := 100.0
 var hp := 100.0
+var speed_mult := 1.0
 var facing := Vector3(0, 0, -1)
 var attack_cooldown_timer := 0.0
 var flash_timer := 0.0
@@ -75,11 +77,11 @@ func _handle_movement(_delta: float) -> void:
 		input_dir = input_dir.normalized()
 		facing = input_dir
 		facing_pivot.look_at(facing_pivot.global_position + facing, Vector3.UP)
-		velocity.x = facing.x * SPEED
-		velocity.z = facing.z * SPEED
+		velocity.x = facing.x * BASE_SPEED * speed_mult
+		velocity.z = facing.z * BASE_SPEED * speed_mult
 	else:
-		velocity.x = move_toward(velocity.x, 0.0, SPEED * 8.0 * _delta)
-		velocity.z = move_toward(velocity.z, 0.0, SPEED * 8.0 * _delta)
+		velocity.x = move_toward(velocity.x, 0.0, BASE_SPEED * speed_mult * 8.0 * _delta)
+		velocity.z = move_toward(velocity.z, 0.0, BASE_SPEED * speed_mult * 8.0 * _delta)
 
 func _handle_attack(delta: float) -> void:
 	attack_cooldown_timer -= delta
@@ -134,6 +136,8 @@ func take_damage(amount: float, _source = null) -> void:
 		return
 	hp = max(hp - amount, 0.0)
 	hp_changed.emit(hp, max_hp)
+	if main != null and main.has_method("on_player_damaged"):
+		main.on_player_damaged(amount)
 	if hp <= 0.0:
 		dead = true
 		died.emit()

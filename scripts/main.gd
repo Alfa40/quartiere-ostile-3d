@@ -3,7 +3,26 @@ extends Node3D
 const EnemyScene := preload("res://scenes/Enemy.tscn")
 const MedikitScene := preload("res://scenes/Medikit.tscn")
 const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
+const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
 const MEDIKIT_CHANCE := 0.16
+
+const STEAL_CHANCE := 0.35
+const STEAL_BASE_FRACTION := 0.12
+const BASE_PLAYER_MAX_HP := 100.0
+
+const OBJECT_SCENES := {
+	"albero": preload("res://scenes/Albero.tscn"),
+	"lampione": preload("res://scenes/Lampione.tscn"),
+	"panchina": preload("res://scenes/Panchina.tscn"),
+	"cassonetto": preload("res://scenes/Cassonetto.tscn"),
+	"barile": preload("res://scenes/Barile.tscn"),
+	"cestino": preload("res://scenes/Cestino.tscn"),
+	"recinzione": preload("res://scenes/Recinzione.tscn"),
+}
+const ARENA_HALF := 38.0
+const OBJECT_CLEAR_RADIUS := 6.0
+const OBJECT_COUNT_MIN := 30
+const OBJECT_COUNT_MAX := 45
 
 const MATERIAL_LABELS := {
 	"legno": "Legno",
@@ -46,6 +65,7 @@ var money := 0.0
 var enemies_defeated := 0
 var run_start_msec := 0
 var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
+var upgrades := {}
 var weapon_name := "Pugni"
 
 var zone_enemies_total := 0
@@ -57,14 +77,46 @@ var zone_transitioning := false
 func _ready() -> void:
 	run_start_msec = Time.get_ticks_msec()
 	if DevMode.enabled:
+		zone = 1
 		money = 999999.0
 		materials = {"legno": 999999, "metallo": 999999, "cablaggi": 999999}
+		upgrades = CheckpointData.DEFAULT_UPGRADES.duplicate()
+	else:
+		zone = CheckpointData.zone
+		money = float(CheckpointData.money)
+		materials = CheckpointData.materials.duplicate()
+		upgrades = CheckpointData.upgrades.duplicate()
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	player.died.connect(_on_player_died)
+	hud.go_home_chosen.connect(_go_home)
+	hud.skip_home_chosen.connect(_skip_home)
+	_apply_upgrade_effects()
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 	_start_zone()
+
+func _apply_upgrade_effects() -> void:
+	var speed_bonus: float = PlayerUpgrades.effect("scarpe", upgrades.get("scarpe", 0))
+	player.speed_mult = 1.0 + speed_bonus
+	var hp_bonus: float = PlayerUpgrades.effect("salute", upgrades.get("salute", 0))
+	player.max_hp = BASE_PLAYER_MAX_HP + hp_bonus
+	player.hp = player.max_hp
+	player.hp_changed.emit(player.hp, player.max_hp)
+
+func on_player_damaged(_amount: float) -> void:
+	if DevMode.enabled or money <= 0.0:
+		return
+	if randf() > STEAL_CHANCE:
+		return
+	var reduction: float = clamp(PlayerUpgrades.effect("sicurezza", upgrades.get("sicurezza", 0)), 0.0, 0.9)
+	var steal_fraction := STEAL_BASE_FRACTION * (1.0 - reduction)
+	var stolen := roundi(money * steal_fraction)
+	if stolen <= 0:
+		return
+	money -= stolen
+	hud.update_money(money)
+	hud.show_message("Un nemico ti ha rubato %d€!" % stolen)
 
 func _start_zone() -> void:
 	zone_transitioning = false
@@ -112,7 +164,8 @@ func _on_enemy_died(enemy: Node3D) -> void:
 	zone_enemies_alive -= 1
 	enemies_defeated += 1
 	var money_mult := 1.0 + MONEY_PER_ZONE * (zone - 1)
-	var reward := roundi(randf_range(10.0, 18.0) * money_mult)
+	var saccheggio_mult: float = 1.0 + PlayerUpgrades.effect("saccheggio", upgrades.get("saccheggio", 0))
+	var reward := roundi(randf_range(10.0, 18.0) * money_mult * saccheggio_mult)
 	money += reward
 	hud.update_money(money)
 
@@ -134,24 +187,74 @@ func _on_object_destroyed(obj: Node3D) -> void:
 	var drops: Dictionary = obj.material_drops
 	if drops.is_empty():
 		return
+	var zaino_mult: float = 1.0 + PlayerUpgrades.effect("zaino", upgrades.get("zaino", 0))
 	var parts: Array[String] = []
 	for mat in drops:
-		var amount: int = drops[mat]
+		var amount := roundi(int(drops[mat]) * zaino_mult)
 		materials[mat] = materials.get(mat, 0) + amount
 		parts.append("+%d %s" % [amount, MATERIAL_LABELS.get(mat, mat)])
 	hud.show_message(", ".join(parts))
 
 func _complete_zone() -> void:
 	zone_transitioning = true
-	hud.show_message("Zona %d ripulita! Prossima zona in arrivo..." % zone)
-	await get_tree().create_timer(2.5, false).timeout
+	if not DevMode.enabled and CheckpointData.is_checkpoint_zone(zone):
+		CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
+	_regenerate_objects()
+	hud.show_zone_complete_choice()
+
+func _go_home() -> void:
+	CheckpointData.set_live_state(zone, int(money), materials, upgrades)
+	get_tree().change_scene_to_file("res://scenes/Home.tscn")
+
+func _skip_home() -> void:
 	zone += 1
 	_start_zone()
+
+func _regenerate_objects() -> void:
+	for obj in get_tree().get_nodes_in_group("park_objects"):
+		obj.queue_free()
+
+	var count := randi_range(OBJECT_COUNT_MIN, OBJECT_COUNT_MAX)
+	var keys := OBJECT_SCENES.keys()
+	for i in range(count):
+		var type_id: String = keys[randi() % keys.size()]
+		var scene: PackedScene = OBJECT_SCENES[type_id]
+		var obj = scene.instantiate()
+		obj.position = _random_object_position()
+		if type_id == "albero":
+			var tier := randf()
+			if tier < 0.34:
+				obj.scale = Vector3.ONE * 0.65
+				obj.max_hp = 140.0
+				obj.material_drops = {"legno": 2}
+			elif tier < 0.67:
+				obj.scale = Vector3.ONE * 1.0
+				obj.max_hp = 280.0
+				obj.material_drops = {"legno": 4}
+			else:
+				obj.scale = Vector3.ONE * 1.5
+				obj.max_hp = 480.0
+				obj.material_drops = {"legno": 6}
+		elif type_id == "recinzione":
+			obj.rotation_degrees.y = 90.0 if randf() < 0.5 else 0.0
+		add_child(obj)
+		obj.destroyed.connect(_on_object_destroyed.bind(obj))
+
+func _random_object_position() -> Vector3:
+	var pos := Vector3.ZERO
+	for attempt in range(10):
+		var x := randf_range(-ARENA_HALF, ARENA_HALF)
+		var z := randf_range(-ARENA_HALF, ARENA_HALF)
+		pos = Vector3(x, 0.0, z)
+		if pos.length() > OBJECT_CLEAR_RADIUS:
+			return pos
+	return pos
 
 func _on_player_died() -> void:
 	hud.show_message("Sei stato steso.")
 	if not DevMode.enabled:
 		SaveData.report_run(zone, int(money))
+		CheckpointData.load_checkpoint()
 	hud.show_game_over()
 
 func get_stats_text() -> String:

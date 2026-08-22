@@ -1111,6 +1111,55 @@ offset_bottom = 132.0
 theme_override_font_sizes/font_size = 48
 text = "II"
 
+[node name="ZoneCompletePanel" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/ZoneCompletePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0.05, 0, 0.7)
+
+[node name="Box" type="VBoxContainer" parent="HUD/ZoneCompletePanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -200.0
+offset_right = 320.0
+offset_bottom = 200.0
+theme_override_constants/separation = 30
+
+[node name="Title" type="Label" parent="HUD/ZoneCompletePanel/Box"]
+theme_override_font_sizes/font_size = 64
+theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
+horizontal_alignment = 1
+text = "Zona ripulita!"
+
+[node name="TimerLabel" type="Label" parent="HUD/ZoneCompletePanel/Box"]
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+horizontal_alignment = 1
+text = "Ritorno automatico a casa tra 30 s"
+
+[node name="HomeButton" type="Button" parent="HUD/ZoneCompletePanel/Box"]
+custom_minimum_size = Vector2(0, 100)
+theme_override_font_sizes/font_size = 36
+text = "Torna a casa"
+
+[node name="SkipButton" type="Button" parent="HUD/ZoneCompletePanel/Box"]
+custom_minimum_size = Vector2(0, 100)
+theme_override_font_sizes/font_size = 36
+text = "Prosegui subito"
+
 [node name="PausePanel" type="Control" parent="HUD"]
 anchor_left = 0.0
 anchor_top = 0.0
@@ -1175,7 +1224,7 @@ text = "Riprendi"
 [node name="RestartButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 48
-text = "Ricomincia da zona 1"
+text = "Ricomincia dall'ultimo checkpoint"
 
 [node name="MainMenuButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
@@ -1228,7 +1277,7 @@ text = ""
 [node name="RestartButton" type="Button" parent="HUD/GameOverPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 48
-text = "Ricomincia da zona 1"
+text = "Ricomincia dall'ultimo checkpoint"
 
 [node name="MainMenuButton" type="Button" parent="HUD/GameOverPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
