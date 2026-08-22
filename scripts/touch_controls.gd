@@ -7,7 +7,7 @@ const MAX_DRAG := 140.0
 # Area di tocco della mira più piccola della metà schermo: lascia spazio ai
 # tasti di attacco e delle armi da lancio vicini senza che vengano rubati
 # dal joystick di mira (lo stesso tipo di bug che c'era col movimento).
-const AIM_ZONE_RADIUS := JOY_RADIUS + 5.0
+const AIM_ZONE_RADIUS := JOY_RADIUS + 20.0
 
 var move_vector := Vector2.ZERO
 var attack_held := false
