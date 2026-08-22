@@ -170,6 +170,11 @@ func _apply_firearm_stats() -> void:
 		String(def.fire_mode),
 		int(def.get("burst_count", 1)),
 		float(def.get("burst_delay", 0.0)),
+		Firearms.bullet_speed(fid),
+		Firearms.final_spread_degrees(fid, fups),
+		Firearms.pellet_count(fid),
+		Firearms.final_pellet_spread_degrees(fid, fups),
+		Firearms.final_aim_line_length(fid, fups),
 	)
 
 func get_firearm_reserve_ammo(fid: String) -> int:
@@ -198,6 +203,7 @@ func _apply_throwable_stats() -> void:
 		float(def.get("burn_dps", 0.0)),
 		int(def.get("cluster_count", 0)),
 		float(def.get("cluster_radius", 0.0)),
+		Throwables.final_aim_line_length(tid, tups),
 	)
 	hud.update_throw_type_label(String(def.label))
 

@@ -22,6 +22,7 @@ collision_mask = 0
 script = ExtResource("1_object")
 max_hp = 60.0
 material_drops = {"metallo": 1}
+low_object = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CestinoShape")

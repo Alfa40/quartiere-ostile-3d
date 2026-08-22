@@ -13,6 +13,7 @@ signal died
 @onready var attack_area: Area3D = $FacingPivot/AttackArea
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
 @onready var firearm_flash: MeshInstance3D = $FacingPivot/FirearmFlash
+@onready var aim_line: MeshInstance3D = $FacingPivot/AimLine
 @onready var touch = get_node_or_null("../HUD/TouchControls")
 @onready var main = get_parent()
 
@@ -46,7 +47,7 @@ var arm_tween: Tween = null
 const AIM_CONE_DEGREES := 32.0
 const FIREARM_FLASH_TIME := 0.08
 const THROW_SPEED := 24.0
-const BULLET_SPEED := 45.0
+const DEFAULT_AIM_LINE_LENGTH := 6.0
 const ThrownWeaponScene := preload("res://scenes/ThrownWeapon.tscn")
 const BulletScene := preload("res://scenes/Bullet.tscn")
 const GrenadeScene := preload("res://scenes/Grenade.tscn")
@@ -61,6 +62,11 @@ var firearm_magazine_size := 0
 var firearm_reload_time := 1.0
 var firearm_burst_count := 1
 var firearm_burst_delay := 0.0
+var firearm_bullet_speed := 40.0
+var firearm_spread_degrees := 2.0
+var firearm_pellet_count := 1
+var firearm_pellet_spread_degrees := 0.0
+var firearm_aim_line_length := DEFAULT_AIM_LINE_LENGTH
 
 var firearm_ammo_in_mag := 0
 var firearm_fire_timer := 0.0
@@ -72,7 +78,7 @@ var _burst_shots_remaining := 0
 var _burst_timer := 0.0
 var _burst_aim_dir := Vector3(0, 0, -1)
 
-func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0) -> void:
+func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0, bullet_speed: float = 40.0, spread_degrees: float = 2.0, pellet_count: int = 1, pellet_spread_degrees: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH) -> void:
 	firearm_id = id
 	firearm_damage = damage
 	firearm_cooldown = cooldown
@@ -83,6 +89,11 @@ func equip_firearm(id: String, damage: float, cooldown: float, range_val: float,
 	firearm_fire_mode = fire_mode
 	firearm_burst_count = burst_count
 	firearm_burst_delay = burst_delay
+	firearm_bullet_speed = bullet_speed
+	firearm_spread_degrees = spread_degrees
+	firearm_pellet_count = pellet_count
+	firearm_pellet_spread_degrees = pellet_spread_degrees
+	firearm_aim_line_length = aim_line_length
 	firearm_ammo_in_mag = magazine_size
 	firearm_reloading = false
 	firearm_reload_timer = 0.0
@@ -109,9 +120,10 @@ var throwable_burn_duration := 0.0
 var throwable_burn_dps := 0.0
 var throwable_cluster_count := 0
 var throwable_cluster_radius := 0.0
+var throwable_aim_line_length := DEFAULT_AIM_LINE_LENGTH
 var active_sticky_grenade: Node3D = null
 
-func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0) -> void:
+func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH) -> void:
 	throwable_id = id
 	throwable_damage = damage
 	throwable_cooldown = cooldown
@@ -125,6 +137,7 @@ func equip_throwable(id: String, damage: float, cooldown: float, range_val: floa
 	throwable_burn_dps = burn_dps
 	throwable_cluster_count = cluster_count
 	throwable_cluster_radius = cluster_radius
+	throwable_aim_line_length = aim_line_length
 
 func unequip_throwable() -> void:
 	throwable_id = ""
@@ -256,6 +269,18 @@ func _handle_firearm(delta: float) -> void:
 		last_aim_dir = Vector3(aim.x, 0, aim.y).normalized()
 		facing_pivot.look_at(facing_pivot.global_position + last_aim_dir, Vector3.UP)
 
+	if aiming and (firearm_id != "" or throwable_id != ""):
+		var line_length := DEFAULT_AIM_LINE_LENGTH
+		if firearm_id != "":
+			line_length = max(line_length, firearm_aim_line_length)
+		if throwable_id != "":
+			line_length = max(line_length, throwable_aim_line_length)
+		aim_line.visible = true
+		aim_line.scale = Vector3(1.0, 1.0, line_length)
+		aim_line.position = Vector3(0, 1.0, -line_length * 0.5)
+	else:
+		aim_line.visible = false
+
 	var release_pending: bool = touch != null and touch.fire_release_pending
 	if touch != null:
 		touch.fire_release_pending = false
@@ -328,14 +353,19 @@ func _fire_firearm(aim_dir: Vector3) -> void:
 	firearm_ammo_in_mag -= 1
 	firearm_fire_timer = firearm_cooldown
 	firearm_flash_timer = FIREARM_FLASH_TIME
-	firearm_flash.visible = true
-	var proj: Area3D = BulletScene.instantiate()
-	get_parent().add_child(proj)
-	proj.global_position = global_position + Vector3(0, 1.0, 0) + aim_dir * 0.8
-	proj.travel = aim_dir * BULLET_SPEED
-	proj.damage = firearm_damage
-	proj.max_distance = firearm_range
-	proj.source = self
+	var shots: int = max(firearm_pellet_count, 1)
+	var half_spread: float = (firearm_pellet_spread_degrees if shots > 1 else firearm_spread_degrees) * 0.5
+	for i in range(shots):
+		var dir := aim_dir
+		if half_spread > 0.0:
+			dir = aim_dir.rotated(Vector3.UP, deg_to_rad(randf_range(-half_spread, half_spread)))
+		var proj: Area3D = BulletScene.instantiate()
+		get_parent().add_child(proj)
+		proj.global_position = global_position + Vector3(0, 1.0, 0) + dir * 0.8
+		proj.travel = dir * firearm_bullet_speed
+		proj.damage = firearm_damage
+		proj.max_distance = firearm_range
+		proj.source = self
 
 func _start_reload() -> void:
 	if firearm_reloading:

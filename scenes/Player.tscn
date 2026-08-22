@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 
@@ -72,6 +72,17 @@ transparency = 1
 emission_enabled = true
 emission = Color(0.6, 0.8, 1.0, 1)
 emission_energy_multiplier = 0.8
+
+[sub_resource type="BoxMesh" id="AimLineMesh"]
+size = Vector3(0.035, 0.035, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="AimLineMaterial"]
+albedo_color = Color(1.0, 1.0, 1.0, 0.5)
+transparency = 1
+emission_enabled = true
+emission = Color(1.0, 1.0, 1.0, 1)
+emission_energy_multiplier = 0.9
+shading_mode = 0
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -182,6 +193,11 @@ visible = false
 position = Vector3(0, 1.0, -1.0)
 mesh = SubResource("FirearmFlashMesh")
 surface_material_override/0 = SubResource("FirearmFlashMaterial")
+visible = false
+
+[node name="AimLine" type="MeshInstance3D" parent="FacingPivot"]
+mesh = SubResource("AimLineMesh")
+surface_material_override/0 = SubResource("AimLineMaterial")
 visible = false
 
 [node name="Camera3D" type="Camera3D" parent="."]

@@ -776,6 +776,8 @@ func _firearm_track_value_text(tid: String, wid: String, fups: Dictionary) -> St
 			return "Danno attuale: %d" % int(Firearms.final_damage(wid, fups))
 		"estrazione":
 			return "Estrazione attuale: %.2fs" % Firearms.final_draw_time(wid, fups)
+		"mirino":
+			return "Linea di mira attuale: %.1fm" % Firearms.final_aim_line_length(wid, fups)
 	return ""
 
 func _firearm_track_preview_text(tid: String, wid: String, fups: Dictionary, next_fups: Dictionary) -> String:
@@ -788,6 +790,8 @@ func _firearm_track_preview_text(tid: String, wid: String, fups: Dictionary, nex
 			return "Danno: %d → %d" % [int(Firearms.final_damage(wid, fups)), int(Firearms.final_damage(wid, next_fups))]
 		"estrazione":
 			return "Estrazione: %.2fs → %.2fs" % [Firearms.final_draw_time(wid, fups), Firearms.final_draw_time(wid, next_fups)]
+		"mirino":
+			return "Mirino: %.1fm → %.1fm" % [Firearms.final_aim_line_length(wid, fups), Firearms.final_aim_line_length(wid, next_fups)]
 	return ""
 
 func _on_firearm_action_pressed(wid: String) -> void:
@@ -930,6 +934,8 @@ func _throwable_track_value_text(tid: String, wid: String, tups: Dictionary) -> 
 			return "Danno attuale: %d" % int(Throwables.final_damage(wid, tups))
 		"estrazione":
 			return "Estrazione attuale: %.2fs" % Throwables.final_draw_time(wid, tups)
+		"mirino":
+			return "Linea di mira attuale: %.1fm" % Throwables.final_aim_line_length(wid, tups)
 	return ""
 
 func _throwable_track_preview_text(tid: String, wid: String, tups: Dictionary, next_tups: Dictionary) -> String:
@@ -940,6 +946,8 @@ func _throwable_track_preview_text(tid: String, wid: String, tups: Dictionary, n
 			return "Cadenza: %.2fs → %.2fs" % [Throwables.final_cooldown(wid, tups), Throwables.final_cooldown(wid, next_tups)]
 		"danno":
 			return "Danno: %d → %d" % [int(Throwables.final_damage(wid, tups)), int(Throwables.final_damage(wid, next_tups))]
+		"mirino":
+			return "Mirino: %.1fm → %.1fm" % [Throwables.final_aim_line_length(wid, tups), Throwables.final_aim_line_length(wid, next_tups)]
 		"estrazione":
 			return "Estrazione: %.2fs → %.2fs" % [Throwables.final_draw_time(wid, tups), Throwables.final_draw_time(wid, next_tups)]
 	return ""

@@ -125,34 +125,39 @@ const WEAPONS := {
 		"ammo_pack_amount": 55, "ammo_pack_price_money": 125,
 	},
 
+	# Il campo "damage" dei fucili a pompa è il danno DI OGNUNO dei pallini
+	# sparati in un colpo solo (vedi pellet_count/pellet_base_spread_degrees
+	# più sotto): da vicino i pallini colpiscono quasi tutti lo stesso
+	# bersaglio (danno alto e concentrato), da lontano il cono si allarga e
+	# colpisce più nemici vicini tra loro, ognuno per meno danno.
 	"pompa_arrugginito": {
 		"label": "Fucile a pompa arrugginito", "category": "fucile_a_pompa", "tier": 1, "fire_mode": "single", "fire_style": "manuale",
 		"price_money": 900, "price_material": "metallo", "price_amount": 38,
-		"damage": 45.0, "fire_cooldown": 0.8, "magazine_size": 4, "range": 8.0, "reload_time": 2.2, "draw_time": 0.30,
+		"damage": 8.0, "fire_cooldown": 0.8, "magazine_size": 4, "range": 8.0, "reload_time": 2.2, "draw_time": 0.30,
 		"ammo_pack_amount": 10, "ammo_pack_price_money": 40,
 	},
 	"pompa_corto": {
 		"label": "Fucile a pompa corto", "category": "fucile_a_pompa", "tier": 2, "fire_mode": "single", "fire_style": "manuale",
 		"price_money": 1250, "price_material": "metallo", "price_amount": 50,
-		"damage": 58.0, "fire_cooldown": 0.75, "magazine_size": 5, "range": 9.0, "reload_time": 2.0, "draw_time": 0.26,
+		"damage": 8.5, "fire_cooldown": 0.75, "magazine_size": 5, "range": 9.0, "reload_time": 2.0, "draw_time": 0.26,
 		"ammo_pack_amount": 12, "ammo_pack_price_money": 52,
 	},
 	"pompa_tattico": {
 		"label": "Fucile a pompa semiautomatico", "category": "fucile_a_pompa", "tier": 3, "fire_mode": "auto", "fire_style": "semiautomatica",
 		"price_money": 1700, "price_material": "metallo", "price_amount": 65,
-		"damage": 72.0, "fire_cooldown": 0.7, "magazine_size": 6, "range": 10.0, "reload_time": 1.8, "draw_time": 0.22,
+		"damage": 9.0, "fire_cooldown": 0.7, "magazine_size": 6, "range": 10.0, "reload_time": 1.8, "draw_time": 0.22,
 		"ammo_pack_amount": 14, "ammo_pack_price_money": 66,
 	},
 	"pompa_militare": {
 		"label": "Fucile a pompa automatico militare", "category": "fucile_a_pompa", "tier": 4, "fire_mode": "auto", "fire_style": "automatica",
 		"price_money": 2300, "price_material": "metallo", "price_amount": 85,
-		"damage": 90.0, "fire_cooldown": 0.65, "magazine_size": 7, "range": 11.0, "reload_time": 1.6, "draw_time": 0.18,
+		"damage": 10.0, "fire_cooldown": 0.65, "magazine_size": 7, "range": 11.0, "reload_time": 1.6, "draw_time": 0.18,
 		"ammo_pack_amount": 16, "ammo_pack_price_money": 85,
 	},
 	"pompa_demolizione": {
 		"label": "Fucile a pompa da demolizione", "category": "fucile_a_pompa", "tier": 5, "fire_mode": "single", "fire_style": "manuale",
 		"price_money": 3100, "price_material": "metallo", "price_amount": 110,
-		"damage": 115.0, "fire_cooldown": 0.6, "magazine_size": 8, "range": 12.0, "reload_time": 1.4, "draw_time": 0.12,
+		"damage": 12.0, "fire_cooldown": 0.6, "magazine_size": 8, "range": 12.0, "reload_time": 1.4, "draw_time": 0.12,
 		"ammo_pack_amount": 18, "ammo_pack_price_money": 110,
 	},
 
@@ -188,14 +193,52 @@ const WEAPONS := {
 	},
 }
 
-const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione"]
+const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mirino"]
 
 const UPGRADE_TRACKS := {
 	"portata": {"label": "Portata", "desc": "Aumenta la gittata dell'arma", "material": "legno", "per_level": 0.03},
 	"velocita": {"label": "Cadenza di fuoco", "desc": "Riduce il tempo tra un colpo e l'altro", "material": "metallo", "per_level": 0.025},
 	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "per_level": 0.06},
 	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "per_level": 0.08},
+	"mirino": {"label": "Mirino", "desc": "Allunga la linea di mira e aumenta la precisione dell'arma", "material": "cablaggi", "per_level": 0.08},
 }
+
+# Velocità del proiettile e dispersione di base per categoria (non per singola
+# arma, per evitare di dover ripetere gli stessi due campi su 25 armi): le
+# pistole sparano proiettili lenti, i cecchini velocissimi; il fucile a pompa
+# ha già la sua dispersione "a pallini" e non ha bisogno di uno spread extra.
+const CATEGORY_BASE_BULLET_SPEED := {
+	"pistole": 22.0,
+	"mitragliette": 30.0,
+	"mitra": 34.0,
+	"fucile_a_pompa": 26.0,
+	"cecchino": 55.0,
+}
+
+const CATEGORY_BASE_SPREAD := {
+	"pistole": 2.5,
+	"mitragliette": 4.5,
+	"mitra": 3.0,
+	"fucile_a_pompa": 0.0,
+	"cecchino": 0.7,
+}
+
+static func bullet_speed(weapon_id: String) -> float:
+	var def: Dictionary = WEAPONS[weapon_id]
+	var base: float = CATEGORY_BASE_BULLET_SPEED.get(def.category, 40.0)
+	return base + float(int(def.tier) - 1) * 3.0
+
+static func pellet_count(weapon_id: String) -> int:
+	var def: Dictionary = WEAPONS[weapon_id]
+	if def.category != "fucile_a_pompa":
+		return 1
+	return 5 + int(def.tier)
+
+static func pellet_base_spread_degrees(weapon_id: String) -> float:
+	var def: Dictionary = WEAPONS[weapon_id]
+	if def.category != "fucile_a_pompa":
+		return 0.0
+	return 11.0 - float(def.tier)
 
 const UPGRADE_MAX_LEVEL := 10
 const UPGRADE_BASE_MONEY := 35
@@ -235,3 +278,20 @@ static func final_draw_time(weapon_id: String, upgrades: Dictionary) -> float:
 	var base: float = WEAPONS[weapon_id].draw_time
 	var level: int = upgrades.get("estrazione", 0)
 	return max(base * (1.0 - upgrade_effect("estrazione", level)), 0.0)
+
+const AIM_LINE_BASE_LENGTH := 6.0
+
+static func final_aim_line_length(_weapon_id: String, upgrades: Dictionary) -> float:
+	var level: int = upgrades.get("mirino", 0)
+	return AIM_LINE_BASE_LENGTH * (1.0 + upgrade_effect("mirino", level))
+
+static func final_spread_degrees(weapon_id: String, upgrades: Dictionary) -> float:
+	var def: Dictionary = WEAPONS[weapon_id]
+	var base: float = CATEGORY_BASE_SPREAD.get(def.category, 2.0)
+	var level: int = upgrades.get("mirino", 0)
+	return base * max(0.2, 1.0 - level * 0.08)
+
+static func final_pellet_spread_degrees(weapon_id: String, upgrades: Dictionary) -> float:
+	var base := pellet_base_spread_degrees(weapon_id)
+	var level: int = upgrades.get("mirino", 0)
+	return base * max(0.4, 1.0 - level * 0.06)

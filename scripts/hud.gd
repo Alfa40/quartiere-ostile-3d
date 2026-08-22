@@ -45,9 +45,9 @@ const HEALTH_BAR_LEFT_PORTRAIT := 24.0
 const HEALTH_BAR_LEFT_LANDSCAPE := 74.0
 const HEALTH_BAR_WIDTH := 520.0
 
-const HP_TEXT_FONT_PORTRAIT := 32
+const HP_TEXT_FONT_PORTRAIT := 42
 const HP_TEXT_FONT_LANDSCAPE := 24
-const TOP_LABEL_FONT_PORTRAIT := 24
+const TOP_LABEL_FONT_PORTRAIT := 32
 const TOP_LABEL_FONT_LANDSCAPE := 18
 
 const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
@@ -190,19 +190,19 @@ func _update_top_hud_layout() -> void:
 		message_label.offset_bottom = message_label.offset_top + 34.0
 	else:
 		zone_label.offset_left = 24.0
-		zone_label.offset_right = 440.0
+		zone_label.offset_right = 460.0
 		zone_label.offset_top = 80.0
-		zone_label.offset_bottom = 108.0
+		zone_label.offset_bottom = 124.0
 		zone_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 		money_label.offset_left = 24.0
-		money_label.offset_right = 320.0
-		money_label.offset_top = 108.0
-		money_label.offset_bottom = 134.0
+		money_label.offset_right = 360.0
+		money_label.offset_top = 128.0
+		money_label.offset_bottom = 172.0
 		money_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
-		message_label.offset_top = 138.0
-		message_label.offset_bottom = 172.0
+		message_label.offset_top = 176.0
+		message_label.offset_bottom = 216.0
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:

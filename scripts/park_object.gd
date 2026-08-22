@@ -4,6 +4,7 @@ signal destroyed
 
 @export var max_hp: float = 100.0
 @export var material_drops: Dictionary = {}
+@export var low_object: bool = false
 
 var hp: float
 var base_scale: Vector3

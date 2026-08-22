@@ -2726,6 +2726,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_aria_compressa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_aria_compressa/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_aria_compressa/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_aria_compressa"]
 
 [node name="Weapon_revolver_arrugginito" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox"]
@@ -2817,6 +2832,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_revolver_arrugginito/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_revolver_arrugginito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_revolver_arrugginito/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_revolver_arrugginito/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -2916,6 +2946,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_semiautomatica_9mm"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_semiautomatica_9mm/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_semiautomatica_9mm/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_semiautomatica_9mm"]
 
 [node name="Weapon_pistola_tattica" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox"]
@@ -3011,6 +3056,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_tattica"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_tattica/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_tattica/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_tattica"]
 
 [node name="Weapon_magnum_44" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox"]
@@ -3102,6 +3162,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_magnum_44/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_magnum_44"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_magnum_44/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_magnum_44/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -3206,6 +3281,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_aria_compressa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_aria_compressa/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_aria_compressa/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_aria_compressa"]
 
 [node name="Weapon_mitraglietta_compatta" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox"]
@@ -3297,6 +3387,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_compatta/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_compatta"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_compatta/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_compatta/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -3396,6 +3501,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_tattica"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_tattica/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_tattica/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_tattica"]
 
 [node name="Weapon_mitraglietta_militare" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox"]
@@ -3491,6 +3611,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_militare/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_militare/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_militare"]
 
 [node name="Weapon_mitraglietta_incursione" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox"]
@@ -3582,6 +3717,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_incursione/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_incursione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_incursione/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_incursione/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -3685,6 +3835,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_artigianale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_artigianale/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_artigianale/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_artigianale"]
 
 [node name="Weapon_mitra_pattuglia" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox"]
@@ -3776,6 +3941,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pattuglia/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pattuglia"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pattuglia/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pattuglia/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -3875,6 +4055,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pesante/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pesante/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pesante"]
 
 [node name="Weapon_fucile_tricolpo" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox"]
@@ -3966,6 +4161,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -4064,6 +4274,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_assalto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_assalto/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_assalto/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_assalto"]
 
 [node name="Weapon_mitra_guerra" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox"]
@@ -4155,6 +4380,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_guerra/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_guerra/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_guerra/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -4258,6 +4498,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_arrugginito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_arrugginito/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_arrugginito/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_arrugginito"]
 
 [node name="Weapon_pompa_corto" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox"]
@@ -4349,6 +4604,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_corto/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_corto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_corto/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_corto/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -4448,6 +4718,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_tattico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_tattico/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_tattico/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_tattico"]
 
 [node name="Weapon_pompa_militare" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox"]
@@ -4543,6 +4828,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_militare/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_militare/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_militare"]
 
 [node name="Weapon_pompa_demolizione" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox"]
@@ -4634,6 +4934,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_demolizione/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_demolizione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_demolizione/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_demolizione/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -4737,6 +5052,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_fucile_caccia"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_fucile_caccia/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_fucile_caccia/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_fucile_caccia"]
 
 [node name="Weapon_carabina_precisione" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox"]
@@ -4828,6 +5158,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_carabina_precisione/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_carabina_precisione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_carabina_precisione/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_carabina_precisione/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -4927,6 +5272,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_tiratore_scelto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_tiratore_scelto/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_tiratore_scelto/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_tiratore_scelto"]
 
 [node name="Weapon_anti_materiale" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox"]
@@ -5022,6 +5382,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_anti_materiale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_anti_materiale/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_anti_materiale/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_anti_materiale"]
 
 [node name="Weapon_cecchino_leggendario" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox"]
@@ -5113,6 +5488,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5279,6 +5669,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
 
 [node name="Weapon_pugnale_da_lancio" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
@@ -5370,6 +5775,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5469,6 +5889,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
 
 [node name="Weapon_stella_ninja" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
@@ -5564,6 +5999,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
 
 [node name="Weapon_ascia_battaglia_lancio" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
@@ -5655,6 +6105,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5758,6 +6223,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov"]
 
 [node name="Weapon_granata" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox"]
@@ -5849,6 +6329,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5948,6 +6443,21 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
 [node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa"]
 
 [node name="Weapon_granata_a_grappolo" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox"]
@@ -6039,6 +6549,21 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_mirino"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
