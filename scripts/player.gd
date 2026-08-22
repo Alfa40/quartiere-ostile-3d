@@ -12,6 +12,7 @@ signal died
 @onready var facing_pivot: Node3D = $FacingPivot
 @onready var attack_area: Area3D = $FacingPivot/AttackArea
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
+@onready var firearm_flash: MeshInstance3D = $FacingPivot/FirearmFlash
 @onready var touch = get_node_or_null("../HUD/TouchControls")
 @onready var main = get_parent()
 
@@ -42,6 +43,44 @@ var dead := false
 var walk_phase := 0.0
 var arm_tween: Tween = null
 
+const AIM_CONE_DEGREES := 32.0
+const FIREARM_FLASH_TIME := 0.08
+
+var firearm_id := ""
+var firearm_fire_mode := "auto"
+var firearm_damage := 0.0
+var firearm_cooldown := 0.5
+var firearm_range := 14.0
+var firearm_draw_time := 0.0
+var firearm_magazine_size := 0
+var firearm_reload_time := 1.0
+
+var firearm_ammo_in_mag := 0
+var firearm_fire_timer := 0.0
+var firearm_reload_timer := 0.0
+var firearm_reloading := false
+var firearm_flash_timer := 0.0
+var last_aim_dir := Vector3(0, 0, -1)
+
+func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String) -> void:
+	firearm_id = id
+	firearm_damage = damage
+	firearm_cooldown = cooldown
+	firearm_range = range_val
+	firearm_draw_time = draw_time
+	firearm_magazine_size = magazine_size
+	firearm_reload_time = reload_time
+	firearm_fire_mode = fire_mode
+	firearm_ammo_in_mag = magazine_size
+	firearm_reloading = false
+	firearm_reload_timer = 0.0
+	firearm_fire_timer = max(firearm_fire_timer, draw_time)
+
+func unequip_firearm() -> void:
+	firearm_id = ""
+	firearm_ammo_in_mag = 0
+	firearm_reloading = false
+
 func _ready() -> void:
 	add_to_group("player")
 	hp_changed.emit(hp, max_hp)
@@ -54,6 +93,7 @@ func _physics_process(delta: float) -> void:
 
 	_handle_movement(delta)
 	_handle_attack(delta)
+	_handle_firearm(delta)
 	_animate_body(delta)
 
 	if is_on_floor():
@@ -105,6 +145,92 @@ func _handle_attack(delta: float) -> void:
 		for body in attack_area.get_overlapping_bodies():
 			if (body.is_in_group("enemies") or body.is_in_group("park_objects")) and body.has_method("take_damage"):
 				body.take_damage(attack_damage, self)
+
+func _handle_firearm(delta: float) -> void:
+	firearm_fire_timer -= delta
+	firearm_flash_timer -= delta
+	if firearm_flash_timer <= 0.0:
+		firearm_flash.visible = false
+
+	if firearm_id == "":
+		if touch != null:
+			touch.fire_release_pending = false
+		return
+
+	if firearm_reloading:
+		firearm_reload_timer -= delta
+		if firearm_reload_timer <= 0.0:
+			_finish_reload()
+		if touch != null:
+			touch.fire_release_pending = false
+		return
+
+	if firearm_ammo_in_mag <= 0:
+		if touch != null:
+			touch.fire_release_pending = false
+		_start_reload()
+		return
+
+	var aim: Vector2 = touch.aim_vector if touch != null else Vector2.ZERO
+	var aiming := aim.length() > 0.15
+
+	if aiming:
+		var aim_dir := Vector3(aim.x, 0, aim.y).normalized()
+		last_aim_dir = aim_dir
+		facing_pivot.look_at(facing_pivot.global_position + aim_dir, Vector3.UP)
+		if firearm_fire_mode == "auto" and firearm_fire_timer <= 0.0:
+			var target := _find_enemy_in_aim_cone(aim_dir)
+			if target != null:
+				_fire_firearm(aim_dir)
+
+	var release_pending: bool = touch != null and touch.fire_release_pending
+	if touch != null:
+		touch.fire_release_pending = false
+	if release_pending and firearm_fire_mode == "single" and firearm_fire_timer <= 0.0:
+		_fire_firearm(last_aim_dir)
+
+func _find_enemy_in_aim_cone(aim_dir: Vector3) -> Node3D:
+	var best: Node3D = null
+	var best_dist := INF
+	var cos_limit := cos(deg_to_rad(AIM_CONE_DEGREES))
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if not (enemy is Node3D):
+			continue
+		var to_enemy: Vector3 = enemy.global_position - global_position
+		to_enemy.y = 0.0
+		var dist := to_enemy.length()
+		if dist > firearm_range or dist < 0.001:
+			continue
+		var dot := aim_dir.dot(to_enemy.normalized())
+		if dot < cos_limit:
+			continue
+		if dist < best_dist:
+			best_dist = dist
+			best = enemy
+	return best
+
+func _fire_firearm(aim_dir: Vector3) -> void:
+	firearm_ammo_in_mag -= 1
+	firearm_fire_timer = firearm_cooldown
+	firearm_flash_timer = FIREARM_FLASH_TIME
+	firearm_flash.visible = true
+	var target := _find_enemy_in_aim_cone(aim_dir)
+	if target != null and target.has_method("take_damage"):
+		target.take_damage(firearm_damage, self)
+
+func _start_reload() -> void:
+	if firearm_reloading:
+		return
+	firearm_reloading = true
+	firearm_reload_timer = firearm_reload_time
+
+func _finish_reload() -> void:
+	firearm_reloading = false
+	var reserve: int = main.get_firearm_reserve_ammo(firearm_id) if main != null and main.has_method("get_firearm_reserve_ammo") else 0
+	var loaded: int = min(firearm_magazine_size, reserve)
+	firearm_ammo_in_mag = loaded
+	if main != null and main.has_method("consume_firearm_reserve_ammo"):
+		main.consume_firearm_reserve_ammo(firearm_id, loaded)
 
 func _play_attack_swing() -> void:
 	if arm_tween != null and arm_tween.is_valid():

@@ -9,11 +9,21 @@ var move_vector := Vector2.ZERO
 var attack_held := false
 var input_enabled := true
 
+var aim_enabled := false:
+	set(value):
+		aim_enabled = value
+		_update_layout()
+var aim_vector := Vector2.ZERO
+var fire_release_pending := false
+
 var _joy_touch_index := -2
 var _joy_origin := Vector2.ZERO
 var _attack_touch_index := -2
+var _aim_touch_index := -2
+var _aim_origin := Vector2.ZERO
 var _joy_base_pos := Vector2.ZERO
 var _btn_pos := Vector2.ZERO
+var _aim_base_pos := Vector2.ZERO
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -24,7 +34,11 @@ func _ready() -> void:
 func _update_layout() -> void:
 	var vp := get_viewport_rect().size
 	_joy_base_pos = Vector2(170, vp.y - 220)
-	_btn_pos = Vector2(vp.x - 170, vp.y - 220)
+	if aim_enabled:
+		_aim_base_pos = Vector2(vp.x - 170, vp.y - 220)
+		_btn_pos = Vector2(vp.x - 340, vp.y - 220)
+	else:
+		_btn_pos = Vector2(vp.x - 170, vp.y - 220)
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:
@@ -50,6 +64,11 @@ func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 			_attack_touch_index = index
 			attack_held = true
 			queue_redraw()
+		elif aim_enabled and not _in_joystick_zone(pos) and _aim_touch_index == -2:
+			_aim_touch_index = index
+			_aim_origin = pos
+			aim_vector = Vector2.ZERO
+			queue_redraw()
 	else:
 		if index == _joy_touch_index:
 			_joy_touch_index = -2
@@ -59,20 +78,33 @@ func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 			_attack_touch_index = -2
 			attack_held = false
 			queue_redraw()
+		elif index == _aim_touch_index:
+			_aim_touch_index = -2
+			if aim_vector.length() > 0.15:
+				fire_release_pending = true
+			aim_vector = Vector2.ZERO
+			queue_redraw()
 
 func _handle_pointer_drag(index: int, pos: Vector2) -> void:
-	if index != _joy_touch_index:
-		return
-	if not _in_joystick_zone(pos):
-		# A drag that jumps outside the joystick's own half of the screen can
-		# only be a misrouted/phantom event (e.g. the attack button on some
-		# devices) — ignore it instead of letting it corrupt move_vector.
-		return
-	var delta := pos - _joy_origin
-	if delta.length() > MAX_DRAG:
-		delta = delta.normalized() * MAX_DRAG
-	move_vector = delta / MAX_DRAG
-	queue_redraw()
+	if index == _joy_touch_index:
+		if not _in_joystick_zone(pos):
+			# A drag that jumps outside the joystick's own half of the screen can
+			# only be a misrouted/phantom event (e.g. the attack button on some
+			# devices) — ignore it instead of letting it corrupt move_vector.
+			return
+		var delta := pos - _joy_origin
+		if delta.length() > MAX_DRAG:
+			delta = delta.normalized() * MAX_DRAG
+		move_vector = delta / MAX_DRAG
+		queue_redraw()
+	elif index == _aim_touch_index:
+		if _in_joystick_zone(pos):
+			return
+		var delta := pos - _aim_origin
+		if delta.length() > MAX_DRAG:
+			delta = delta.normalized() * MAX_DRAG
+		aim_vector = delta / MAX_DRAG
+		queue_redraw()
 
 func _in_joystick_zone(pos: Vector2) -> bool:
 	return pos.x < get_viewport_rect().size.x * 0.5
@@ -88,3 +120,10 @@ func _draw() -> void:
 	if _attack_touch_index != -2:
 		btn_color = Color(1, 0.3, 0.25, 0.65)
 	draw_circle(_btn_pos, BTN_RADIUS, btn_color)
+
+	if aim_enabled:
+		draw_circle(_aim_base_pos, JOY_RADIUS, Color(0.4, 0.7, 1, 0.15))
+		var aim_knob_pos := _aim_base_pos
+		if _aim_touch_index != -2:
+			aim_knob_pos += aim_vector * MAX_DRAG
+		draw_circle(aim_knob_pos, JOY_KNOB_RADIUS, Color(0.4, 0.7, 1, 0.45))

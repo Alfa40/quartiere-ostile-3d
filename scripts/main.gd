@@ -5,6 +5,7 @@ const MedikitScene := preload("res://scenes/Medikit.tscn")
 const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
 const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
+const Firearms := preload("res://scripts/firearms.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
@@ -65,6 +66,7 @@ const SPAWN_RETRY_DELAY := 0.2
 
 @onready var hud = $HUD
 @onready var player: Node3D = $Player
+@onready var touch_controls = $HUD/TouchControls
 
 var zone := 1
 var money := 0.0
@@ -103,6 +105,7 @@ func _ready() -> void:
 	hud.house_enter_pressed.connect(_enter_house_anytime)
 	_apply_upgrade_effects()
 	_apply_weapon_stats()
+	_apply_firearm_stats()
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
@@ -145,6 +148,31 @@ func _apply_weapon_stats() -> void:
 	player.attack_cooldown = MeleeWeapons.final_cooldown(wid, wups)
 	player.attack_reach_mult = MeleeWeapons.final_reach_mult(wid, wups)
 	player.apply_draw_delay(MeleeWeapons.final_draw_time(wid, wups))
+
+func _apply_firearm_stats() -> void:
+	var fid: String = CheckpointData.equipped_firearm
+	touch_controls.aim_enabled = not CheckpointData.owned_firearms.is_empty()
+	if fid == "" or not Firearms.WEAPONS.has(fid):
+		player.unequip_firearm()
+		return
+	var fups: Dictionary = CheckpointData.firearm_upgrades.get(fid, {})
+	var def: Dictionary = Firearms.WEAPONS[fid]
+	player.equip_firearm(
+		fid,
+		Firearms.final_damage(fid, fups),
+		Firearms.final_cooldown(fid, fups),
+		Firearms.final_range(fid, fups),
+		Firearms.final_draw_time(fid, fups),
+		int(def.magazine_size),
+		float(def.reload_time),
+		String(def.fire_mode),
+	)
+
+func get_firearm_reserve_ammo(fid: String) -> int:
+	return int(CheckpointData.firearm_ammo.get(fid, 0))
+
+func consume_firearm_reserve_ammo(fid: String, amount: int) -> void:
+	CheckpointData.firearm_ammo[fid] = max(0, int(CheckpointData.firearm_ammo.get(fid, 0)) - amount)
 
 func set_creator_mode(target_enabled: bool) -> void:
 	if target_enabled and not DevMode.enabled:

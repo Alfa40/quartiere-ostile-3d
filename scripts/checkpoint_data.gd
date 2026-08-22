@@ -21,6 +21,10 @@ var placed_benches := []
 var owned_weapons := {}
 var weapon_upgrades := {}
 var equipped_weapon := DEFAULT_EQUIPPED_WEAPON
+var owned_firearms := {}
+var firearm_upgrades := {}
+var firearm_ammo := {}
+var equipped_firearm := ""
 
 func _ready() -> void:
 	load_checkpoint()
@@ -52,6 +56,13 @@ func load_checkpoint() -> void:
 	var wups = data.get("weapon_upgrades", {})
 	weapon_upgrades = wups.duplicate(true) if typeof(wups) == TYPE_DICTIONARY else {}
 	equipped_weapon = String(data.get("equipped_weapon", DEFAULT_EQUIPPED_WEAPON))
+	var owned_f = data.get("owned_firearms", {})
+	owned_firearms = owned_f.duplicate() if typeof(owned_f) == TYPE_DICTIONARY else {}
+	var fups = data.get("firearm_upgrades", {})
+	firearm_upgrades = fups.duplicate(true) if typeof(fups) == TYPE_DICTIONARY else {}
+	var fammo = data.get("firearm_ammo", {})
+	firearm_ammo = fammo.duplicate() if typeof(fammo) == TYPE_DICTIONARY else {}
+	equipped_firearm = String(data.get("equipped_firearm", ""))
 
 func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	zone = current_zone
@@ -73,6 +84,10 @@ func save_checkpoint(current_zone: int, current_money: int, current_materials: D
 		"owned_weapons": owned_weapons,
 		"weapon_upgrades": weapon_upgrades,
 		"equipped_weapon": equipped_weapon,
+		"owned_firearms": owned_firearms,
+		"firearm_upgrades": firearm_upgrades,
+		"firearm_ammo": firearm_ammo,
+		"equipped_firearm": equipped_firearm,
 	}))
 	f.close()
 

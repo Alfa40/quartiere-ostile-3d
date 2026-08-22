@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 
@@ -61,6 +61,17 @@ transparency = 1
 emission_enabled = true
 emission = Color(1.0, 0.9, 0.3, 1)
 emission_energy_multiplier = 0.6
+
+[sub_resource type="SphereMesh" id="FirearmFlashMesh"]
+radius = 0.91
+height = 1.82
+
+[sub_resource type="StandardMaterial3D" id="FirearmFlashMaterial"]
+albedo_color = Color(0.5, 0.75, 1.0, 0.22)
+transparency = 1
+emission_enabled = true
+emission = Color(0.6, 0.8, 1.0, 1)
+emission_energy_multiplier = 0.8
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -165,6 +176,12 @@ shape = SubResource("AttackShape")
 [node name="Flash" type="MeshInstance3D" parent="FacingPivot/AttackArea"]
 mesh = SubResource("AttackFlashMesh")
 surface_material_override/0 = SubResource("AttackFlashMaterial")
+visible = false
+
+[node name="FirearmFlash" type="MeshInstance3D" parent="FacingPivot"]
+position = Vector3(0, 1.0, -1.0)
+mesh = SubResource("FirearmFlashMesh")
+surface_material_override/0 = SubResource("FirearmFlashMaterial")
 visible = false
 
 [node name="Camera3D" type="Camera3D" parent="."]

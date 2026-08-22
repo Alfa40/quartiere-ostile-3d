@@ -2,6 +2,7 @@ extends Node3D
 
 const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
 const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
+const Firearms := preload("res://scripts/firearms.gd")
 const UIScale := preload("res://scripts/ui_scale.gd")
 
 const MENU_SCROLL_LEFT_PORTRAIT := 60.0
@@ -27,12 +28,19 @@ const CATEGORY_BOXES := {
 
 const BENCH_SCENES := {
 	"armi_bianche": preload("res://scenes/WorkbenchArmiBianche.tscn"),
+	"armi_da_fuoco": preload("res://scenes/WorkbenchArmiDaFuoco.tscn"),
 }
 const BENCH_COSTS := {
 	"armi_bianche": {"money": 250, "material": "metallo", "amount": 20},
+	"armi_da_fuoco": {"money": 550, "material": "metallo", "amount": 40},
 }
 const BENCH_LABELS := {
 	"armi_bianche": "Banco delle armi bianche",
+	"armi_da_fuoco": "Banco delle armi da fuoco",
+}
+const BENCH_UNLOCK_DESC := {
+	"armi_bianche": "Sblocca coltelli, spade, mazze, martelli e lance",
+	"armi_da_fuoco": "Sblocca pistole, mitragliette, mitra, fucili a pompa e da tiratore",
 }
 
 @onready var player: Node3D = $Player
@@ -43,8 +51,11 @@ const BENCH_LABELS := {
 @onready var benches_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/BenchesTab
 @onready var weapon_menu: Control = $HUD/WeaponMenu
 @onready var weapon_money_label: Label = $HUD/WeaponMenu/Scroll/Box/MoneyMaterialsLabel
+@onready var firearm_menu: Control = $HUD/FirearmMenu
+@onready var firearm_money_label: Label = $HUD/FirearmMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var workbench_scroll: ScrollContainer = $HUD/WorkbenchMenu/Scroll
 @onready var weapon_scroll: ScrollContainer = $HUD/WeaponMenu/Scroll
+@onready var firearm_scroll: ScrollContainer = $HUD/FirearmMenu/Scroll
 @onready var placement_ui: Control = $HUD/PlacementUI
 @onready var placement_highlight: MeshInstance3D = $PlacementHighlight
 @onready var bench_ghost_holder: Node3D = $BenchGhostHolder
@@ -66,6 +77,7 @@ func _ready() -> void:
 	interact_button.visible = false
 	workbench_menu.visible = false
 	weapon_menu.visible = false
+	firearm_menu.visible = false
 	placement_ui.visible = false
 	placement_highlight.visible = false
 
@@ -74,6 +86,7 @@ func _ready() -> void:
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/UpgradesTabButton.pressed.connect(_show_upgrades_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/BenchesTabButton.pressed.connect(_show_benches_tab)
 	$HUD/WeaponMenu/Scroll/Box/CloseButton.pressed.connect(_close_weapon_menu)
+	$HUD/FirearmMenu/Scroll/Box/CloseButton.pressed.connect(_close_firearm_menu)
 	$HUD/PlacementUI/ButtonRow/ConfirmButton.pressed.connect(_on_confirm_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/CancelButton.pressed.connect(_on_cancel_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/RotateButton.pressed.connect(_on_rotate_placement_pressed)
@@ -83,6 +96,17 @@ func _ready() -> void:
 		btn.pressed.connect(_on_buy_upgrade_pressed.bind(id))
 
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_bianche"))
+	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_fuoco/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_da_fuoco"))
+
+	for wid in Firearms.CATEGORY_WEAPONS["pistole"]:
+		var fbase := get_node("HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_%s" % wid)
+		var faction_btn: Button = fbase.get_node("MainRow/ActionButton")
+		faction_btn.pressed.connect(_on_firearm_action_pressed.bind(wid))
+		var fammo_btn: Button = fbase.get_node("AmmoRow/BuyButton")
+		fammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
+		for tid in Firearms.UPGRADE_TRACK_ORDER:
+			var ft_btn: Button = fbase.get_node("Track_%s/BuyButton" % tid)
+			ft_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
 
 	for cat_id in MeleeWeapons.CATEGORY_ORDER:
 		var cat_btn: Button = get_node("HUD/WeaponMenu/Scroll/Box/CategoryRow/Btn_%s" % cat_id)
@@ -114,6 +138,7 @@ func _update_menu_layout() -> void:
 
 	UIScale.apply_orientation_scale(workbench_menu, is_portrait)
 	UIScale.apply_orientation_scale(weapon_menu, is_portrait)
+	UIScale.apply_orientation_scale(firearm_menu, is_portrait)
 	UIScale.apply_orientation_scale(placement_ui, is_portrait)
 
 	var left := MENU_SCROLL_LEFT_LANDSCAPE if is_landscape else MENU_SCROLL_LEFT_PORTRAIT
@@ -122,9 +147,11 @@ func _update_menu_layout() -> void:
 	workbench_scroll.offset_right = right
 	weapon_scroll.offset_left = left
 	weapon_scroll.offset_right = right
+	firearm_scroll.offset_left = left
+	firearm_scroll.offset_right = right
 
 func _process(_delta: float) -> void:
-	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible:
+	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible:
 		interact_button.visible = false
 		return
 
@@ -150,8 +177,10 @@ func _process(_delta: float) -> void:
 func _on_interact_pressed() -> void:
 	if _current_interact == "casa":
 		_open_house_menu()
-	elif _current_interact != "":
+	elif _current_interact == "armi_bianche":
 		_open_weapon_menu()
+	elif _current_interact == "armi_da_fuoco":
+		_open_firearm_menu()
 
 func _open_house_menu() -> void:
 	workbench_menu.visible = true
@@ -201,17 +230,21 @@ func _refresh_benches_tab() -> void:
 		CheckpointData.money, CheckpointData.materials.get("legno", 0),
 		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
 	]
-	var row := $HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche
+	_refresh_bench_row("armi_bianche")
+	_refresh_bench_row("armi_da_fuoco")
+
+func _refresh_bench_row(type_id: String) -> void:
+	var row := get_node("HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_%s" % type_id)
 	var info: Label = row.get_node("InfoLabel")
 	var btn: Button = row.get_node("BuyButton")
-	if _has_placed_bench("armi_bianche"):
-		info.text = "Banco delle armi bianche — posizionato in casa"
+	if _has_placed_bench(type_id):
+		info.text = "%s — posizionato in casa" % BENCH_LABELS.get(type_id, type_id)
 		btn.disabled = true
 		btn.text = "Posizionato"
 	else:
-		var cost: Dictionary = BENCH_COSTS["armi_bianche"]
+		var cost: Dictionary = BENCH_COSTS[type_id]
 		var mat_name: String = MATERIAL_LABELS.get(cost.material, cost.material)
-		info.text = "Banco delle armi bianche\nSblocca coltelli, spade, mazze, martelli e lance — costa %d€ + %d %s" % [cost.money, cost.amount, mat_name]
+		info.text = "%s\n%s — costa %d€ + %d %s" % [BENCH_LABELS.get(type_id, type_id), BENCH_UNLOCK_DESC.get(type_id, ""), cost.money, cost.amount, mat_name]
 		var afford: bool = CheckpointData.money >= cost.money and CheckpointData.materials.get(cost.material, 0) >= cost.amount
 		btn.disabled = not afford
 		btn.text = "Compra"
@@ -580,6 +613,155 @@ func _on_upgrade_weapon_pressed(wid: String, tid: String) -> void:
 	wups[tid] = level + 1
 	CheckpointData.weapon_upgrades[wid] = wups
 	_refresh_weapon_menu()
+
+func _open_firearm_menu() -> void:
+	firearm_menu.visible = true
+	interact_button.visible = false
+	_refresh_firearm_menu()
+
+func _close_firearm_menu() -> void:
+	firearm_menu.visible = false
+
+func _refresh_firearm_menu() -> void:
+	firearm_money_label.text = "Soldi: %d€   Legno: %d   Metallo: %d   Cablaggi: %d" % [
+		CheckpointData.money, CheckpointData.materials.get("legno", 0),
+		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
+	]
+	for wid in Firearms.CATEGORY_WEAPONS["pistole"]:
+		var base := get_node("HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_%s" % wid)
+		var main_info: Label = base.get_node("MainRow/InfoLabel")
+		var action_btn: Button = base.get_node("MainRow/ActionButton")
+		var ammo_info: Label = base.get_node("AmmoRow/InfoLabel")
+		var ammo_btn: Button = base.get_node("AmmoRow/BuyButton")
+		var def: Dictionary = Firearms.WEAPONS[wid]
+		var owned: bool = CheckpointData.owned_firearms.get(wid, false)
+		var equipped: bool = CheckpointData.equipped_firearm == wid
+		var fups: Dictionary = CheckpointData.firearm_upgrades.get(wid, {})
+		var mode_label: String = "automatica" if def.fire_mode == "auto" else "colpo singolo (al rilascio della mira)"
+
+		if not owned:
+			var mat_name: String = MATERIAL_LABELS.get(def.price_material, def.price_material)
+			main_info.text = "%s — %s\nDanno %d · Cadenza %.2fs · Caricatore %d · Portata %d\nCosta %d€ + %d %s" % [
+				def.label, mode_label, int(def.damage), def.fire_cooldown, int(def.magazine_size), int(def.range),
+				def.price_money, def.price_amount, mat_name,
+			]
+			var afford: bool = CheckpointData.money >= def.price_money and CheckpointData.materials.get(def.price_material, 0) >= def.price_amount
+			action_btn.disabled = not afford
+			action_btn.text = "Compra"
+			ammo_info.text = "Munizioni: si sbloccano comprando l'arma"
+			ammo_btn.disabled = true
+			ammo_btn.text = "Compra munizioni"
+		else:
+			var stats_line := "Danno %d · Cadenza %.2fs · Portata %d · Estrazione %.2fs" % [
+				int(Firearms.final_damage(wid, fups)), Firearms.final_cooldown(wid, fups),
+				int(Firearms.final_range(wid, fups)), Firearms.final_draw_time(wid, fups),
+			]
+			if equipped:
+				main_info.text = "%s — Equipaggiata (%s)\n%s" % [def.label, mode_label, stats_line]
+				action_btn.disabled = true
+				action_btn.text = "Equipaggiata"
+			else:
+				main_info.text = "%s — posseduta (%s)\n%s" % [def.label, mode_label, stats_line]
+				action_btn.disabled = false
+				action_btn.text = "Equipaggia"
+
+			var reserve: int = int(CheckpointData.firearm_ammo.get(wid, 0))
+			var pack_amt: int = int(def.ammo_pack_amount)
+			var pack_cost: int = int(def.ammo_pack_price_money)
+			ammo_info.text = "Munizioni in riserva: %d\nCompra %d colpi per %d€" % [reserve, pack_amt, pack_cost]
+			ammo_btn.disabled = CheckpointData.money < pack_cost
+			ammo_btn.text = "Compra munizioni"
+
+		for tid in Firearms.UPGRADE_TRACK_ORDER:
+			var track_row := base.get_node("Track_%s" % tid)
+			var t_info: Label = track_row.get_node("InfoLabel")
+			var t_btn: Button = track_row.get_node("BuyButton")
+			var level: int = fups.get(tid, 0)
+			var tdef: Dictionary = Firearms.UPGRADE_TRACKS[tid]
+			if not owned:
+				t_info.text = "%s (si sblocca comprando l'arma)" % tdef.label
+				t_btn.disabled = true
+				t_btn.text = "Potenzia"
+			elif Firearms.upgrade_is_maxed(level):
+				var maxed_value := _firearm_track_value_text(tid, wid, fups)
+				t_info.text = "%s — LIVELLO MASSIMO (%d/%d)\n%s" % [tdef.label, level, Firearms.UPGRADE_MAX_LEVEL, maxed_value]
+				t_btn.disabled = true
+				t_btn.text = "Massimo"
+			else:
+				var next_fups := fups.duplicate()
+				next_fups[tid] = level + 1
+				var preview := _firearm_track_preview_text(tid, wid, fups, next_fups)
+				var cm := Firearms.upgrade_cost_money(wid, level)
+				var cmat := Firearms.upgrade_cost_material(wid, level)
+				var mat_name2: String = MATERIAL_LABELS.get(tdef.material, tdef.material)
+				t_info.text = "%s (Lv %d/%d) — %s\n%s\ncosta %d€ + %d %s" % [tdef.label, level, Firearms.UPGRADE_MAX_LEVEL, tdef.desc, preview, cm, cmat, mat_name2]
+				var afford2: bool = CheckpointData.money >= cm and CheckpointData.materials.get(tdef.material, 0) >= cmat
+				t_btn.disabled = not afford2
+				t_btn.text = "Potenzia"
+
+func _firearm_track_value_text(tid: String, wid: String, fups: Dictionary) -> String:
+	match tid:
+		"portata":
+			return "Portata attuale: %d" % int(Firearms.final_range(wid, fups))
+		"velocita":
+			return "Cadenza attuale: %.2fs" % Firearms.final_cooldown(wid, fups)
+		"danno":
+			return "Danno attuale: %d" % int(Firearms.final_damage(wid, fups))
+		"estrazione":
+			return "Estrazione attuale: %.2fs" % Firearms.final_draw_time(wid, fups)
+	return ""
+
+func _firearm_track_preview_text(tid: String, wid: String, fups: Dictionary, next_fups: Dictionary) -> String:
+	match tid:
+		"portata":
+			return "Portata: %d → %d" % [int(Firearms.final_range(wid, fups)), int(Firearms.final_range(wid, next_fups))]
+		"velocita":
+			return "Cadenza: %.2fs → %.2fs" % [Firearms.final_cooldown(wid, fups), Firearms.final_cooldown(wid, next_fups)]
+		"danno":
+			return "Danno: %d → %d" % [int(Firearms.final_damage(wid, fups)), int(Firearms.final_damage(wid, next_fups))]
+		"estrazione":
+			return "Estrazione: %.2fs → %.2fs" % [Firearms.final_draw_time(wid, fups), Firearms.final_draw_time(wid, next_fups)]
+	return ""
+
+func _on_firearm_action_pressed(wid: String) -> void:
+	var owned: bool = CheckpointData.owned_firearms.get(wid, false)
+	if not owned:
+		var def: Dictionary = Firearms.WEAPONS[wid]
+		if CheckpointData.money < def.price_money or CheckpointData.materials.get(def.price_material, 0) < def.price_amount:
+			return
+		CheckpointData.money -= int(def.price_money)
+		CheckpointData.materials[def.price_material] = CheckpointData.materials.get(def.price_material, 0) - int(def.price_amount)
+		CheckpointData.owned_firearms[wid] = true
+		CheckpointData.firearm_upgrades[wid] = {}
+		CheckpointData.firearm_ammo[wid] = int(def.magazine_size)
+	else:
+		CheckpointData.equipped_firearm = wid
+	_refresh_firearm_menu()
+
+func _on_buy_ammo_pressed(wid: String) -> void:
+	var def: Dictionary = Firearms.WEAPONS[wid]
+	var cost: int = int(def.ammo_pack_price_money)
+	if CheckpointData.money < cost:
+		return
+	CheckpointData.money -= cost
+	CheckpointData.firearm_ammo[wid] = int(CheckpointData.firearm_ammo.get(wid, 0)) + int(def.ammo_pack_amount)
+	_refresh_firearm_menu()
+
+func _on_upgrade_firearm_pressed(wid: String, tid: String) -> void:
+	var fups: Dictionary = CheckpointData.firearm_upgrades.get(wid, {})
+	var level: int = fups.get(tid, 0)
+	if Firearms.upgrade_is_maxed(level):
+		return
+	var cm := Firearms.upgrade_cost_money(wid, level)
+	var cmat := Firearms.upgrade_cost_material(wid, level)
+	var mat: String = Firearms.UPGRADE_TRACKS[tid].material
+	if CheckpointData.money < cm or CheckpointData.materials.get(mat, 0) < cmat:
+		return
+	CheckpointData.money -= cm
+	CheckpointData.materials[mat] = CheckpointData.materials.get(mat, 0) - cmat
+	fups[tid] = level + 1
+	CheckpointData.firearm_upgrades[wid] = fups
+	_refresh_firearm_menu()
 
 func _on_door_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
