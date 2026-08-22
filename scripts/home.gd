@@ -934,7 +934,7 @@ func _throwable_track_value_text(tid: String, wid: String, tups: Dictionary) -> 
 			return "Danno attuale: %d" % int(Throwables.final_damage(wid, tups))
 		"estrazione":
 			return "Estrazione attuale: %.2fs" % Throwables.final_draw_time(wid, tups)
-		"mirino":
+		"mira":
 			return "Linea di mira attuale: %.1fm" % Throwables.final_aim_line_length(wid, tups)
 	return ""
 
@@ -946,8 +946,8 @@ func _throwable_track_preview_text(tid: String, wid: String, tups: Dictionary, n
 			return "Cadenza: %.2fs → %.2fs" % [Throwables.final_cooldown(wid, tups), Throwables.final_cooldown(wid, next_tups)]
 		"danno":
 			return "Danno: %d → %d" % [int(Throwables.final_damage(wid, tups)), int(Throwables.final_damage(wid, next_tups))]
-		"mirino":
-			return "Mirino: %.1fm → %.1fm" % [Throwables.final_aim_line_length(wid, tups), Throwables.final_aim_line_length(wid, next_tups)]
+		"mira":
+			return "Mira: %.1fm → %.1fm" % [Throwables.final_aim_line_length(wid, tups), Throwables.final_aim_line_length(wid, next_tups)]
 		"estrazione":
 			return "Estrazione: %.2fs → %.2fs" % [Throwables.final_draw_time(wid, tups), Throwables.final_draw_time(wid, next_tups)]
 	return ""

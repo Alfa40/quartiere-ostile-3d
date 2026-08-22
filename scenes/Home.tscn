@@ -5669,17 +5669,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5779,17 +5779,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5889,17 +5889,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -5999,17 +5999,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -6109,17 +6109,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -6223,17 +6223,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_molotov/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -6333,17 +6333,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -6443,17 +6443,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_appiccicosa/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
@@ -6553,17 +6553,17 @@ custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
-[node name="Track_mirino" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo"]
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_mirino"]
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_mira"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_mirino"]
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo/Track_mira"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 19
 text = "Potenzia"

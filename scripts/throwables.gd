@@ -83,14 +83,14 @@ const WEAPONS := {
 	},
 }
 
-const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mirino"]
+const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mira"]
 
 const UPGRADE_TRACKS := {
 	"portata": {"label": "Portata", "desc": "Aumenta la gittata del lancio", "material": "legno", "per_level": 0.03},
 	"velocita": {"label": "Velocità di lancio", "desc": "Riduce il tempo tra un lancio e l'altro", "material": "metallo", "per_level": 0.025},
 	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "per_level": 0.06},
 	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "per_level": 0.08},
-	"mirino": {"label": "Mirino", "desc": "Allunga la linea di mira e aumenta la precisione del lancio", "material": "cablaggi", "per_level": 0.08},
+	"mira": {"label": "Mira", "desc": "Allunga la linea di mira e aumenta la precisione del lancio", "material": "cablaggi", "per_level": 0.08},
 }
 
 const UPGRADE_MAX_LEVEL := 10
@@ -135,5 +135,5 @@ static func final_draw_time(weapon_id: String, upgrades: Dictionary) -> float:
 const AIM_LINE_BASE_LENGTH := 6.0
 
 static func final_aim_line_length(_weapon_id: String, upgrades: Dictionary) -> float:
-	var level: int = upgrades.get("mirino", 0)
-	return AIM_LINE_BASE_LENGTH * (1.0 + upgrade_effect("mirino", level))
+	var level: int = upgrades.get("mira", 0)
+	return AIM_LINE_BASE_LENGTH * (1.0 + upgrade_effect("mira", level))
