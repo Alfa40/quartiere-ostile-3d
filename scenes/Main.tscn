@@ -257,7 +257,7 @@ surface_material_override/0 = SubResource("WallMaterial")
 shape = SubResource("WallShape")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector3(0, 0, 7)
+position = Vector3(0, 0, 21)
 
 [node name="HouseExterior" type="StaticBody3D" parent="."]
 position = Vector3(0, 1.1, 14)

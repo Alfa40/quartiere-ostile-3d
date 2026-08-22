@@ -56,11 +56,11 @@ const ZONE_NAMES := [
 	"Le torri abbandonate", "L'ultimo isolato",
 ]
 
-const SPAWN_POINTS := [
-	Vector3(0, 0, -36), Vector3(-36, 0, -20), Vector3(36, 0, -20),
-	Vector3(-36, 0, 20), Vector3(36, 0, 20), Vector3(0, 0, -24),
-	Vector3(-30, 0, 30), Vector3(30, 0, 30),
-]
+const SPAWN_GRID_STEP := 12.0
+const SPAWN_GRID_HALF := 32.0
+const SPAWN_HOUSE_EXCLUDE_RADIUS := 12.0
+const SPAWN_DEACTIVATE_RADIUS := 18.0
+const SPAWN_RETRY_DELAY := 0.2
 
 @onready var hud = $HUD
 @onready var player: Node3D = $Player
@@ -78,6 +78,7 @@ var zone_enemies_spawned := 0
 var zone_enemies_alive := 0
 var spawn_timer := 0.0
 var zone_transitioning := false
+var spawn_points := []
 
 var _pre_creator_money := 0.0
 var _pre_creator_materials := {}
@@ -104,7 +105,21 @@ func _ready() -> void:
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
+	_build_spawn_points()
 	_start_zone()
+
+func _build_spawn_points() -> void:
+	spawn_points.clear()
+	var house_pos := Vector3(0, 0, 14)
+	var x := -SPAWN_GRID_HALF
+	while x <= SPAWN_GRID_HALF:
+		var z := -SPAWN_GRID_HALF
+		while z <= SPAWN_GRID_HALF:
+			var pos := Vector3(x, 0, z)
+			if pos.distance_to(house_pos) > SPAWN_HOUSE_EXCLUDE_RADIUS:
+				spawn_points.append({"pos": pos, "active": true})
+			z += SPAWN_GRID_STEP
+		x += SPAWN_GRID_STEP
 
 func _apply_upgrade_effects() -> void:
 	var speed_bonus: float = PlayerUpgrades.effect("scarpe", upgrades.get("scarpe", 0))
@@ -184,17 +199,48 @@ func _process(delta: float) -> void:
 		return
 
 	hud.set_house_button_visible(false)
+	_update_spawn_points()
 
 	if zone_enemies_spawned < zone_enemies_total:
 		spawn_timer -= delta
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
-			spawn_timer = SPAWN_INTERVAL
+
+func _update_spawn_points() -> void:
+	var cam := get_viewport().get_camera_3d()
+	for sp in spawn_points:
+		if sp.active:
+			if player.global_position.distance_to(sp.pos) < SPAWN_DEACTIVATE_RADIUS:
+				sp.active = false
+		elif cam == null or not _point_in_camera_frustum(cam, sp.pos):
+			sp.active = true
+
+func _point_in_camera_frustum(cam: Camera3D, pos: Vector3) -> bool:
+	for plane in cam.get_frustum():
+		if plane.is_point_over(pos):
+			return false
+	return true
+
+func _pick_active_spawn_point():
+	var active_points := []
+	for sp in spawn_points:
+		if sp.active:
+			active_points.append(sp)
+	if active_points.is_empty():
+		return null
+	return active_points[randi() % active_points.size()]
 
 func _spawn_enemy() -> void:
+	var sp = _pick_active_spawn_point()
+	if sp == null:
+		spawn_timer = SPAWN_RETRY_DELAY
+		return
+	sp.active = false
+
 	var enemy = EnemyScene.instantiate()
 	add_child(enemy)
-	enemy.position = SPAWN_POINTS[randi() % SPAWN_POINTS.size()]
+	enemy.position = sp.pos
+	spawn_timer = SPAWN_INTERVAL
 
 	var hp_mult := 1.0 + HP_PER_ZONE * (zone - 1)
 	var dmg_mult := 1.0 + DAMAGE_PER_ZONE * (zone - 1)
