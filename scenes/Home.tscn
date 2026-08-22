@@ -409,19 +409,24 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -220.0
+offset_left = -300.0
 offset_top = -140.0
-offset_right = 220.0
+offset_right = 300.0
 offset_bottom = -60.0
-theme_override_constants/separation = 24
+theme_override_constants/separation = 20
+
+[node name="RotateButton" type="Button" parent="HUD/PlacementUI/ButtonRow"]
+custom_minimum_size = Vector2(150, 76)
+theme_override_font_sizes/font_size = 22
+text = "⟳ Ruota"
 
 [node name="ConfirmButton" type="Button" parent="HUD/PlacementUI/ButtonRow"]
-custom_minimum_size = Vector2(200, 76)
+custom_minimum_size = Vector2(180, 76)
 theme_override_font_sizes/font_size = 24
 text = "Conferma"
 
 [node name="CancelButton" type="Button" parent="HUD/PlacementUI/ButtonRow"]
-custom_minimum_size = Vector2(200, 76)
+custom_minimum_size = Vector2(180, 76)
 theme_override_font_sizes/font_size = 24
 text = "Annulla"
 
@@ -477,26 +482,22 @@ text = "Coltelli"
 [node name="Btn_spade" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 18
-disabled = true
-text = "Spade (presto)"
+text = "Spade"
 
 [node name="Btn_mazze" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 18
-disabled = true
-text = "Mazze (presto)"
+text = "Mazze"
 
 [node name="Btn_martelli" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 18
-disabled = true
-text = "Martelli (presto)"
+text = "Martelli"
 
 [node name="Btn_lance" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 18
-disabled = true
-text = "Lance (presto)"
+text = "Lance"
 
 [node name="KnivesBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
 theme_override_constants/separation = 10
@@ -901,6 +902,1621 @@ text = "Potenzia"
 
 [node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
 
+[node name="SpadeBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 10
+
+[node name="Weapon_spada_giocattolo" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo"]
+
+[node name="Weapon_spada_da_scena" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena"]
+
+[node name="Weapon_sciabola_arrugginita" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita"]
+
+[node name="Weapon_katana_da_allenamento" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento"]
+
+[node name="Weapon_spadone_leggendario" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario"]
+
+[node name="MazzeBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 10
+
+[node name="Weapon_mazza_baseball" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball"]
+
+[node name="Weapon_spranga_ferro" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro"]
+
+[node name="Weapon_mazza_chiodata" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata"]
+
+[node name="Weapon_mazza_da_golf_rinforzata" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata"]
+
+[node name="Weapon_mazza_da_guerra" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra"]
+
+[node name="MartelliBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 10
+
+[node name="Weapon_martello_carpentiere" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere"]
+
+[node name="Weapon_martello_fabbro" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro"]
+
+[node name="Weapon_mazzuolo_pesante" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante"]
+
+[node name="Weapon_martello_demolizione" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione"]
+
+[node name="Weapon_martello_da_guerra" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra"]
+
+[node name="LanceBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 10
+
+[node name="Weapon_bastone_appuntito" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito"]
+
+[node name="Weapon_forca_giardino" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino"]
+
+[node name="Weapon_lancia_da_pesca" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca"]
+
+[node name="Weapon_lancia_da_combattimento" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento"]
+
+[node name="Weapon_lancia_cerimoniale" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale"]
 [node name="CloseButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 26

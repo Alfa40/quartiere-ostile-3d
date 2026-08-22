@@ -7,8 +7,17 @@ const WORKBENCH_POS := Vector3(1.3, 0.0, -2.2)
 const INTERACT_RANGE := 2.2
 const MATERIAL_LABELS := {"legno": "Legno", "metallo": "Metallo", "cablaggi": "Cablaggi"}
 
-const ROOM_ROWS := [-2.0, 0.0, 2.0]
-const FIXED_BENCH_ROW := -2.0
+const COL_VALUES := [-1.0, 1.0]
+const ROW_VALUES := [-2.0, 0.0, 2.0]
+const FIXED_BENCH_CELLS := ["0:0", "1:0"]
+
+const CATEGORY_BOXES := {
+	"coltelli": "KnivesBox",
+	"spade": "SpadeBox",
+	"mazze": "MazzeBox",
+	"martelli": "MartelliBox",
+	"lance": "LanceBox",
+}
 
 const BENCH_SCENES := {
 	"armi_bianche": preload("res://scenes/WorkbenchArmiBianche.tscn"),
@@ -36,9 +45,12 @@ const BENCH_LABELS := {
 
 var placing_bench_type := ""
 var placing_ghost: Node3D = null
-var placing_row := 0.0
+var placing_orientation := "h"
+var placing_col_idx := 0
+var placing_row_idx := 0
 var placing_valid := false
 
+var current_weapon_category := "coltelli"
 var _current_interact := ""
 var _placed_bench_nodes := {}
 
@@ -56,6 +68,7 @@ func _ready() -> void:
 	$HUD/WeaponMenu/Scroll/Box/CloseButton.pressed.connect(_close_weapon_menu)
 	$HUD/PlacementUI/ButtonRow/ConfirmButton.pressed.connect(_on_confirm_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/CancelButton.pressed.connect(_on_cancel_placement_pressed)
+	$HUD/PlacementUI/ButtonRow/RotateButton.pressed.connect(_on_rotate_placement_pressed)
 
 	for id in PlayerUpgrades.ORDER:
 		var btn: Button = get_node("HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_%s/BuyButton" % id)
@@ -63,20 +76,24 @@ func _ready() -> void:
 
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_bianche"))
 
-	for wid in MeleeWeapons.CATEGORY_WEAPONS["coltelli"]:
-		var base := get_node("HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_%s" % wid)
-		var action_btn: Button = base.get_node("MainRow/ActionButton")
-		action_btn.pressed.connect(_on_weapon_action_pressed.bind(wid))
-		for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
-			var t_btn: Button = base.get_node("Track_%s/BuyButton" % tid)
-			t_btn.pressed.connect(_on_upgrade_weapon_pressed.bind(wid, tid))
+	for cat_id in MeleeWeapons.CATEGORY_ORDER:
+		var cat_btn: Button = get_node("HUD/WeaponMenu/Scroll/Box/CategoryRow/Btn_%s" % cat_id)
+		cat_btn.pressed.connect(_show_weapon_category.bind(cat_id))
+		for wid in MeleeWeapons.CATEGORY_WEAPONS[cat_id]:
+			var base := get_node("HUD/WeaponMenu/Scroll/Box/%s/Weapon_%s" % [CATEGORY_BOXES[cat_id], wid])
+			var action_btn: Button = base.get_node("MainRow/ActionButton")
+			action_btn.pressed.connect(_on_weapon_action_pressed.bind(wid))
+			for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
+				var t_btn: Button = base.get_node("Track_%s/BuyButton" % tid)
+				t_btn.pressed.connect(_on_upgrade_weapon_pressed.bind(wid, tid))
 
 	$DoorTrigger.body_entered.connect(_on_door_entered)
 
 	for b in CheckpointData.placed_benches:
-		_instantiate_placed_bench(String(b.get("type", "")), float(b.get("row", 0.0)))
+		_instantiate_placed_bench(String(b.get("type", "")), String(b.get("orientation", "h")), int(b.get("col_idx", 0)), int(b.get("row_idx", 0)))
 
 	_show_upgrades_tab()
+	_show_weapon_category("coltelli")
 	_refresh_workbench_menu()
 
 func _process(_delta: float) -> void:
@@ -210,28 +227,109 @@ func _start_bench_placement(type_id: String) -> void:
 
 	placing_ghost = BENCH_SCENES[type_id].instantiate()
 	bench_ghost_holder.add_child(placing_ghost)
-	placing_row = _first_free_row()
-	placing_ghost.position = Vector3(0, 0, placing_row)
+
+	placing_orientation = "h"
+	var slot = _first_free_slot("h")
+	if slot == null:
+		slot = _first_free_slot("v")
+		if slot != null:
+			placing_orientation = "v"
+	if slot == null:
+		slot = {"row_idx": 0, "col_idx": 0}
+	placing_row_idx = slot.row_idx
+	placing_col_idx = slot.col_idx
+
+	_apply_ghost_transform()
 	placement_highlight.visible = true
 	placement_ui.visible = true
 	_update_placement_validity()
 
-func _first_free_row() -> float:
-	var occ := _occupied_rows()
-	for r in ROOM_ROWS:
-		if not occ.has(r):
-			return r
-	return ROOM_ROWS[0]
+func _cell_key(col_idx: int, row_idx: int) -> String:
+	return "%d:%d" % [col_idx, row_idx]
 
-func _occupied_rows() -> Dictionary:
-	var occ := {FIXED_BENCH_ROW: true}
+func _footprint_cells(orientation: String, col_idx: int, row_idx: int) -> Array:
+	if orientation == "h":
+		return [_cell_key(0, row_idx), _cell_key(1, row_idx)]
+	return [_cell_key(col_idx, row_idx), _cell_key(col_idx, row_idx + 1)]
+
+func _occupied_cells() -> Dictionary:
+	var occ := {}
+	for key in FIXED_BENCH_CELLS:
+		occ[key] = true
 	for b in CheckpointData.placed_benches:
-		occ[float(b.get("row", 0.0))] = true
+		var orientation: String = String(b.get("orientation", "h"))
+		var col_idx: int = int(b.get("col_idx", 0))
+		var row_idx: int = int(b.get("row_idx", 0))
+		for key in _footprint_cells(orientation, col_idx, row_idx):
+			occ[key] = true
 	return occ
 
+func _first_free_slot(orientation: String):
+	var occ := _occupied_cells()
+	if orientation == "h":
+		for r in range(ROW_VALUES.size()):
+			var cells := _footprint_cells("h", 0, r)
+			if not occ.has(cells[0]) and not occ.has(cells[1]):
+				return {"row_idx": r, "col_idx": 0}
+	else:
+		for c in range(COL_VALUES.size()):
+			for r in range(ROW_VALUES.size() - 1):
+				var cells := _footprint_cells("v", c, r)
+				if not occ.has(cells[0]) and not occ.has(cells[1]):
+					return {"row_idx": r, "col_idx": c}
+	return null
+
+func _bench_world_position(orientation: String, col_idx: int, row_idx: int) -> Vector3:
+	if orientation == "h":
+		return Vector3(0, 0, ROW_VALUES[row_idx])
+	var z: float = (ROW_VALUES[row_idx] + ROW_VALUES[row_idx + 1]) / 2.0
+	return Vector3(COL_VALUES[col_idx], 0, z)
+
+func _bench_rotation_y(orientation: String) -> float:
+	return 90.0 if orientation == "v" else 0.0
+
+func _nearest_index(values: Array, v: float) -> int:
+	var best_i := 0
+	var best_d := INF
+	for i in range(values.size()):
+		var d: float = absf(v - float(values[i]))
+		if d < best_d:
+			best_d = d
+			best_i = i
+	return best_i
+
+func _nearest_anchor(orientation: String, world_point: Vector3) -> Dictionary:
+	if orientation == "h":
+		return {"row_idx": _nearest_index(ROW_VALUES, world_point.z), "col_idx": 0}
+	var col_idx := _nearest_index(COL_VALUES, world_point.x)
+	var row_idx := 0
+	if ROW_VALUES.size() >= 3:
+		var mid0: float = (ROW_VALUES[0] + ROW_VALUES[1]) / 2.0
+		var mid1: float = (ROW_VALUES[1] + ROW_VALUES[2]) / 2.0
+		if absf(world_point.z - mid1) < absf(world_point.z - mid0):
+			row_idx = 1
+	return {"row_idx": row_idx, "col_idx": col_idx}
+
+func _apply_ghost_transform() -> void:
+	placing_ghost.position = _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
+	placing_ghost.rotation_degrees.y = _bench_rotation_y(placing_orientation)
+
+func _on_rotate_placement_pressed() -> void:
+	var current_pos := _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
+	placing_orientation = "v" if placing_orientation == "h" else "h"
+	var anchor := _nearest_anchor(placing_orientation, current_pos)
+	placing_row_idx = anchor.row_idx
+	placing_col_idx = anchor.col_idx
+	_apply_ghost_transform()
+	_update_placement_validity()
+
 func _update_placement_validity() -> void:
-	placing_valid = not _occupied_rows().has(placing_row)
-	placement_highlight.position = Vector3(0, 0.02, placing_row)
+	var cells := _footprint_cells(placing_orientation, placing_col_idx, placing_row_idx)
+	var occ := _occupied_cells()
+	placing_valid = not occ.has(cells[0]) and not occ.has(cells[1])
+	var pos := _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
+	placement_highlight.position = pos + Vector3(0, 0.02, 0)
+	placement_highlight.rotation_degrees.y = _bench_rotation_y(placing_orientation)
 	placement_highlight.set_surface_override_material(0, _placement_material(placing_valid))
 	$HUD/PlacementUI/ButtonRow/ConfirmButton.disabled = not placing_valid
 
@@ -282,15 +380,10 @@ func _update_ghost_from_screen(pos: Vector2) -> void:
 	if t < 0.0:
 		return
 	var world_point := origin + normal * t
-	var nearest_row: float = ROOM_ROWS[0]
-	var best_dist := INF
-	for r in ROOM_ROWS:
-		var d: float = absf(world_point.z - float(r))
-		if d < best_dist:
-			best_dist = d
-			nearest_row = r
-	placing_row = nearest_row
-	placing_ghost.position = Vector3(0, 0, placing_row)
+	var anchor := _nearest_anchor(placing_orientation, world_point)
+	placing_row_idx = anchor.row_idx
+	placing_col_idx = anchor.col_idx
+	_apply_ghost_transform()
 	_update_placement_validity()
 
 func _on_confirm_placement_pressed() -> void:
@@ -300,8 +393,11 @@ func _on_confirm_placement_pressed() -> void:
 	var cost: Dictionary = BENCH_COSTS[type_id]
 	CheckpointData.money -= int(cost.money)
 	CheckpointData.materials[cost.material] = CheckpointData.materials.get(cost.material, 0) - int(cost.amount)
-	CheckpointData.placed_benches.append({"type": type_id, "row": placing_row})
-	_instantiate_placed_bench(type_id, placing_row)
+	CheckpointData.placed_benches.append({
+		"type": type_id, "orientation": placing_orientation,
+		"col_idx": placing_col_idx, "row_idx": placing_row_idx,
+	})
+	_instantiate_placed_bench(type_id, placing_orientation, placing_col_idx, placing_row_idx)
 	_end_placement()
 
 func _on_cancel_placement_pressed() -> void:
@@ -317,11 +413,12 @@ func _end_placement() -> void:
 	touch_controls.input_enabled = true
 	_refresh_workbench_menu()
 
-func _instantiate_placed_bench(type_id: String, row: float) -> void:
+func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: int, row_idx: int) -> void:
 	if not BENCH_SCENES.has(type_id):
 		return
 	var node: Node3D = BENCH_SCENES[type_id].instantiate()
-	node.position = Vector3(0, 0, row)
+	node.position = _bench_world_position(orientation, col_idx, row_idx)
+	node.rotation_degrees.y = _bench_rotation_y(orientation)
 	placed_benches_root.add_child(node)
 	_placed_bench_nodes[type_id] = node
 
@@ -333,13 +430,20 @@ func _open_weapon_menu() -> void:
 func _close_weapon_menu() -> void:
 	weapon_menu.visible = false
 
+func _show_weapon_category(cat_id: String) -> void:
+	current_weapon_category = cat_id
+	for cid in MeleeWeapons.CATEGORY_ORDER:
+		get_node("HUD/WeaponMenu/Scroll/Box/%s" % CATEGORY_BOXES[cid]).visible = (cid == cat_id)
+	if weapon_menu.visible:
+		_refresh_weapon_menu()
+
 func _refresh_weapon_menu() -> void:
 	weapon_money_label.text = "Soldi: %d€   Legno: %d   Metallo: %d   Cablaggi: %d" % [
 		CheckpointData.money, CheckpointData.materials.get("legno", 0),
 		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
 	]
-	for wid in MeleeWeapons.CATEGORY_WEAPONS["coltelli"]:
-		var base := get_node("HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_%s" % wid)
+	for wid in MeleeWeapons.CATEGORY_WEAPONS[current_weapon_category]:
+		var base := get_node("HUD/WeaponMenu/Scroll/Box/%s/Weapon_%s" % [CATEGORY_BOXES[current_weapon_category], wid])
 		var main_info: Label = base.get_node("MainRow/InfoLabel")
 		var action_btn: Button = base.get_node("MainRow/ActionButton")
 		var def: Dictionary = MeleeWeapons.WEAPONS[wid]
