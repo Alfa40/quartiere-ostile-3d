@@ -54,6 +54,8 @@ var firearm_range := 14.0
 var firearm_draw_time := 0.0
 var firearm_magazine_size := 0
 var firearm_reload_time := 1.0
+var firearm_burst_count := 1
+var firearm_burst_delay := 0.0
 
 var firearm_ammo_in_mag := 0
 var firearm_fire_timer := 0.0
@@ -61,8 +63,11 @@ var firearm_reload_timer := 0.0
 var firearm_reloading := false
 var firearm_flash_timer := 0.0
 var last_aim_dir := Vector3(0, 0, -1)
+var _burst_shots_remaining := 0
+var _burst_timer := 0.0
+var _burst_aim_dir := Vector3(0, 0, -1)
 
-func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String) -> void:
+func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0) -> void:
 	firearm_id = id
 	firearm_damage = damage
 	firearm_cooldown = cooldown
@@ -71,15 +76,20 @@ func equip_firearm(id: String, damage: float, cooldown: float, range_val: float,
 	firearm_magazine_size = magazine_size
 	firearm_reload_time = reload_time
 	firearm_fire_mode = fire_mode
+	firearm_burst_count = burst_count
+	firearm_burst_delay = burst_delay
 	firearm_ammo_in_mag = magazine_size
 	firearm_reloading = false
 	firearm_reload_timer = 0.0
 	firearm_fire_timer = max(firearm_fire_timer, draw_time)
+	_burst_shots_remaining = 0
+	_burst_timer = 0.0
 
 func unequip_firearm() -> void:
 	firearm_id = ""
 	firearm_ammo_in_mag = 0
 	firearm_reloading = false
+	_burst_shots_remaining = 0
 
 func _ready() -> void:
 	add_to_group("player")
@@ -168,7 +178,20 @@ func _handle_firearm(delta: float) -> void:
 	if firearm_ammo_in_mag <= 0:
 		if touch != null:
 			touch.fire_release_pending = false
+		_burst_shots_remaining = 0
 		_start_reload()
+		return
+
+	if _burst_shots_remaining > 0:
+		if touch != null:
+			touch.fire_release_pending = false
+		_burst_timer -= delta
+		if _burst_timer <= 0.0:
+			_fire_firearm(_burst_aim_dir)
+			_burst_shots_remaining -= 1
+			_burst_timer = firearm_burst_delay
+			if firearm_ammo_in_mag <= 0:
+				_burst_shots_remaining = 0
 		return
 
 	var aim: Vector2 = touch.aim_vector if touch != null else Vector2.ZERO
@@ -186,8 +209,14 @@ func _handle_firearm(delta: float) -> void:
 	var release_pending: bool = touch != null and touch.fire_release_pending
 	if touch != null:
 		touch.fire_release_pending = false
-	if release_pending and firearm_fire_mode == "single" and firearm_fire_timer <= 0.0:
-		_fire_firearm(last_aim_dir)
+	if release_pending and firearm_fire_timer <= 0.0:
+		if firearm_fire_mode == "single":
+			_fire_firearm(last_aim_dir)
+		elif firearm_fire_mode == "burst":
+			_burst_aim_dir = last_aim_dir
+			_fire_firearm(_burst_aim_dir)
+			_burst_shots_remaining = firearm_burst_count - 1
+			_burst_timer = firearm_burst_delay
 
 func _find_enemy_in_aim_cone(aim_dir: Vector3) -> Node3D:
 	var best: Node3D = null

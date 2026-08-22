@@ -657,7 +657,7 @@ func _refresh_firearm_menu() -> void:
 		var owned: bool = CheckpointData.owned_firearms.get(wid, false)
 		var equipped: bool = CheckpointData.equipped_firearm == wid
 		var fups: Dictionary = CheckpointData.firearm_upgrades.get(wid, {})
-		var mode_label: String = "automatica" if def.fire_mode == "auto" else "colpo singolo (al rilascio della mira)"
+		var mode_label: String = _firearm_mode_label(def)
 
 		if not owned:
 			var mat_name: String = MATERIAL_LABELS.get(def.price_material, def.price_material)
@@ -718,6 +718,16 @@ func _refresh_firearm_menu() -> void:
 				var afford2: bool = CheckpointData.money >= cm and CheckpointData.materials.get(tdef.material, 0) >= cmat
 				t_btn.disabled = not afford2
 				t_btn.text = "Potenzia"
+
+func _firearm_mode_label(def: Dictionary) -> String:
+	var style: String = String(def.get("fire_style", ""))
+	match String(def.fire_mode):
+		"burst":
+			return "%s (al rilascio della mira)" % style
+		"single":
+			return "%s (al rilascio della mira)" % style
+		_:
+			return style
 
 func _firearm_track_value_text(tid: String, wid: String, fups: Dictionary) -> String:
 	match tid:

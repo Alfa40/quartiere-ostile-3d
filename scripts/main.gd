@@ -166,6 +166,8 @@ func _apply_firearm_stats() -> void:
 		int(def.magazine_size),
 		float(def.reload_time),
 		String(def.fire_mode),
+		int(def.get("burst_count", 1)),
+		float(def.get("burst_delay", 0.0)),
 	)
 
 func get_firearm_reserve_ammo(fid: String) -> int:

@@ -3862,6 +3862,100 @@ text = "Potenzia"
 
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pesante"]
 
+[node name="Weapon_fucile_tricolpo" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo"]
 [node name="Weapon_mitra_assalto" type="VBoxContainer" parent="HUD/FirearmMenu/Scroll/Box/MitraBox"]
 theme_override_constants/separation = 6
 
