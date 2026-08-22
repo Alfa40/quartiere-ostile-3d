@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3]
+[gd_scene load_steps=49 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -6,6 +6,23 @@
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="5_object"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
 [ext_resource type="Script" path="res://scripts/enemy_indicators.gd" id="7_indicators"]
+
+[sub_resource type="PrismMesh" id="TentMesh"]
+size = Vector3(4, 2.2, 6)
+
+[sub_resource type="BoxShape3D" id="TentShape"]
+size = Vector3(4, 2.2, 6)
+
+[sub_resource type="StandardMaterial3D" id="TentMaterial"]
+albedo_color = Color(0.62, 0.52, 0.36, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="DoorMarkerMesh"]
+size = Vector3(1.2, 1.6, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="DoorMarkerMaterial"]
+albedo_color = Color(0.08, 0.07, 0.06, 1)
+roughness = 0.95
 
 [sub_resource type="StyleBoxFlat" id="HealthBarBG"]
 bg_color = Color(0.08, 0.08, 0.08, 0.85)
@@ -230,6 +247,27 @@ shape = SubResource("WallShape")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 0, 10)
+
+[node name="HouseExterior" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.1, 14)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HouseExterior"]
+shape = SubResource("TentShape")
+
+[node name="Tent" type="MeshInstance3D" parent="HouseExterior"]
+mesh = SubResource("TentMesh")
+surface_material_override/0 = SubResource("TentMaterial")
+
+[node name="Door" type="MeshInstance3D" parent="HouseExterior"]
+mesh = SubResource("DoorMarkerMesh")
+surface_material_override/0 = SubResource("DoorMarkerMaterial")
+position = Vector3(0, -0.3, -3.02)
+
+[node name="Light" type="OmniLight3D" parent="HouseExterior"]
+position = Vector3(0, 1.5, -2)
+light_color = Color(1.0, 0.85, 0.55, 1)
+light_energy = 1.0
+omni_range = 5.0
 
 [node name="Albero1" type="StaticBody3D" parent="."]
 position = Vector3(-28, 0, -28)
@@ -1101,6 +1139,18 @@ script = ExtResource("6_touch")
 [node name="EnemyIndicators" type="Control" parent="HUD"]
 script = ExtResource("7_indicators")
 
+[node name="HouseEnterButton" type="Button" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 0.72
+anchor_right = 0.5
+anchor_bottom = 0.72
+offset_left = -160.0
+offset_top = -44.0
+offset_right = 160.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 28
+text = "Entra in casa"
+
 [node name="PauseButton" type="Button" parent="HUD"]
 anchor_left = 1.0
 anchor_right = 1.0
@@ -1112,6 +1162,7 @@ theme_override_font_sizes/font_size = 48
 text = "II"
 
 [node name="ZoneCompletePanel" type="Control" parent="HUD"]
+mouse_filter = 2
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -1123,6 +1174,7 @@ offset_bottom = 0.0
 visible = false
 
 [node name="Dim" type="ColorRect" parent="HUD/ZoneCompletePanel"]
+mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0.05, 0, 0.7)

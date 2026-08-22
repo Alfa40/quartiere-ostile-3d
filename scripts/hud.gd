@@ -13,9 +13,11 @@ extends CanvasLayer
 @onready var pause_button: Button = $PauseButton
 @onready var zone_complete_panel: Control = $ZoneCompletePanel
 @onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Box/TimerLabel
+@onready var house_enter_button: Button = $HouseEnterButton
 
 signal go_home_chosen
 signal skip_home_chosen
+signal house_enter_pressed
 
 var main: Node = null
 var zone_complete_active := false
@@ -44,6 +46,12 @@ func _ready() -> void:
 	zone_complete_panel.visible = false
 	$ZoneCompletePanel/Box/HomeButton.pressed.connect(func(): _resolve_zone_choice(true))
 	$ZoneCompletePanel/Box/SkipButton.pressed.connect(func(): _resolve_zone_choice(false))
+	house_enter_button.visible = false
+	house_enter_button.pressed.connect(func(): house_enter_pressed.emit())
+
+func set_house_button_visible(value: bool) -> void:
+	if not zone_complete_active and not pause_panel.visible and not gameover_panel.visible:
+		house_enter_button.visible = value
 
 func _process(delta: float) -> void:
 	if zone_complete_active:

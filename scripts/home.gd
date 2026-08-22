@@ -77,5 +77,4 @@ func _on_buy_pressed(id: String) -> void:
 func _on_door_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
 		return
-	CheckpointData.zone += 1
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

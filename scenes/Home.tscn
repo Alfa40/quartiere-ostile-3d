@@ -163,7 +163,6 @@ position = Vector3(0, 0.65, 0)
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 0, 1.8)
-rotation_degrees = Vector3(0, 180, 0)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

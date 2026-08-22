@@ -24,6 +24,10 @@ const OBJECT_CLEAR_RADIUS := 6.0
 const OBJECT_COUNT_MIN := 30
 const OBJECT_COUNT_MAX := 45
 
+const HOUSE_DOOR_POS := Vector3(0, 0, 10.5)
+const HOUSE_CLEAR_RADIUS := 10.0
+const HOUSE_INTERACT_RANGE := 2.5
+
 const MATERIAL_LABELS := {
 	"legno": "Legno",
 	"metallo": "Metallo",
@@ -58,7 +62,7 @@ const SPAWN_POINTS := [
 ]
 
 @onready var hud = $HUD
-@onready var player = $Player
+@onready var player: Node3D = $Player
 
 var zone := 1
 var money := 0.0
@@ -90,6 +94,7 @@ func _ready() -> void:
 	player.died.connect(_on_player_died)
 	hud.go_home_chosen.connect(_go_home)
 	hud.skip_home_chosen.connect(_skip_home)
+	hud.house_enter_pressed.connect(_enter_house_anytime)
 	_apply_upgrade_effects()
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
@@ -136,7 +141,11 @@ func _process(delta: float) -> void:
 		get_tree().reload_current_scene()
 
 	if zone_transitioning or player.dead:
+		hud.set_house_button_visible(false)
 		return
+
+	var dist_to_house := player.global_position.distance_to(HOUSE_DOOR_POS)
+	hud.set_house_button_visible(dist_to_house <= HOUSE_INTERACT_RANGE)
 
 	if zone_enemies_spawned < zone_enemies_total:
 		spawn_timer -= delta
@@ -203,12 +212,16 @@ func _complete_zone() -> void:
 	hud.show_zone_complete_choice()
 
 func _go_home() -> void:
-	CheckpointData.set_live_state(zone, int(money), materials, upgrades)
+	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _skip_home() -> void:
 	zone += 1
 	_start_zone()
+
+func _enter_house_anytime() -> void:
+	CheckpointData.set_live_state(zone, int(money), materials, upgrades)
+	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _regenerate_objects() -> void:
 	for obj in get_tree().get_nodes_in_group("park_objects"):
@@ -246,7 +259,7 @@ func _random_object_position() -> Vector3:
 		var x := randf_range(-ARENA_HALF, ARENA_HALF)
 		var z := randf_range(-ARENA_HALF, ARENA_HALF)
 		pos = Vector3(x, 0.0, z)
-		if pos.length() > OBJECT_CLEAR_RADIUS:
+		if pos.length() > OBJECT_CLEAR_RADIUS and pos.distance_to(HOUSE_DOOR_POS) > HOUSE_CLEAR_RADIUS:
 			return pos
 	return pos
 
