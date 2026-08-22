@@ -227,6 +227,19 @@ func _on_throw_type_pressed() -> void:
 	hud.flash_throw_type_toast(new_label)
 
 func _on_throw_arm_pressed() -> void:
+	# Se una granata appiccicosa è in attesa di detonazione ha sempre la
+	# priorità (arm_throw() la gestisce internamente).
+	if player.active_sticky_grenade != null and is_instance_valid(player.active_sticky_grenade):
+		player.arm_throw()
+		return
+	# Un secondo tocco mentre l'arma da lancio è già armata la disequipaggia,
+	# così il player può tornare subito a usare l'arma da fuoco senza dover
+	# sprecare un lancio o passare dal banco di casa.
+	if player.throw_armed:
+		player.throw_armed = false
+		CheckpointData.equipped_throwable = ""
+		_apply_throwable_stats()
+		return
 	player.arm_throw()
 
 func set_creator_mode(target_enabled: bool) -> void:

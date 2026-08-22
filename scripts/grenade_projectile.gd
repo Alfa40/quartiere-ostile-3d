@@ -89,7 +89,7 @@ func _explode() -> void:
 			if damage > 0.0:
 				GrenadeUtils.explode_damage(get_tree(), global_position, explosion_radius, damage, source)
 			_spawn_stink_zone()
-		_:
+		"sticky", "frag", _:
 			GrenadeUtils.explode_damage(get_tree(), global_position, explosion_radius, damage, source)
 			_spawn_flash(global_position, FLASH_COLOR_DAMAGE)
 	queue_free()
