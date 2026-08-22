@@ -77,7 +77,7 @@ plane = Plane(0, 1, 0, 0)
 size = Vector2(80, 80)
 
 [sub_resource type="StandardMaterial3D" id="FloorMaterial"]
-albedo_color = Color(0.16, 0.16, 0.18, 1)
+albedo_color = Color(0.42, 0.58, 0.32, 1)
 roughness = 0.9
 
 [sub_resource type="BoxMesh" id="WallMesh"]
