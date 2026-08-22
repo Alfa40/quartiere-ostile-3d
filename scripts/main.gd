@@ -79,6 +79,9 @@ var zone_enemies_alive := 0
 var spawn_timer := 0.0
 var zone_transitioning := false
 
+var _pre_creator_money := 0.0
+var _pre_creator_materials := {}
+
 func _ready() -> void:
 	run_start_msec = Time.get_ticks_msec()
 	if DevMode.enabled:
@@ -126,6 +129,20 @@ func _apply_weapon_stats() -> void:
 	player.attack_cooldown = MeleeWeapons.final_cooldown(wid, wups)
 	player.attack_reach_mult = MeleeWeapons.final_reach_mult(wid, wups)
 	player.apply_draw_delay(MeleeWeapons.final_draw_time(wid, wups))
+
+func set_creator_mode(target_enabled: bool) -> void:
+	if target_enabled and not DevMode.enabled:
+		_pre_creator_money = money
+		_pre_creator_materials = materials.duplicate()
+		DevMode.enabled = true
+		money = 999999.0
+		materials = {"legno": 999999, "metallo": 999999, "cablaggi": 999999}
+		hud.update_money(money)
+	elif not target_enabled and DevMode.enabled:
+		DevMode.enabled = false
+		money = _pre_creator_money
+		materials = _pre_creator_materials.duplicate()
+		hud.update_money(money)
 
 func on_player_damaged(_amount: float) -> void:
 	if DevMode.enabled or money <= 0.0:

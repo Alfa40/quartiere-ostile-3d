@@ -12,8 +12,13 @@ extends CanvasLayer
 @onready var gameover_stats_label: Label = $GameOverPanel/Scroll/Box/StatsLabel
 @onready var pause_button: Button = $PauseButton
 @onready var zone_complete_panel: Control = $ZoneCompletePanel
-@onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Box/TimerLabel
+@onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Panel/Box/TimerLabel
 @onready var house_enter_button: Button = $HouseEnterButton
+@onready var creator_button: Button = $PausePanel/Scroll/Box/CreatorButton
+@onready var creator_password_panel: Control = $CreatorPasswordPanel
+@onready var creator_password_edit: LineEdit = $CreatorPasswordPanel/Scroll/Box/PasswordEdit
+@onready var creator_error_label: Label = $CreatorPasswordPanel/Scroll/Box/ErrorLabel
+@onready var creator_keyboard: GridContainer = $CreatorPasswordPanel/Scroll/Box/Keyboard
 
 signal go_home_chosen
 signal skip_home_chosen
@@ -44,10 +49,20 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_update_top_hud_layout)
 	_update_top_hud_layout()
 	zone_complete_panel.visible = false
-	$ZoneCompletePanel/Box/HomeButton.pressed.connect(func(): _resolve_zone_choice(true))
-	$ZoneCompletePanel/Box/SkipButton.pressed.connect(func(): _resolve_zone_choice(false))
+	$ZoneCompletePanel/Panel/Box/ButtonRow/HomeButton.pressed.connect(func(): _resolve_zone_choice(true))
+	$ZoneCompletePanel/Panel/Box/ButtonRow/SkipButton.pressed.connect(func(): _resolve_zone_choice(false))
 	house_enter_button.visible = false
 	house_enter_button.pressed.connect(func(): house_enter_pressed.emit())
+
+	creator_password_panel.visible = false
+	creator_button.pressed.connect(_on_creator_button_pressed)
+	$CreatorPasswordPanel/Scroll/Box/BackspaceButton.pressed.connect(_on_creator_backspace_pressed)
+	$CreatorPasswordPanel/Scroll/Box/ConfirmButton.pressed.connect(_on_creator_confirm_pressed)
+	$CreatorPasswordPanel/Scroll/Box/CancelButton.pressed.connect(_on_creator_cancel_pressed)
+	creator_password_edit.text_submitted.connect(func(_t): _on_creator_confirm_pressed())
+	for key in creator_keyboard.get_children():
+		key.pressed.connect(_on_creator_key_pressed.bind(key.text))
+	_refresh_creator_button()
 
 func set_house_button_visible(value: bool) -> void:
 	if not pause_panel.visible and not gameover_panel.visible:
@@ -135,6 +150,42 @@ func set_paused(value: bool) -> void:
 	if value:
 		pause_stats_label.text = main.get_stats_text()
 		pause_inventory_label.text = main.get_inventory_text()
+		_refresh_creator_button()
+
+func _refresh_creator_button() -> void:
+	creator_button.text = "Modalità Creator: ON" if DevMode.enabled else "Modalità Creator: OFF"
+
+func _on_creator_button_pressed() -> void:
+	if DevMode.enabled:
+		main.set_creator_mode(false)
+		_refresh_creator_button()
+	else:
+		creator_error_label.text = ""
+		creator_password_edit.text = ""
+		creator_password_panel.visible = true
+		creator_password_edit.grab_focus()
+
+func _on_creator_cancel_pressed() -> void:
+	creator_password_panel.visible = false
+
+func _on_creator_key_pressed(letter: String) -> void:
+	creator_password_edit.text += letter
+	creator_password_edit.caret_column = creator_password_edit.text.length()
+
+func _on_creator_backspace_pressed() -> void:
+	if creator_password_edit.text.length() > 0:
+		creator_password_edit.text = creator_password_edit.text.substr(0, creator_password_edit.text.length() - 1)
+		creator_password_edit.caret_column = creator_password_edit.text.length()
+
+func _on_creator_confirm_pressed() -> void:
+	if DevMode.check(creator_password_edit.text):
+		main.set_creator_mode(true)
+		creator_password_panel.visible = false
+		_refresh_creator_button()
+	else:
+		creator_error_label.text = "Password errata"
+		creator_password_edit.text = ""
+		creator_password_edit.grab_focus()
 
 func show_game_over() -> void:
 	get_tree().paused = true

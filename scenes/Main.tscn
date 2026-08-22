@@ -24,6 +24,17 @@ size = Vector3(1.2, 1.6, 0.05)
 albedo_color = Color(0.08, 0.07, 0.06, 1)
 roughness = 0.95
 
+[sub_resource type="StyleBoxFlat" id="ZoneCompleteBg"]
+bg_color = Color(0.05, 0.14, 0.05, 0.6)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 22
+content_margin_right = 22
+content_margin_top = 14
+content_margin_bottom = 14
+
 [sub_resource type="StyleBoxFlat" id="HealthBarBG"]
 bg_color = Color(0.08, 0.08, 0.08, 0.85)
 corner_radius_top_left = 10
@@ -246,7 +257,7 @@ surface_material_override/0 = SubResource("WallMaterial")
 shape = SubResource("WallShape")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector3(0, 0, 10)
+position = Vector3(0, 0, 7)
 
 [node name="HouseExterior" type="StaticBody3D" parent="."]
 position = Vector3(0, 1.1, 14)
@@ -1164,53 +1175,51 @@ text = "II"
 
 [node name="ZoneCompletePanel" type="Control" parent="HUD"]
 mouse_filter = 2
-anchor_left = 0.0
+anchor_left = 0.5
 anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
-offset_bottom = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -230.0
+offset_top = 150.0
+offset_right = 230.0
+offset_bottom = 280.0
 visible = false
 
-[node name="Dim" type="ColorRect" parent="HUD/ZoneCompletePanel"]
+[node name="Panel" type="PanelContainer" parent="HUD/ZoneCompletePanel"]
 mouse_filter = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0.05, 0, 0.7)
+theme_override_styles/panel = SubResource("ZoneCompleteBg")
 
-[node name="Box" type="VBoxContainer" parent="HUD/ZoneCompletePanel"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -200.0
-offset_right = 320.0
-offset_bottom = 200.0
-theme_override_constants/separation = 30
+[node name="Box" type="VBoxContainer" parent="HUD/ZoneCompletePanel/Panel"]
+mouse_filter = 2
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="HUD/ZoneCompletePanel/Box"]
-theme_override_font_sizes/font_size = 64
+[node name="Title" type="Label" parent="HUD/ZoneCompletePanel/Panel/Box"]
+theme_override_font_sizes/font_size = 26
 theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
 horizontal_alignment = 1
 text = "Zona ripulita!"
 
-[node name="TimerLabel" type="Label" parent="HUD/ZoneCompletePanel/Box"]
-theme_override_font_sizes/font_size = 24
+[node name="TimerLabel" type="Label" parent="HUD/ZoneCompletePanel/Panel/Box"]
+theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
 horizontal_alignment = 1
 text = "Ritorno automatico a casa tra 30 s"
 
-[node name="HomeButton" type="Button" parent="HUD/ZoneCompletePanel/Box"]
-custom_minimum_size = Vector2(0, 100)
-theme_override_font_sizes/font_size = 36
+[node name="ButtonRow" type="HBoxContainer" parent="HUD/ZoneCompletePanel/Panel/Box"]
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 14
+
+[node name="HomeButton" type="Button" parent="HUD/ZoneCompletePanel/Panel/Box/ButtonRow"]
+custom_minimum_size = Vector2(170, 56)
+theme_override_font_sizes/font_size = 18
 text = "Torna a casa"
 
-[node name="SkipButton" type="Button" parent="HUD/ZoneCompletePanel/Box"]
-custom_minimum_size = Vector2(0, 100)
-theme_override_font_sizes/font_size = 36
+[node name="SkipButton" type="Button" parent="HUD/ZoneCompletePanel/Panel/Box/ButtonRow"]
+custom_minimum_size = Vector2(170, 56)
+theme_override_font_sizes/font_size = 18
 text = "Prosegui subito"
 
 [node name="PausePanel" type="Control" parent="HUD"]
@@ -1283,6 +1292,214 @@ text = "Ricomincia dall'ultimo checkpoint"
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 48
 text = "Torna al menu principale"
+
+[node name="CreatorButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 64)
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.5, 0.5, 0.55, 1)
+flat = true
+text = "Modalità Creator: OFF"
+
+[node name="CreatorPasswordPanel" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/CreatorPasswordPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.75)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/CreatorPasswordPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 24.0
+offset_right = -40.0
+offset_bottom = -24.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/CreatorPasswordPanel/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+text = "Modalità Creator"
+
+[node name="PasswordEdit" type="LineEdit" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 24
+secret = true
+placeholder_text = "Password"
+horizontal_alignment = 1
+
+[node name="ErrorLabel" type="Label" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="Keyboard" type="GridContainer" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+size_flags_horizontal = 4
+columns = 9
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="Key_A" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "A"
+
+[node name="Key_B" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "B"
+
+[node name="Key_C" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "C"
+
+[node name="Key_D" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "D"
+
+[node name="Key_E" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "E"
+
+[node name="Key_F" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "F"
+
+[node name="Key_G" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "G"
+
+[node name="Key_H" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "H"
+
+[node name="Key_I" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "I"
+
+[node name="Key_J" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "J"
+
+[node name="Key_K" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "K"
+
+[node name="Key_L" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "L"
+
+[node name="Key_M" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "M"
+
+[node name="Key_N" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "N"
+
+[node name="Key_O" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "O"
+
+[node name="Key_P" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "P"
+
+[node name="Key_Q" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "Q"
+
+[node name="Key_R" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "R"
+
+[node name="Key_S" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "S"
+
+[node name="Key_T" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "T"
+
+[node name="Key_U" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "U"
+
+[node name="Key_V" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "V"
+
+[node name="Key_W" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "W"
+
+[node name="Key_X" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "X"
+
+[node name="Key_Y" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "Y"
+
+[node name="Key_Z" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(56, 56)
+theme_override_font_sizes/font_size = 22
+text = "Z"
+
+[node name="BackspaceButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 22
+text = "⌫ Cancella"
+
+[node name="ConfirmButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 64)
+theme_override_font_sizes/font_size = 24
+text = "Avanti"
+
+[node name="CancelButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 20
+text = "Annulla"
 
 [node name="GameOverPanel" type="Control" parent="HUD"]
 anchor_left = 0.0
