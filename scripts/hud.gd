@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const UIScale := preload("res://scripts/ui_scale.gd")
+
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var hp_text: Label = $HealthBar/HPText
 @onready var zone_label: Label = $ZoneLabel
@@ -34,6 +36,14 @@ const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
 const HEALTH_BAR_LEFT_PORTRAIT := 24.0
 const HEALTH_BAR_LEFT_LANDSCAPE := 74.0
 const HEALTH_BAR_WIDTH := 520.0
+
+const HP_TEXT_FONT_PORTRAIT := 32
+const HP_TEXT_FONT_LANDSCAPE := 24
+const TOP_LABEL_FONT_PORTRAIT := 24
+const TOP_LABEL_FONT_LANDSCAPE := 18
+
+const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
+const ZONE_COMPLETE_BOX_PORTRAIT := Rect2(-310.0, 140.0, 620.0, 190.0)
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -93,11 +103,30 @@ func _resolve_zone_choice(go_home: bool) -> void:
 func _update_top_hud_layout() -> void:
 	var vp := get_viewport().get_visible_rect().size
 	var is_landscape := vp.x > vp.y
+	var is_portrait := not is_landscape
 	var height := HEALTH_BAR_HEIGHT_LANDSCAPE if is_landscape else HEALTH_BAR_HEIGHT_PORTRAIT
 	health_bar.offset_bottom = health_bar.offset_top + height
 	var left := HEALTH_BAR_LEFT_LANDSCAPE if is_landscape else HEALTH_BAR_LEFT_PORTRAIT
 	health_bar.offset_left = left
 	health_bar.offset_right = left + HEALTH_BAR_WIDTH
+
+	hp_text.add_theme_font_size_override("font_size", HP_TEXT_FONT_PORTRAIT if is_portrait else HP_TEXT_FONT_LANDSCAPE)
+	var top_label_font := TOP_LABEL_FONT_PORTRAIT if is_portrait else TOP_LABEL_FONT_LANDSCAPE
+	zone_label.add_theme_font_size_override("font_size", top_label_font)
+	money_label.add_theme_font_size_override("font_size", top_label_font)
+	message_label.add_theme_font_size_override("font_size", top_label_font)
+
+	UIScale.apply_orientation_scale(pause_panel, is_portrait)
+	UIScale.apply_orientation_scale(gameover_panel, is_portrait)
+	UIScale.apply_orientation_scale(creator_password_panel, is_portrait)
+	UIScale.apply_orientation_scale(house_enter_button, is_portrait)
+	UIScale.apply_orientation_scale(zone_complete_panel, is_portrait)
+
+	var zc_box := ZONE_COMPLETE_BOX_PORTRAIT if is_portrait else ZONE_COMPLETE_BOX_LANDSCAPE
+	zone_complete_panel.offset_left = zc_box.position.x
+	zone_complete_panel.offset_top = zc_box.position.y
+	zone_complete_panel.offset_right = zc_box.position.x + zc_box.size.x
+	zone_complete_panel.offset_bottom = zc_box.position.y + zc_box.size.y
 
 	if is_landscape:
 		var bar_right: float = health_bar.offset_right

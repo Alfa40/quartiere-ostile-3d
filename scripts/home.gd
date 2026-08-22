@@ -2,6 +2,12 @@ extends Node3D
 
 const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
 const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
+const UIScale := preload("res://scripts/ui_scale.gd")
+
+const MENU_SCROLL_LEFT_PORTRAIT := 60.0
+const MENU_SCROLL_RIGHT_PORTRAIT := -60.0
+const MENU_SCROLL_LEFT_LANDSCAPE := 110.0
+const MENU_SCROLL_RIGHT_LANDSCAPE := -10.0
 
 const WORKBENCH_POS := Vector3(1.3, 0.0, -2.2)
 const INTERACT_RANGE := 2.2
@@ -37,6 +43,8 @@ const BENCH_LABELS := {
 @onready var benches_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/BenchesTab
 @onready var weapon_menu: Control = $HUD/WeaponMenu
 @onready var weapon_money_label: Label = $HUD/WeaponMenu/Scroll/Box/MoneyMaterialsLabel
+@onready var workbench_scroll: ScrollContainer = $HUD/WorkbenchMenu/Scroll
+@onready var weapon_scroll: ScrollContainer = $HUD/WeaponMenu/Scroll
 @onready var placement_ui: Control = $HUD/PlacementUI
 @onready var placement_highlight: MeshInstance3D = $PlacementHighlight
 @onready var bench_ghost_holder: Node3D = $BenchGhostHolder
@@ -95,6 +103,25 @@ func _ready() -> void:
 	_show_upgrades_tab()
 	_show_weapon_category("coltelli")
 	_refresh_workbench_menu()
+
+	get_viewport().size_changed.connect(_update_menu_layout)
+	_update_menu_layout()
+
+func _update_menu_layout() -> void:
+	var vp := get_viewport().get_visible_rect().size
+	var is_landscape := vp.x > vp.y
+	var is_portrait := not is_landscape
+
+	UIScale.apply_orientation_scale(workbench_menu, is_portrait)
+	UIScale.apply_orientation_scale(weapon_menu, is_portrait)
+	UIScale.apply_orientation_scale(placement_ui, is_portrait)
+
+	var left := MENU_SCROLL_LEFT_LANDSCAPE if is_landscape else MENU_SCROLL_LEFT_PORTRAIT
+	var right := MENU_SCROLL_RIGHT_LANDSCAPE if is_landscape else MENU_SCROLL_RIGHT_PORTRAIT
+	workbench_scroll.offset_left = left
+	workbench_scroll.offset_right = right
+	weapon_scroll.offset_left = left
+	weapon_scroll.offset_right = right
 
 func _process(_delta: float) -> void:
 	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible:
