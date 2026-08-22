@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="5_object"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
 [ext_resource type="Script" path="res://scripts/enemy_indicators.gd" id="7_indicators"]
+[ext_resource type="Script" path="res://scripts/throw_cooldown_overlay.gd" id="8_throwcooldown"]
 
 [sub_resource type="PrismMesh" id="TentMesh"]
 size = Vector3(4, 2.2, 6)
@@ -1212,6 +1213,13 @@ theme_override_styles/pressed = SubResource("ThrowTypeButtonStyle")
 theme_override_styles/disabled = SubResource("ThrowTypeButtonStyle")
 visible = false
 text = "Arma"
+
+[node name="CooldownOverlay" type="Control" parent="HUD/ThrowTypeButton"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("8_throwcooldown")
 
 [node name="ThrowArmButton" type="Button" parent="HUD"]
 anchor_left = 0.0

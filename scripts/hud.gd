@@ -20,6 +20,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var throw_type_button: Button = $ThrowTypeButton
 @onready var throw_arm_button: Button = $ThrowArmButton
 @onready var throw_toast_label: Label = $ThrowToastLabel
+@onready var throw_type_cooldown_overlay: Control = $ThrowTypeButton/CooldownOverlay
 @onready var touch_controls = $TouchControls
 @onready var creator_button: Button = $PausePanel/Scroll/Box/CreatorButton
 @onready var dev_tools_box: Control = $PausePanel/Scroll/Box/DevToolsBox
@@ -59,6 +60,8 @@ const THROW_ARM_DIAMETER := 130.0
 const THROW_TYPE_DIAMETER := 110.0
 const THROW_ARM_IDLE_MODULATE := Color(0.65, 0.65, 0.68, 1.0)
 const THROW_ARM_ACTIVE_MODULATE := Color(1.25, 1.05, 0.55, 1.0)
+const THROW_TYPE_RECHARGING_MODULATE := Color(0.55, 0.55, 0.58, 1.0)
+const THROW_TYPE_READY_MODULATE := Color(1.0, 1.0, 1.0, 1.0)
 var _throw_toast_tween: Tween = null
 
 func _ready() -> void:
@@ -134,6 +137,17 @@ func _process(delta: float) -> void:
 			_resolve_zone_choice(true)
 	_update_throw_button_positions()
 	_update_ammo_label()
+	_update_throw_type_cooldown()
+
+func _update_throw_type_cooldown() -> void:
+	if main == null or main.player == null or main.player.throwable_id == "":
+		throw_type_cooldown_overlay.frac_remaining = 0.0
+		throw_type_button.modulate = THROW_TYPE_READY_MODULATE
+		return
+	var p = main.player
+	var frac: float = clamp(p.throw_cooldown_timer / max(p.throwable_cooldown, 0.001), 0.0, 1.0)
+	throw_type_cooldown_overlay.frac_remaining = frac
+	throw_type_button.modulate = THROW_TYPE_RECHARGING_MODULATE if frac > 0.001 else THROW_TYPE_READY_MODULATE
 
 func _update_ammo_label() -> void:
 	if main == null or main.player == null or main.player.firearm_id == "":

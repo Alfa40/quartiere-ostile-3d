@@ -12,6 +12,8 @@ const AIM_ZONE_RADIUS := JOY_RADIUS + 5.0
 var move_vector := Vector2.ZERO
 var attack_held := false
 var input_enabled := true
+# 0.0 = appena usato (in ricarica), 1.0 = pronto per colpire di nuovo.
+var attack_ready_frac := 1.0
 
 var aim_enabled := false:
 	set(value):
@@ -34,6 +36,9 @@ func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	_update_layout()
 	get_viewport().size_changed.connect(_update_layout)
+
+func _process(_delta: float) -> void:
+	queue_redraw()
 
 func _update_layout() -> void:
 	var vp := get_viewport_rect().size
@@ -130,10 +135,17 @@ func _draw() -> void:
 		knob_pos += move_vector * MAX_DRAG
 	draw_circle(knob_pos, JOY_KNOB_RADIUS, Color(1, 1, 1, 0.45))
 
-	var btn_color := Color(1, 0.3, 0.25, 0.35)
+	var ready: bool = attack_ready_frac >= 0.999
+	var btn_color: Color
 	if _attack_touch_index != -2:
-		btn_color = Color(1, 0.3, 0.25, 0.65)
+		btn_color = Color(1, 0.35, 0.3, 0.85)
+	elif ready:
+		btn_color = Color(1, 0.32, 0.27, 0.55)
+	else:
+		btn_color = Color(1, 0.3, 0.25, 0.3)
 	draw_circle(_btn_pos, BTN_RADIUS, btn_color)
+	if not ready:
+		_draw_cooldown_pie(_btn_pos, BTN_RADIUS, 1.0 - attack_ready_frac, Color(0.05, 0.03, 0.03, 0.55))
 
 	if aim_enabled:
 		draw_circle(aim_base_pos, JOY_RADIUS, Color(0.4, 0.7, 1, 0.15))
@@ -141,3 +153,19 @@ func _draw() -> void:
 		if _aim_touch_index != -2:
 			aim_knob_pos += aim_vector * MAX_DRAG
 		draw_circle(aim_knob_pos, JOY_KNOB_RADIUS, Color(0.4, 0.7, 1, 0.45))
+
+func _draw_cooldown_pie(center: Vector2, radius: float, frac_remaining: float, color: Color) -> void:
+	# Spicchio scuro che copre la parte di ricarica ancora mancante, si
+	# restringe in senso orario finché non sparisce quando il tasto è pronto.
+	if frac_remaining <= 0.001:
+		return
+	var start_angle := -PI / 2.0
+	var sweep: float = TAU * clamp(frac_remaining, 0.0, 1.0)
+	var segments := 32
+	var points := PackedVector2Array()
+	points.append(center)
+	for i in range(segments + 1):
+		var t := float(i) / float(segments)
+		var a: float = start_angle + sweep * t
+		points.append(center + Vector2(cos(a), sin(a)) * radius)
+	draw_polygon(points, PackedColorArray([color]))

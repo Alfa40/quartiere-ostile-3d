@@ -14,7 +14,6 @@ signal died
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
 @onready var firearm_flash: MeshInstance3D = $FacingPivot/FirearmFlash
 @onready var aim_line: MeshInstance3D = $FacingPivot/AimLine
-@onready var melee_bar_fill: MeshInstance3D = $StatusBars/MeleeBar/FillPivot/Fill
 @onready var firearm_bar: Node3D = $StatusBars/FirearmBar
 @onready var firearm_bar_fill: MeshInstance3D = $StatusBars/FirearmBar/FillPivot/Fill
 @onready var touch = get_node_or_null("../HUD/TouchControls")
@@ -430,8 +429,8 @@ func _animate_body(delta: float) -> void:
 		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
 
 func _update_status_bars() -> void:
-	var melee_frac: float = 1.0 - clamp(attack_cooldown_timer / max(attack_cooldown, 0.001), 0.0, 1.0)
-	_set_bar_fill(melee_bar_fill, melee_frac)
+	if touch != null:
+		touch.attack_ready_frac = 1.0 - clamp(attack_cooldown_timer / max(attack_cooldown, 0.001), 0.0, 1.0)
 
 	if firearm_id == "":
 		firearm_bar.visible = false
