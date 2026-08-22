@@ -28,6 +28,7 @@ const OBJECT_COUNT_MAX := 45
 const HOUSE_DOOR_POS := Vector3(0, 0, 17.5)
 const HOUSE_CLEAR_RADIUS := 10.0
 const HOUSE_INTERACT_RANGE := 2.5
+const HOUSE_EXIT_SPAWN_POS := Vector3(0, 0, 21)
 
 const MATERIAL_LABELS := {
 	"legno": "Legno",
@@ -159,6 +160,23 @@ func set_creator_mode(target_enabled: bool) -> void:
 		materials = _pre_creator_materials.duplicate()
 		hud.update_money(money)
 
+func dev_jump_to_zone(target: int) -> void:
+	if not DevMode.enabled or zone_transitioning:
+		return
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		enemy.queue_free()
+	zone = max(1, target)
+	_start_zone()
+
+func dev_clear_zone() -> void:
+	if not DevMode.enabled or zone_transitioning:
+		return
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		enemy.queue_free()
+	zone_enemies_alive = 0
+	zone_enemies_spawned = zone_enemies_total
+	_complete_zone()
+
 func on_player_damaged(_amount: float) -> void:
 	if DevMode.enabled or money <= 0.0:
 		return
@@ -175,6 +193,8 @@ func on_player_damaged(_amount: float) -> void:
 
 func _start_zone() -> void:
 	zone_transitioning = false
+	if zone > 1:
+		_regenerate_objects()
 	zone_enemies_total = min(BASE_ENEMIES + PER_ZONE * (zone - 1), MAX_ENEMIES_PER_ZONE)
 	zone_enemies_spawned = 0
 	zone_enemies_alive = 0
@@ -292,7 +312,6 @@ func _complete_zone() -> void:
 	zone_transitioning = true
 	if not DevMode.enabled and CheckpointData.is_checkpoint_zone(zone):
 		CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
-	_regenerate_objects()
 	hud.show_zone_complete_choice()
 
 func _go_home() -> void:
@@ -301,6 +320,8 @@ func _go_home() -> void:
 
 func _skip_home() -> void:
 	zone += 1
+	player.global_position = HOUSE_EXIT_SPAWN_POS
+	player.velocity = Vector3.ZERO
 	_start_zone()
 
 func _enter_house_anytime() -> void:

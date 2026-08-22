@@ -17,6 +17,8 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Panel/Box/TimerLabel
 @onready var house_enter_button: Button = $HouseEnterButton
 @onready var creator_button: Button = $PausePanel/Scroll/Box/CreatorButton
+@onready var dev_tools_box: Control = $PausePanel/Scroll/Box/DevToolsBox
+@onready var dev_zone_label: Label = $PausePanel/Scroll/Box/DevToolsBox/ZoneRow/ZoneValueLabel
 @onready var creator_password_panel: Control = $CreatorPasswordPanel
 @onready var creator_password_edit: LineEdit = $CreatorPasswordPanel/Scroll/Box/PasswordEdit
 @onready var creator_error_label: Label = $CreatorPasswordPanel/Scroll/Box/ErrorLabel
@@ -30,6 +32,7 @@ var main: Node = null
 var zone_complete_active := false
 var zone_complete_time_left := 0.0
 const ZONE_COMPLETE_WAIT := 30.0
+var dev_target_zone := 1
 
 const HEALTH_BAR_HEIGHT_PORTRAIT := 54.0
 const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
@@ -73,6 +76,11 @@ func _ready() -> void:
 	for key in creator_keyboard.get_children():
 		key.pressed.connect(_on_creator_key_pressed.bind(key.text))
 	_refresh_creator_button()
+
+	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/MinusButton.pressed.connect(_on_dev_zone_step.bind(-1))
+	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/PlusButton.pressed.connect(_on_dev_zone_step.bind(1))
+	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/GoButton.pressed.connect(_on_dev_zone_go_pressed)
+	$PausePanel/Scroll/Box/DevToolsBox/ClearZoneButton.pressed.connect(_on_dev_clear_zone_pressed)
 
 func set_house_button_visible(value: bool) -> void:
 	if not pause_panel.visible and not gameover_panel.visible:
@@ -183,6 +191,25 @@ func set_paused(value: bool) -> void:
 
 func _refresh_creator_button() -> void:
 	creator_button.text = "Modalità Creator: ON" if DevMode.enabled else "Modalità Creator: OFF"
+	dev_tools_box.visible = DevMode.enabled
+	if DevMode.enabled:
+		dev_target_zone = main.zone
+		_refresh_dev_zone_label()
+
+func _refresh_dev_zone_label() -> void:
+	dev_zone_label.text = "Zona %d" % dev_target_zone
+
+func _on_dev_zone_step(delta: int) -> void:
+	dev_target_zone = max(1, dev_target_zone + delta)
+	_refresh_dev_zone_label()
+
+func _on_dev_zone_go_pressed() -> void:
+	main.dev_jump_to_zone(dev_target_zone)
+	set_paused(false)
+
+func _on_dev_clear_zone_pressed() -> void:
+	main.dev_clear_zone()
+	set_paused(false)
 
 func _on_creator_button_pressed() -> void:
 	if DevMode.enabled:
