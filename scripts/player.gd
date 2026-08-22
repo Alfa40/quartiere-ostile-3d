@@ -2,8 +2,8 @@ extends CharacterBody3D
 
 const BASE_SPEED := 6.0
 const GRAVITY := 20.0
-const ATTACK_DAMAGE := 20.0
-const ATTACK_COOLDOWN := 0.45
+const BASE_ATTACK_DAMAGE := 20.0
+const BASE_ATTACK_COOLDOWN := 0.45
 const FLASH_TIME := 0.12
 
 signal hp_changed(current: float, max_hp: float)
@@ -28,6 +28,13 @@ signal died
 var max_hp := 100.0
 var hp := 100.0
 var speed_mult := 1.0
+var attack_damage := BASE_ATTACK_DAMAGE
+var attack_cooldown := BASE_ATTACK_COOLDOWN
+var attack_reach_mult := 1.0:
+	set(value):
+		attack_reach_mult = value
+		if is_inside_tree():
+			attack_area.scale = Vector3.ONE * value
 var facing := Vector3(0, 0, -1)
 var attack_cooldown_timer := 0.0
 var flash_timer := 0.0
@@ -91,13 +98,13 @@ func _handle_attack(delta: float) -> void:
 
 	var attack_pressed: bool = Input.is_physical_key_pressed(KEY_SPACE) or (touch != null and touch.attack_held)
 	if attack_pressed and attack_cooldown_timer <= 0.0:
-		attack_cooldown_timer = ATTACK_COOLDOWN
+		attack_cooldown_timer = attack_cooldown
 		flash_timer = FLASH_TIME
 		attack_flash.visible = true
 		_play_attack_swing()
 		for body in attack_area.get_overlapping_bodies():
 			if (body.is_in_group("enemies") or body.is_in_group("park_objects")) and body.has_method("take_damage"):
-				body.take_damage(ATTACK_DAMAGE, self)
+				body.take_damage(attack_damage, self)
 
 func _play_attack_swing() -> void:
 	if arm_tween != null and arm_tween.is_valid():
@@ -141,6 +148,9 @@ func take_damage(amount: float, _source = null) -> void:
 	if hp <= 0.0:
 		dead = true
 		died.emit()
+
+func apply_draw_delay(delay: float) -> void:
+	attack_cooldown_timer = max(attack_cooldown_timer, delay)
 
 func heal(fraction: float) -> void:
 	if dead:

@@ -4,6 +4,7 @@ const EnemyScene := preload("res://scenes/Enemy.tscn")
 const MedikitScene := preload("res://scenes/Medikit.tscn")
 const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
+const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
@@ -96,6 +97,7 @@ func _ready() -> void:
 	hud.skip_home_chosen.connect(_skip_home)
 	hud.house_enter_pressed.connect(_enter_house_anytime)
 	_apply_upgrade_effects()
+	_apply_weapon_stats()
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
@@ -108,6 +110,22 @@ func _apply_upgrade_effects() -> void:
 	player.max_hp = BASE_PLAYER_MAX_HP + hp_bonus
 	player.hp = player.max_hp
 	player.hp_changed.emit(player.hp, player.max_hp)
+
+func _apply_weapon_stats() -> void:
+	var wid: String = CheckpointData.equipped_weapon
+	if wid == "pugni" or not MeleeWeapons.WEAPONS.has(wid):
+		weapon_name = "Pugni"
+		player.attack_damage = player.BASE_ATTACK_DAMAGE
+		player.attack_cooldown = player.BASE_ATTACK_COOLDOWN
+		player.attack_reach_mult = 1.0
+		return
+	var wups: Dictionary = CheckpointData.weapon_upgrades.get(wid, {})
+	var def: Dictionary = MeleeWeapons.WEAPONS[wid]
+	weapon_name = String(def.label)
+	player.attack_damage = MeleeWeapons.final_damage(wid, wups)
+	player.attack_cooldown = MeleeWeapons.final_cooldown(wid, wups)
+	player.attack_reach_mult = MeleeWeapons.final_reach_mult(wid, wups)
+	player.apply_draw_delay(MeleeWeapons.final_draw_time(wid, wups))
 
 func on_player_damaged(_amount: float) -> void:
 	if DevMode.enabled or money <= 0.0:

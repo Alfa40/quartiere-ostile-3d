@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scripts/home.gd" id="1_home"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -63,6 +63,21 @@ size = Vector3(0.25, 0.2, 0.25)
 albedo_color = Color(0.55, 0.55, 0.58, 1)
 metallic = 0.6
 roughness = 0.4
+
+[sub_resource type="PlaneMesh" id="PlacementHighlightMesh"]
+size = Vector2(4, 2)
+
+[sub_resource type="StandardMaterial3D" id="PlacementValidMaterial"]
+albedo_color = Color(0.3, 1.0, 0.4, 0.5)
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="PlacementInvalidMaterial"]
+albedo_color = Color(1.0, 0.25, 0.2, 0.5)
+transparency = 1
+shading_mode = 0
+cull_mode = 2
 
 [node name="Home" type="Node3D"]
 script = ExtResource("1_home")
@@ -161,6 +176,16 @@ mesh = SubResource("ToolMesh")
 surface_material_override/0 = SubResource("ToolMaterial")
 position = Vector3(0, 0.65, 0)
 
+[node name="PlacementHighlight" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.02, 0)
+visible = false
+mesh = SubResource("PlacementHighlightMesh")
+surface_material_override/0 = SubResource("PlacementValidMaterial")
+
+[node name="BenchGhostHolder" type="Node3D" parent="."]
+
+[node name="PlacedBenches" type="Node3D" parent="."]
+
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 0, 1.8)
 
@@ -230,13 +255,6 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 horizontal_alignment = 1
 text = "Banco della casa"
 
-[node name="NoteLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box"]
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
-horizontal_alignment = 1
-autowrap_mode = 2
-text = "Altre opzioni (nuovi banchi, case migliori, difesa, decorazioni) arriveranno più avanti"
-
 [node name="MoneyMaterialsLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box"]
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
@@ -244,82 +262,646 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = ""
 
-[node name="Row_scarpe" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+[node name="TabsRow" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="UpgradesTabButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/TabsRow"]
+custom_minimum_size = Vector2(260, 64)
+theme_override_font_sizes/font_size = 22
+text = "Potenziamenti"
+
+[node name="BenchesTabButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/TabsRow"]
+custom_minimum_size = Vector2(260, 64)
+theme_override_font_sizes/font_size = 22
+text = "Banchi da lavoro"
+
+[node name="UpgradesTab" type="VBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+theme_override_constants/separation = 22
+
+[node name="Row_scarpe" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/Row_scarpe"]
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_scarpe"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/Row_scarpe"]
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_scarpe"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 22
 text = "Compra"
 
-[node name="Row_salute" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+[node name="Row_salute" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/Row_salute"]
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_salute"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/Row_salute"]
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_salute"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 22
 text = "Compra"
 
-[node name="Row_saccheggio" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+[node name="Row_saccheggio" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/Row_saccheggio"]
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_saccheggio"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/Row_saccheggio"]
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_saccheggio"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 22
 text = "Compra"
 
-[node name="Row_sicurezza" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+[node name="Row_sicurezza" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/Row_sicurezza"]
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_sicurezza"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/Row_sicurezza"]
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_sicurezza"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 22
 text = "Compra"
 
-[node name="Row_zaino" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+[node name="Row_zaino" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab"]
 theme_override_constants/separation = 20
 
-[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/Row_zaino"]
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_zaino"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 autowrap_mode = 2
 text = ""
 
-[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/Row_zaino"]
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_zaino"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="BenchesTab" type="VBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 22
+
+[node name="BenchesNote" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab"]
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Compra un banco, poi trascinalo nella stanza per posizionarlo"
+
+[node name="Row_armi_bianche" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 22
 text = "Compra"
 
 [node name="CloseButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 26
+text = "Chiudi"
+[node name="PlacementUI" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="HintLabel2" type="Label" parent="HUD/PlacementUI"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -320.0
+offset_top = 20.0
+offset_right = 320.0
+offset_bottom = 70.0
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Trascina il banco nella stanza, poi conferma la posizione"
+
+[node name="ButtonRow" type="HBoxContainer" parent="HUD/PlacementUI"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -140.0
+offset_right = 220.0
+offset_bottom = -60.0
+theme_override_constants/separation = 24
+
+[node name="ConfirmButton" type="Button" parent="HUD/PlacementUI/ButtonRow"]
+custom_minimum_size = Vector2(200, 76)
+theme_override_font_sizes/font_size = 24
+text = "Conferma"
+
+[node name="CancelButton" type="Button" parent="HUD/PlacementUI/ButtonRow"]
+custom_minimum_size = Vector2(200, 76)
+theme_override_font_sizes/font_size = 24
+text = "Annulla"
+
+[node name="WeaponMenu" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/WeaponMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.8)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/WeaponMenu"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="HUD/WeaponMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+text = "Banco delle armi bianche"
+
+[node name="MoneyMaterialsLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = ""
+
+[node name="CategoryRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Btn_coltelli" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 18
+text = "Coltelli"
+
+[node name="Btn_spade" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Spade (presto)"
+
+[node name="Btn_mazze" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Mazze (presto)"
+
+[node name="Btn_martelli" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Martelli (presto)"
+
+[node name="Btn_lance" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Lance (presto)"
+
+[node name="KnivesBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
+theme_override_constants/separation = 10
+
+[node name="Weapon_coltello_cucina" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina"]
+
+[node name="Weapon_a_scatto" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto"]
+
+[node name="Weapon_serramanico" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico"]
+
+[node name="Weapon_tattico" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico"]
+
+[node name="Weapon_rambo" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo"]
+
+[node name="CloseButton" type="Button" parent="HUD/WeaponMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 26
 text = "Chiudi"

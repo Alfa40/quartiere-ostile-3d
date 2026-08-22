@@ -7,6 +7,7 @@ const MAX_DRAG := 140.0
 
 var move_vector := Vector2.ZERO
 var attack_held := false
+var input_enabled := true
 
 var _joy_touch_index := -2
 var _joy_origin := Vector2.ZERO
@@ -27,7 +28,7 @@ func _update_layout() -> void:
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:
-	if get_tree().paused:
+	if get_tree().paused or not input_enabled:
 		return
 	if event is InputEventScreenTouch:
 		_handle_pointer_down_up(event.index, event.position, event.pressed)

@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="BoxMesh" id="ABDeskMesh"]
+size = Vector3(1.6, 0.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="ABDeskShape"]
+size = Vector3(1.6, 0.6, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="ABDeskMaterial"]
+albedo_color = Color(0.3, 0.3, 0.34, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="ABBladeMaterial"]
+albedo_color = Color(0.75, 0.78, 0.82, 1)
+metallic = 0.8
+roughness = 0.25
+
+[node name="WorkbenchArmiBianche" type="StaticBody3D"]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("ABDeskShape")
+position = Vector3(0, 0.3, 0)
+
+[node name="Desk" type="MeshInstance3D" parent="."]
+mesh = SubResource("ABDeskMesh")
+surface_material_override/0 = SubResource("ABDeskMaterial")
+position = Vector3(0, 0.3, 0)
+
+[node name="Blade" type="MeshInstance3D" parent="."]
+mesh = SubResource("ABDeskMesh")
+surface_material_override/0 = SubResource("ABBladeMaterial")
+position = Vector3(0, 0.68, 0)
+scale = Vector3(0.35, 0.06, 0.35)
+rotation_degrees = Vector3(0, 45, 0)
