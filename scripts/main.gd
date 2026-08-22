@@ -204,6 +204,7 @@ func _apply_throwable_stats() -> void:
 		int(def.get("cluster_count", 0)),
 		float(def.get("cluster_radius", 0.0)),
 		Throwables.final_aim_line_length(tid, tups),
+		float(def.get("stun_duration", 0.0)),
 	)
 	hud.update_throw_type_label(String(def.label))
 

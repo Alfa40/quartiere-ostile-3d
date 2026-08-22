@@ -6,13 +6,13 @@ const CATEGORY_ORDER := ["armi_bianche_lancio", "granate_esplosive", "granate_sp
 const CATEGORIES := {
 	"armi_bianche_lancio": {"label": "Armi bianche da lancio", "unlocked": true},
 	"granate_esplosive": {"label": "Granate esplosive", "unlocked": true},
-	"granate_speciali": {"label": "Granate speciali", "unlocked": false},
+	"granate_speciali": {"label": "Granate speciali", "unlocked": true},
 }
 
 const CATEGORY_WEAPONS := {
 	"armi_bianche_lancio": ["coltello_da_lancio", "pugnale_da_lancio", "accetta_da_lancio", "stella_ninja", "ascia_battaglia_lancio"],
 	"granate_esplosive": ["molotov", "granata", "granata_appiccicosa", "granata_a_grappolo"],
-	"granate_speciali": [],
+	"granate_speciali": ["granata_fumogena", "granata_stordente", "granata_puzzosa"],
 }
 
 # Le armi da lancio si lanciano al rilascio del joystick di mira dopo aver
@@ -80,6 +80,31 @@ const WEAPONS := {
 		"ammo_pack_amount": 2, "ammo_pack_price_money": 230,
 		"grenade_type": "cluster", "explosion_radius": 2.5,
 		"cluster_count": 4, "cluster_radius": 3.2,
+	},
+	# Le granate speciali non fanno danno diretto: creano un'area con un
+	# effetto non letale (visibilità ridotta o danno costante nel tempo) o
+	# stordiscono sul colpo i nemici presenti nell'area di esplosione.
+	"granata_fumogena": {
+		"label": "Granata fumogena", "category": "granate_speciali", "tier": 1,
+		"price_money": 700, "price_material": "metallo", "price_amount": 30,
+		"damage": 0.0, "throw_cooldown": 1.8, "range": 12.0, "draw_time": 0.3,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 100,
+		"grenade_type": "fumogena", "explosion_radius": 5.0, "burn_duration": 7.0,
+	},
+	"granata_stordente": {
+		"label": "Granata stordente", "category": "granate_speciali", "tier": 2,
+		"price_money": 1100, "price_material": "metallo", "price_amount": 45,
+		"damage": 0.0, "throw_cooldown": 2.0, "range": 11.0, "draw_time": 0.35,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 130,
+		"grenade_type": "stordente", "explosion_radius": 4.0, "stun_duration": 2.5,
+	},
+	"granata_puzzosa": {
+		"label": "Granata puzzosa", "category": "granate_speciali", "tier": 3,
+		"price_money": 1500, "price_material": "metallo", "price_amount": 60,
+		"damage": 0.0, "throw_cooldown": 2.2, "range": 11.0, "draw_time": 0.35,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 150,
+		"grenade_type": "puzzosa", "explosion_radius": 3.5,
+		"burn_duration": 10.0, "burn_dps": 6.0,
 	},
 }
 

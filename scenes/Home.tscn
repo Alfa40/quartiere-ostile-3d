@@ -5570,8 +5570,7 @@ text = "Granate esplosive"
 [node name="Btn_granate_speciali" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/CategoryRow"]
 custom_minimum_size = Vector2(180, 56)
 theme_override_font_sizes/font_size = 21
-disabled = true
-text = "Granate speciali (presto)"
+text = "Granate speciali"
 
 [node name="ArmiBiancheLancioBox" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box"]
 theme_override_constants/separation = 10
@@ -6569,6 +6568,340 @@ theme_override_font_sizes/font_size = 19
 text = "Potenzia"
 
 [node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/GranateEsplosiveBox/Weapon_granata_a_grappolo"]
+
+[node name="GranateSpecialiBox" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 10
+
+[node name="Weapon_granata_fumogena" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 25
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_mira"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena/Track_mira"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_fumogena"]
+
+[node name="Weapon_granata_stordente" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 25
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_mira"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente/Track_mira"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_stordente"]
+
+[node name="Weapon_granata_puzzosa" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 25
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Track_mira" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_mira"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa/Track_mira"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 19
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/GranateSpecialiBox/Weapon_granata_puzzosa"]
 
 [node name="CloseButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)

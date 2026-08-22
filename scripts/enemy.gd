@@ -52,6 +52,15 @@ var aware := false
 var wander_dir := Vector3.ZERO
 var wander_timer := 0.0
 
+var stun_timer := 0.0
+var blind_timer := 0.0
+
+func apply_stun(duration: float) -> void:
+	stun_timer = max(stun_timer, duration)
+
+func apply_blind(duration: float) -> void:
+	blind_timer = max(blind_timer, duration)
+
 func _ready() -> void:
 	add_to_group("enemies")
 	call_deferred("_find_player")
@@ -99,11 +108,25 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+	if stun_timer > 0.0:
+		stun_timer -= delta
+		velocity.x = move_toward(velocity.x, 0.0, speed * 8.0 * delta)
+		velocity.z = move_toward(velocity.z, 0.0, speed * 8.0 * delta)
+		if is_on_floor():
+			velocity.y = 0.0
+		else:
+			velocity.y -= GRAVITY * delta
+		move_and_slide()
+		return
+
+	if blind_timer > 0.0:
+		blind_timer -= delta
+
 	if not aware:
 		var to_player_raw := player.global_position - global_position
 		to_player_raw.y = 0.0
 		var detect_range := DETECT_RANGE_RANGED if behavior == "ranged" else DETECT_RANGE
-		if to_player_raw.length() <= detect_range:
+		if to_player_raw.length() <= detect_range and blind_timer <= 0.0:
 			aware = true
 		else:
 			_process_wander(delta)
@@ -114,6 +137,16 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 			_animate_body(delta)
 			return
+
+	if blind_timer > 0.0:
+		_process_wander(delta)
+		if is_on_floor():
+			velocity.y = 0.0
+		else:
+			velocity.y -= GRAVITY * delta
+		move_and_slide()
+		_animate_body(delta)
+		return
 
 	attack_cooldown_timer -= delta
 

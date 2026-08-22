@@ -38,6 +38,7 @@ const FIREARM_CATEGORY_BOXES := {
 const THROWABLE_CATEGORY_BOXES := {
 	"armi_bianche_lancio": "ArmiBiancheLancioBox",
 	"granate_esplosive": "GranateEsplosiveBox",
+	"granate_speciali": "GranateSpecialiBox",
 }
 
 const BENCH_SCENES := {

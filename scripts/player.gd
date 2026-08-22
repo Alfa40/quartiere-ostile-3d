@@ -120,10 +120,11 @@ var throwable_burn_duration := 0.0
 var throwable_burn_dps := 0.0
 var throwable_cluster_count := 0
 var throwable_cluster_radius := 0.0
+var throwable_stun_duration := 0.0
 var throwable_aim_line_length := DEFAULT_AIM_LINE_LENGTH
 var active_sticky_grenade: Node3D = null
 
-func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH) -> void:
+func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH, stun_duration: float = 0.0) -> void:
 	throwable_id = id
 	throwable_damage = damage
 	throwable_cooldown = cooldown
@@ -138,6 +139,7 @@ func equip_throwable(id: String, damage: float, cooldown: float, range_val: floa
 	throwable_cluster_count = cluster_count
 	throwable_cluster_radius = cluster_radius
 	throwable_aim_line_length = aim_line_length
+	throwable_stun_duration = stun_duration
 
 func unequip_throwable() -> void:
 	throwable_id = ""
@@ -176,6 +178,7 @@ func _throw_weapon(direction: Vector3) -> void:
 		proj.burn_dps = throwable_burn_dps
 		proj.cluster_count = throwable_cluster_count
 		proj.cluster_radius = throwable_cluster_radius
+		proj.stun_duration = throwable_stun_duration
 		if throwable_grenade_type == "sticky":
 			proj.stuck.connect(_on_grenade_stuck.bind(proj))
 	else:
