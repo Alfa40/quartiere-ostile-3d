@@ -1388,138 +1388,138 @@ text = ""
 
 [node name="Keyboard" type="GridContainer" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
 size_flags_horizontal = 4
-columns = 9
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
+columns = 4
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 24
 
 [node name="Key_A" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "A"
 
 [node name="Key_B" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "B"
 
 [node name="Key_C" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "C"
 
 [node name="Key_D" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "D"
 
 [node name="Key_E" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "E"
 
 [node name="Key_F" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "F"
 
 [node name="Key_G" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "G"
 
 [node name="Key_H" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "H"
 
 [node name="Key_I" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "I"
 
 [node name="Key_J" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "J"
 
 [node name="Key_K" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "K"
 
 [node name="Key_L" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "L"
 
 [node name="Key_M" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "M"
 
 [node name="Key_N" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "N"
 
 [node name="Key_O" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "O"
 
 [node name="Key_P" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "P"
 
 [node name="Key_Q" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "Q"
 
 [node name="Key_R" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "R"
 
 [node name="Key_S" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "S"
 
 [node name="Key_T" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "T"
 
 [node name="Key_U" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "U"
 
 [node name="Key_V" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "V"
 
 [node name="Key_W" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "W"
 
 [node name="Key_X" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "X"
 
 [node name="Key_Y" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "Y"
 
 [node name="Key_Z" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(56, 56)
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(168, 168)
+theme_override_font_sizes/font_size = 66
 text = "Z"
 
 [node name="BackspaceButton" type="Button" parent="HUD/CreatorPasswordPanel/Scroll/Box"]
