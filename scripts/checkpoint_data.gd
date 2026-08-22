@@ -25,6 +25,10 @@ var owned_firearms := {}
 var firearm_upgrades := {}
 var firearm_ammo := {}
 var equipped_firearm := ""
+var owned_throwables := {}
+var throwable_upgrades := {}
+var throwable_ammo := {}
+var equipped_throwable := ""
 
 func _ready() -> void:
 	load_checkpoint()
@@ -63,6 +67,13 @@ func load_checkpoint() -> void:
 	var fammo = data.get("firearm_ammo", {})
 	firearm_ammo = fammo.duplicate() if typeof(fammo) == TYPE_DICTIONARY else {}
 	equipped_firearm = String(data.get("equipped_firearm", ""))
+	var owned_t = data.get("owned_throwables", {})
+	owned_throwables = owned_t.duplicate() if typeof(owned_t) == TYPE_DICTIONARY else {}
+	var tups = data.get("throwable_upgrades", {})
+	throwable_upgrades = tups.duplicate(true) if typeof(tups) == TYPE_DICTIONARY else {}
+	var tammo = data.get("throwable_ammo", {})
+	throwable_ammo = tammo.duplicate() if typeof(tammo) == TYPE_DICTIONARY else {}
+	equipped_throwable = String(data.get("equipped_throwable", ""))
 
 func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	zone = current_zone
@@ -88,6 +99,10 @@ func save_checkpoint(current_zone: int, current_money: int, current_materials: D
 		"firearm_upgrades": firearm_upgrades,
 		"firearm_ammo": firearm_ammo,
 		"equipped_firearm": equipped_firearm,
+		"owned_throwables": owned_throwables,
+		"throwable_upgrades": throwable_upgrades,
+		"throwable_ammo": throwable_ammo,
+		"equipped_throwable": equipped_throwable,
 	}))
 	f.close()
 

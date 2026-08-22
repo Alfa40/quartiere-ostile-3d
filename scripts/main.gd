@@ -6,6 +6,7 @@ const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
 const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
 const Firearms := preload("res://scripts/firearms.gd")
+const Throwables := preload("res://scripts/throwables.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
@@ -88,24 +89,25 @@ var _pre_creator_materials := {}
 
 func _ready() -> void:
 	run_start_msec = Time.get_ticks_msec()
+	zone = CheckpointData.zone
+	upgrades = CheckpointData.upgrades.duplicate()
 	if DevMode.enabled:
-		zone = 1
 		money = 999999.0
 		materials = {"legno": 999999, "metallo": 999999, "cablaggi": 999999}
-		upgrades = CheckpointData.DEFAULT_UPGRADES.duplicate()
 	else:
-		zone = CheckpointData.zone
 		money = float(CheckpointData.money)
 		materials = CheckpointData.materials.duplicate()
-		upgrades = CheckpointData.upgrades.duplicate()
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	player.died.connect(_on_player_died)
 	hud.go_home_chosen.connect(_go_home)
 	hud.skip_home_chosen.connect(_skip_home)
 	hud.house_enter_pressed.connect(_enter_house_anytime)
+	hud.throw_type_pressed.connect(_on_throw_type_pressed)
+	hud.throw_arm_pressed.connect(_on_throw_arm_pressed)
 	_apply_upgrade_effects()
 	_apply_weapon_stats()
 	_apply_firearm_stats()
+	_apply_throwable_stats()
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
@@ -175,6 +177,41 @@ func get_firearm_reserve_ammo(fid: String) -> int:
 
 func consume_firearm_reserve_ammo(fid: String, amount: int) -> void:
 	CheckpointData.firearm_ammo[fid] = max(0, int(CheckpointData.firearm_ammo.get(fid, 0)) - amount)
+
+func _apply_throwable_stats() -> void:
+	var tid: String = CheckpointData.equipped_throwable
+	if tid == "" or not Throwables.WEAPONS.has(tid):
+		player.unequip_throwable()
+		hud.update_throw_type_label("-")
+		return
+	var tups: Dictionary = CheckpointData.throwable_upgrades.get(tid, {})
+	var def: Dictionary = Throwables.WEAPONS[tid]
+	player.equip_throwable(
+		tid,
+		Throwables.final_damage(tid, tups),
+		Throwables.final_cooldown(tid, tups),
+		Throwables.final_range(tid, tups),
+		Throwables.final_draw_time(tid, tups),
+	)
+	hud.update_throw_type_label(String(def.label))
+
+func get_throwable_reserve_ammo(tid: String) -> int:
+	return int(CheckpointData.throwable_ammo.get(tid, 0))
+
+func consume_throwable_reserve_ammo(tid: String, amount: int) -> void:
+	CheckpointData.throwable_ammo[tid] = max(0, int(CheckpointData.throwable_ammo.get(tid, 0)) - amount)
+
+func _on_throw_type_pressed() -> void:
+	var owned: Array = CheckpointData.owned_throwables.keys()
+	if owned.is_empty():
+		return
+	var idx := owned.find(CheckpointData.equipped_throwable)
+	idx = (idx + 1) % owned.size()
+	CheckpointData.equipped_throwable = owned[idx]
+	_apply_throwable_stats()
+
+func _on_throw_arm_pressed() -> void:
+	player.arm_throw()
 
 func set_creator_mode(target_enabled: bool) -> void:
 	if target_enabled and not DevMode.enabled:
@@ -246,9 +283,11 @@ func _process(delta: float) -> void:
 			hud.set_house_button_visible(dist_to_house <= HOUSE_INTERACT_RANGE)
 		else:
 			hud.set_house_button_visible(false)
+		hud.set_throw_buttons_visible(false)
 		return
 
 	hud.set_house_button_visible(false)
+	hud.set_throw_buttons_visible(not CheckpointData.owned_throwables.is_empty())
 	_update_spawn_points()
 
 	if zone_enemies_spawned < zone_enemies_total:

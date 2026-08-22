@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/thrown_weapon.gd" id="1_thrown"]
+
+[sub_resource type="CapsuleShape3D" id="ThrownShape"]
+radius = 0.3
+height = 5.0
+
+[sub_resource type="SphereMesh" id="ThrownMesh"]
+radius = 0.2
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="ThrownMaterial"]
+albedo_color = Color(0.75, 0.78, 0.82, 1)
+metallic = 0.7
+roughness = 0.3
+emission_enabled = true
+emission = Color(0.8, 0.85, 0.9, 1)
+emission_energy_multiplier = 0.7
+
+[node name="ThrownWeapon" type="Area3D"]
+script = ExtResource("1_thrown")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("ThrownShape")
+position = Vector3(0, -1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("ThrownMesh")
+surface_material_override/0 = SubResource("ThrownMaterial")

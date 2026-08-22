@@ -45,6 +45,10 @@ var arm_tween: Tween = null
 
 const AIM_CONE_DEGREES := 32.0
 const FIREARM_FLASH_TIME := 0.08
+const THROW_SPEED := 24.0
+const BULLET_SPEED := 45.0
+const ThrownWeaponScene := preload("res://scenes/ThrownWeapon.tscn")
+const BulletScene := preload("res://scenes/Bullet.tscn")
 
 var firearm_id := ""
 var firearm_fire_mode := "auto"
@@ -89,6 +93,52 @@ func unequip_firearm() -> void:
 	firearm_id = ""
 	firearm_ammo_in_mag = 0
 	firearm_reloading = false
+	_burst_shots_remaining = 0
+
+var throwable_id := ""
+var throwable_damage := 0.0
+var throwable_cooldown := 0.5
+var throwable_range := 14.0
+var throwable_draw_time := 0.0
+var throw_armed := false
+var throw_cooldown_timer := 0.0
+
+func equip_throwable(id: String, damage: float, cooldown: float, range_val: float, draw_time: float) -> void:
+	throwable_id = id
+	throwable_damage = damage
+	throwable_cooldown = cooldown
+	throwable_range = range_val
+	throwable_draw_time = draw_time
+	throw_cooldown_timer = max(throw_cooldown_timer, draw_time)
+	throw_armed = false
+
+func unequip_throwable() -> void:
+	throwable_id = ""
+	throw_armed = false
+
+func arm_throw() -> void:
+	if throwable_id == "" or throw_cooldown_timer > 0.0:
+		return
+	if main != null and main.has_method("get_throwable_reserve_ammo") and main.get_throwable_reserve_ammo(throwable_id) <= 0:
+		return
+	throw_armed = true
+
+func _throw_weapon(direction: Vector3) -> void:
+	if throwable_id == "":
+		return
+	var reserve: int = main.get_throwable_reserve_ammo(throwable_id) if main != null and main.has_method("get_throwable_reserve_ammo") else 0
+	if reserve <= 0:
+		return
+	if main != null and main.has_method("consume_throwable_reserve_ammo"):
+		main.consume_throwable_reserve_ammo(throwable_id, 1)
+	throw_cooldown_timer = throwable_cooldown
+	var proj: Area3D = ThrownWeaponScene.instantiate()
+	get_parent().add_child(proj)
+	proj.global_position = global_position + Vector3(0, 1.0, 0) + direction * 1.0
+	proj.travel = direction * THROW_SPEED
+	proj.damage = throwable_damage
+	proj.max_distance = throwable_range
+	proj.source = self
 	_burst_shots_remaining = 0
 
 func _ready() -> void:
@@ -159,32 +209,41 @@ func _handle_attack(delta: float) -> void:
 func _handle_firearm(delta: float) -> void:
 	firearm_fire_timer -= delta
 	firearm_flash_timer -= delta
+	throw_cooldown_timer -= delta
 	if firearm_flash_timer <= 0.0:
 		firearm_flash.visible = false
 
+	var aim: Vector2 = touch.aim_vector if touch != null else Vector2.ZERO
+	var aiming := aim.length() > 0.15
+	if aiming:
+		last_aim_dir = Vector3(aim.x, 0, aim.y).normalized()
+		facing_pivot.look_at(facing_pivot.global_position + last_aim_dir, Vector3.UP)
+
+	var release_pending: bool = touch != null and touch.fire_release_pending
+	if touch != null:
+		touch.fire_release_pending = false
+
+	# Il lancio armato ha priorità sull'arma da fuoco equipaggiata sullo stesso rilascio.
+	if release_pending and throw_armed:
+		_throw_weapon(last_aim_dir)
+		throw_armed = false
+		release_pending = false
+
 	if firearm_id == "":
-		if touch != null:
-			touch.fire_release_pending = false
 		return
 
 	if firearm_reloading:
 		firearm_reload_timer -= delta
 		if firearm_reload_timer <= 0.0:
 			_finish_reload()
-		if touch != null:
-			touch.fire_release_pending = false
 		return
 
 	if firearm_ammo_in_mag <= 0:
-		if touch != null:
-			touch.fire_release_pending = false
 		_burst_shots_remaining = 0
 		_start_reload()
 		return
 
 	if _burst_shots_remaining > 0:
-		if touch != null:
-			touch.fire_release_pending = false
 		_burst_timer -= delta
 		if _burst_timer <= 0.0:
 			_fire_firearm(_burst_aim_dir)
@@ -194,21 +253,11 @@ func _handle_firearm(delta: float) -> void:
 				_burst_shots_remaining = 0
 		return
 
-	var aim: Vector2 = touch.aim_vector if touch != null else Vector2.ZERO
-	var aiming := aim.length() > 0.15
+	if aiming and firearm_fire_mode == "auto" and firearm_fire_timer <= 0.0:
+		var target := _find_enemy_in_aim_cone(last_aim_dir)
+		if target != null:
+			_fire_firearm(last_aim_dir)
 
-	if aiming:
-		var aim_dir := Vector3(aim.x, 0, aim.y).normalized()
-		last_aim_dir = aim_dir
-		facing_pivot.look_at(facing_pivot.global_position + aim_dir, Vector3.UP)
-		if firearm_fire_mode == "auto" and firearm_fire_timer <= 0.0:
-			var target := _find_enemy_in_aim_cone(aim_dir)
-			if target != null:
-				_fire_firearm(aim_dir)
-
-	var release_pending: bool = touch != null and touch.fire_release_pending
-	if touch != null:
-		touch.fire_release_pending = false
 	if release_pending and firearm_fire_timer <= 0.0:
 		if firearm_fire_mode == "single":
 			_fire_firearm(last_aim_dir)
@@ -243,9 +292,13 @@ func _fire_firearm(aim_dir: Vector3) -> void:
 	firearm_fire_timer = firearm_cooldown
 	firearm_flash_timer = FIREARM_FLASH_TIME
 	firearm_flash.visible = true
-	var target := _find_enemy_in_aim_cone(aim_dir)
-	if target != null and target.has_method("take_damage"):
-		target.take_damage(firearm_damage, self)
+	var proj: Area3D = BulletScene.instantiate()
+	get_parent().add_child(proj)
+	proj.global_position = global_position + Vector3(0, 1.0, 0) + aim_dir * 0.8
+	proj.travel = aim_dir * BULLET_SPEED
+	proj.damage = firearm_damage
+	proj.max_distance = firearm_range
+	proj.source = self
 
 func _start_reload() -> void:
 	if firearm_reloading:

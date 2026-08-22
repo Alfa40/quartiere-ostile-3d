@@ -27,7 +27,7 @@ theme_override_constants/separation = 68
 
 [node name="Title" type="Label" parent="Scroll/Box"]
 theme_override_font_sizes/font_size = 88
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Guida scritta"
 

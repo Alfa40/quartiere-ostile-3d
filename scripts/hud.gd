@@ -16,6 +16,9 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var zone_complete_panel: Control = $ZoneCompletePanel
 @onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Panel/Box/TimerLabel
 @onready var house_enter_button: Button = $HouseEnterButton
+@onready var throw_type_button: Button = $ThrowTypeButton
+@onready var throw_arm_button: Button = $ThrowArmButton
+@onready var touch_controls = $TouchControls
 @onready var creator_button: Button = $PausePanel/Scroll/Box/CreatorButton
 @onready var dev_tools_box: Control = $PausePanel/Scroll/Box/DevToolsBox
 @onready var dev_zone_label: Label = $PausePanel/Scroll/Box/DevToolsBox/ZoneRow/ZoneValueLabel
@@ -27,6 +30,8 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 signal go_home_chosen
 signal skip_home_chosen
 signal house_enter_pressed
+signal throw_type_pressed
+signal throw_arm_pressed
 
 var main: Node = null
 var zone_complete_active := false
@@ -66,6 +71,10 @@ func _ready() -> void:
 	$ZoneCompletePanel/Panel/Box/ButtonRow/SkipButton.pressed.connect(func(): _resolve_zone_choice(false))
 	house_enter_button.visible = false
 	house_enter_button.pressed.connect(func(): house_enter_pressed.emit())
+	throw_type_button.visible = false
+	throw_arm_button.visible = false
+	throw_type_button.pressed.connect(func(): throw_type_pressed.emit())
+	throw_arm_button.pressed.connect(func(): throw_arm_pressed.emit())
 
 	creator_password_panel.visible = false
 	creator_button.pressed.connect(_on_creator_button_pressed)
@@ -86,12 +95,39 @@ func set_house_button_visible(value: bool) -> void:
 	if not pause_panel.visible and not gameover_panel.visible:
 		house_enter_button.visible = value
 
+func set_throw_buttons_visible(value: bool) -> void:
+	if not pause_panel.visible and not gameover_panel.visible:
+		throw_type_button.visible = value
+		throw_arm_button.visible = value
+
+func update_throw_type_label(label: String) -> void:
+	throw_type_button.text = "Arma: %s" % label
+
 func _process(delta: float) -> void:
 	if zone_complete_active:
 		zone_complete_time_left -= delta
 		zone_complete_timer_label.text = "Ritorno automatico a casa tra %d s" % int(ceil(zone_complete_time_left))
 		if zone_complete_time_left <= 0.0:
 			_resolve_zone_choice(true)
+	_update_throw_button_positions()
+
+func _update_throw_button_positions() -> void:
+	if not touch_controls.aim_enabled:
+		return
+	var aim_pos: Vector2 = touch_controls.aim_base_pos
+	var half_w := 100.0
+	var gap := 16.0
+	var joy_top: float = aim_pos.y - touch_controls.JOY_RADIUS
+
+	throw_arm_button.offset_left = aim_pos.x - half_w
+	throw_arm_button.offset_right = aim_pos.x + half_w
+	throw_arm_button.offset_bottom = joy_top - gap
+	throw_arm_button.offset_top = throw_arm_button.offset_bottom - 70.0
+
+	throw_type_button.offset_left = aim_pos.x - half_w
+	throw_type_button.offset_right = aim_pos.x + half_w
+	throw_type_button.offset_bottom = throw_arm_button.offset_top - gap
+	throw_type_button.offset_top = throw_type_button.offset_bottom - 60.0
 
 func show_zone_complete_choice() -> void:
 	zone_complete_active = true

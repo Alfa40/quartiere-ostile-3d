@@ -211,7 +211,7 @@ offset_top = 20.0
 offset_right = 300.0
 offset_bottom = 56.0
 theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Cammina verso la porta (in fondo) per tornare al quartiere"
 
@@ -241,7 +241,7 @@ visible = false
 [node name="Dim" type="ColorRect" parent="HUD/WorkbenchMenu"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.8)
+color = Color(0.07, 0.08, 0.11, 0.92)
 
 [node name="Scroll" type="ScrollContainer" parent="HUD/WorkbenchMenu"]
 anchor_left = 0.0
@@ -260,7 +260,7 @@ theme_override_constants/separation = 22
 
 [node name="Title" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box"]
 theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Banco della casa"
 
@@ -294,7 +294,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_scarpe"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -309,7 +309,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_salute"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -324,7 +324,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_saccheggio"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -339,7 +339,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_sicurezza"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -354,7 +354,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_zaino"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -380,7 +380,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -395,11 +395,26 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_fuoco"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_fuoco"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="Row_armi_da_lancio" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_lancio"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_lancio"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 22
 text = "Compra"
@@ -423,7 +438,7 @@ offset_top = 20.0
 offset_right = 320.0
 offset_bottom = 70.0
 theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
 text = "Trascina il banco nella stanza, poi conferma la posizione"
@@ -464,7 +479,7 @@ visible = false
 [node name="Dim" type="ColorRect" parent="HUD/WeaponMenu"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.8)
+color = Color(0.07, 0.08, 0.11, 0.92)
 
 [node name="Scroll" type="ScrollContainer" parent="HUD/WeaponMenu"]
 anchor_left = 0.0
@@ -483,7 +498,7 @@ theme_override_constants/separation = 22
 
 [node name="Title" type="Label" parent="HUD/WeaponMenu/Scroll/Box"]
 theme_override_font_sizes/font_size = 44
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Banco delle armi bianche"
 
@@ -535,7 +550,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_coltello_cucina/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -615,7 +630,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_a_scatto/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -695,7 +710,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_serramanico/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -775,7 +790,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_tattico/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -855,7 +870,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/KnivesBox/Weapon_rambo/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -939,7 +954,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_giocattolo/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1019,7 +1034,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spada_da_scena/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1099,7 +1114,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_sciabola_arrugginita/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1179,7 +1194,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_katana_da_allenamento/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1259,7 +1274,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/SpadeBox/Weapon_spadone_leggendario/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1343,7 +1358,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_baseball/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1423,7 +1438,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_spranga_ferro/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1503,7 +1518,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_chiodata/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1583,7 +1598,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_golf_rinforzata/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1663,7 +1678,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MazzeBox/Weapon_mazza_da_guerra/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1747,7 +1762,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_carpentiere/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1827,7 +1842,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_fabbro/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1907,7 +1922,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_mazzuolo_pesante/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -1987,7 +2002,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_demolizione/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2067,7 +2082,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/MartelliBox/Weapon_martello_da_guerra/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2151,7 +2166,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_bastone_appuntito/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2231,7 +2246,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_forca_giardino/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2311,7 +2326,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_pesca/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2391,7 +2406,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_da_combattimento/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2471,7 +2486,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/WeaponMenu/Scroll/Box/LanceBox/Weapon_lancia_cerimoniale/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2556,7 +2571,7 @@ visible = false
 [node name="Dim" type="ColorRect" parent="HUD/FirearmMenu"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.8)
+color = Color(0.07, 0.08, 0.11, 0.92)
 
 [node name="Scroll" type="ScrollContainer" parent="HUD/FirearmMenu"]
 anchor_left = 0.0
@@ -2575,7 +2590,7 @@ theme_override_constants/separation = 22
 
 [node name="Title" type="Label" parent="HUD/FirearmMenu/Scroll/Box"]
 theme_override_font_sizes/font_size = 44
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
 text = "Banco delle armi da fuoco"
 
@@ -2627,7 +2642,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_aria_compressa/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2722,7 +2737,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_revolver_arrugginito/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2817,7 +2832,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_semiautomatica_9mm/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -2912,7 +2927,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_pistola_tattica/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3007,7 +3022,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_magnum_44/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3107,7 +3122,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_aria_compressa/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3202,7 +3217,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_compatta/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3297,7 +3312,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_tattica/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3392,7 +3407,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_militare/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3487,7 +3502,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitragliettaBox/Weapon_mitraglietta_incursione/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3586,7 +3601,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_artigianale/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3681,7 +3696,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pattuglia/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3776,7 +3791,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_pesante/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3871,7 +3886,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_fucile_tricolpo/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -3965,7 +3980,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_assalto/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4060,7 +4075,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/MitraBox/Weapon_mitra_guerra/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4159,7 +4174,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_arrugginito/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4254,7 +4269,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_corto/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4349,7 +4364,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_tattico/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4444,7 +4459,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_militare/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4539,7 +4554,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/PompaBox/Weapon_pompa_demolizione/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4638,7 +4653,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_fucile_caccia/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4733,7 +4748,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_carabina_precisione/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4828,7 +4843,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_tiratore_scelto/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -4923,7 +4938,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_anti_materiale/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -5018,7 +5033,7 @@ theme_override_constants/separation = 20
 [node name="InfoLabel" type="Label" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario/MainRow"]
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 autowrap_mode = 2
 text = ""
 
@@ -5104,6 +5119,550 @@ text = "Potenzia"
 
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario"]
 [node name="CloseButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 26
+text = "Chiudi"
+
+[node name="ThrowableMenu" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/ThrowableMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.92)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/ThrowableMenu"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="HUD/ThrowableMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Banco delle armi da lancio"
+
+[node name="MoneyMaterialsLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = ""
+
+[node name="CategoryRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Btn_armi_bianche_lancio" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(180, 56)
+theme_override_font_sizes/font_size = 18
+text = "Armi bianche da lancio"
+
+[node name="Btn_granate_esplosive" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(180, 56)
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Granate esplosive (presto)"
+
+[node name="Btn_granate_speciali" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(180, 56)
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Granate speciali (presto)"
+
+[node name="ArmiBiancheLancioBox" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box"]
+theme_override_constants/separation = 10
+
+[node name="Weapon_coltello_da_lancio" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_coltello_da_lancio"]
+
+[node name="Weapon_pugnale_da_lancio" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_pugnale_da_lancio"]
+
+[node name="Weapon_accetta_da_lancio" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_accetta_da_lancio"]
+
+[node name="Weapon_stella_ninja" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_stella_ninja"]
+
+[node name="Weapon_ascia_battaglia_lancio" type="VBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 22
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Compra scorta"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 16
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ThrowableMenu/Scroll/Box/ArmiBiancheLancioBox/Weapon_ascia_battaglia_lancio"]
+
+[node name="CloseButton" type="Button" parent="HUD/ThrowableMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 26
 text = "Chiudi"

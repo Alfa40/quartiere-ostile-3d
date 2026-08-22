@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/thrown_weapon.gd" id="1_thrown"]
+
+[sub_resource type="CapsuleShape3D" id="BulletShape"]
+radius = 0.3
+height = 5.0
+
+[sub_resource type="SphereMesh" id="BulletMesh"]
+radius = 0.1
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="BulletMaterial"]
+albedo_color = Color(1.0, 0.95, 0.6, 1)
+emission_enabled = true
+emission = Color(1.0, 0.9, 0.4, 1)
+emission_energy_multiplier = 3.0
+
+[node name="Bullet" type="Area3D"]
+script = ExtResource("1_thrown")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BulletShape")
+position = Vector3(0, -1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BulletMesh")
+surface_material_override/0 = SubResource("BulletMaterial")

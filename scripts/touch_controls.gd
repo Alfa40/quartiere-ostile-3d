@@ -23,7 +23,7 @@ var _aim_touch_index := -2
 var _aim_origin := Vector2.ZERO
 var _joy_base_pos := Vector2.ZERO
 var _btn_pos := Vector2.ZERO
-var _aim_base_pos := Vector2.ZERO
+var aim_base_pos := Vector2.ZERO
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -35,9 +35,16 @@ func _update_layout() -> void:
 	var vp := get_viewport_rect().size
 	_joy_base_pos = Vector2(170, vp.y - 220)
 	if aim_enabled:
-		_aim_base_pos = Vector2(vp.x - 170, vp.y - 220)
-		_btn_pos = Vector2(vp.x - 340, vp.y - 220)
+		aim_base_pos = Vector2(vp.x - 170, vp.y - 220)
+		# Il tasto attacco deve restare a destra della zona di movimento (metà
+		# schermo) e a sinistra del joystick di mira: lo mettiamo a metà dello
+		# spazio libero tra i due, così si adatta a qualsiasi larghezza schermo.
+		var aim_left_edge: float = aim_base_pos.x - JOY_RADIUS
+		var zone_boundary: float = vp.x * 0.5
+		var attack_x: float = (zone_boundary + aim_left_edge) / 2.0
+		_btn_pos = Vector2(attack_x, vp.y - 220)
 	else:
+		aim_base_pos = Vector2.ZERO
 		_btn_pos = Vector2(vp.x - 170, vp.y - 220)
 	queue_redraw()
 
@@ -122,8 +129,8 @@ func _draw() -> void:
 	draw_circle(_btn_pos, BTN_RADIUS, btn_color)
 
 	if aim_enabled:
-		draw_circle(_aim_base_pos, JOY_RADIUS, Color(0.4, 0.7, 1, 0.15))
-		var aim_knob_pos := _aim_base_pos
+		draw_circle(aim_base_pos, JOY_RADIUS, Color(0.4, 0.7, 1, 0.15))
+		var aim_knob_pos := aim_base_pos
 		if _aim_touch_index != -2:
 			aim_knob_pos += aim_vector * MAX_DRAG
 		draw_circle(aim_knob_pos, JOY_KNOB_RADIUS, Color(0.4, 0.7, 1, 0.45))
