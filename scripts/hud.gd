@@ -166,19 +166,30 @@ func _update_throw_button_positions() -> void:
 	var gap := 16.0
 	var joy_top: float = aim_pos.y - touch_controls.JOY_RADIUS
 
-	throw_arm_button.offset_left = aim_pos.x - THROW_ARM_DIAMETER * 0.5
-	throw_arm_button.offset_right = aim_pos.x + THROW_ARM_DIAMETER * 0.5
-	throw_arm_button.offset_bottom = joy_top - gap
-	throw_arm_button.offset_top = throw_arm_button.offset_bottom - THROW_ARM_DIAMETER
+	# I due tasti erano impilati verticalmente sopra il joystick di mira; ora
+	# stanno affiancati (arma a sinistra, lancia a destra), entrambi centrati
+	# sul punto medio dell'altezza che occupavano prima da impilati.
+	var old_arm_bottom: float = joy_top - gap
+	var old_arm_top: float = old_arm_bottom - THROW_ARM_DIAMETER
+	var old_type_top: float = old_arm_top - gap - THROW_TYPE_DIAMETER
+	var mid_y: float = (old_type_top + old_arm_bottom) * 0.5
 
-	throw_type_button.offset_left = aim_pos.x - THROW_TYPE_DIAMETER * 0.5
-	throw_type_button.offset_right = aim_pos.x + THROW_TYPE_DIAMETER * 0.5
-	throw_type_button.offset_bottom = throw_arm_button.offset_top - gap
-	throw_type_button.offset_top = throw_type_button.offset_bottom - THROW_TYPE_DIAMETER
+	var pair_width: float = THROW_TYPE_DIAMETER + gap + THROW_ARM_DIAMETER
+	var pair_left: float = aim_pos.x - pair_width * 0.5
+
+	throw_type_button.offset_left = pair_left
+	throw_type_button.offset_right = pair_left + THROW_TYPE_DIAMETER
+	throw_type_button.offset_top = mid_y - THROW_TYPE_DIAMETER * 0.5
+	throw_type_button.offset_bottom = mid_y + THROW_TYPE_DIAMETER * 0.5
+
+	throw_arm_button.offset_left = throw_type_button.offset_right + gap
+	throw_arm_button.offset_right = throw_arm_button.offset_left + THROW_ARM_DIAMETER
+	throw_arm_button.offset_top = mid_y - THROW_ARM_DIAMETER * 0.5
+	throw_arm_button.offset_bottom = mid_y + THROW_ARM_DIAMETER * 0.5
 
 	throw_toast_label.offset_left = aim_pos.x - 160.0
 	throw_toast_label.offset_right = aim_pos.x + 160.0
-	throw_toast_label.offset_bottom = throw_type_button.offset_top - gap
+	throw_toast_label.offset_bottom = mid_y - THROW_ARM_DIAMETER * 0.5 - gap
 	throw_toast_label.offset_top = throw_toast_label.offset_bottom - 50.0
 
 func show_zone_complete_choice() -> void:
