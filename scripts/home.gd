@@ -476,6 +476,7 @@ func _refresh_weapon_menu() -> void:
 		var def: Dictionary = MeleeWeapons.WEAPONS[wid]
 		var owned: bool = CheckpointData.owned_weapons.get(wid, false)
 		var equipped: bool = CheckpointData.equipped_weapon == wid
+		var wups: Dictionary = CheckpointData.weapon_upgrades.get(wid, {})
 
 		if not owned:
 			var mat_name: String = MATERIAL_LABELS.get(def.price_material, def.price_material)
@@ -485,16 +486,20 @@ func _refresh_weapon_menu() -> void:
 			var afford: bool = CheckpointData.money >= def.price_money and CheckpointData.materials.get(def.price_material, 0) >= def.price_amount
 			action_btn.disabled = not afford
 			action_btn.text = "Compra"
-		elif equipped:
-			main_info.text = "%s — Equipaggiata" % def.label
-			action_btn.disabled = true
-			action_btn.text = "Equipaggiata"
 		else:
-			main_info.text = "%s — posseduta" % def.label
-			action_btn.disabled = false
-			action_btn.text = "Equipaggia"
+			var stats_line := "Danno %d · Cooldown %.2fs · Portata x%.2f · Estrazione %.2fs" % [
+				int(MeleeWeapons.final_damage(wid, wups)), MeleeWeapons.final_cooldown(wid, wups),
+				MeleeWeapons.final_reach_mult(wid, wups), MeleeWeapons.final_draw_time(wid, wups),
+			]
+			if equipped:
+				main_info.text = "%s — Equipaggiata\n%s" % [def.label, stats_line]
+				action_btn.disabled = true
+				action_btn.text = "Equipaggiata"
+			else:
+				main_info.text = "%s — posseduta\n%s" % [def.label, stats_line]
+				action_btn.disabled = false
+				action_btn.text = "Equipaggia"
 
-		var wups: Dictionary = CheckpointData.weapon_upgrades.get(wid, {})
 		for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
 			var t_info: Label = track_row.get_node("InfoLabel")
@@ -506,17 +511,45 @@ func _refresh_weapon_menu() -> void:
 				t_btn.disabled = true
 				t_btn.text = "Potenzia"
 			elif MeleeWeapons.upgrade_is_maxed(level):
-				t_info.text = "%s — LIVELLO MASSIMO (%d/%d)" % [tdef.label, level, MeleeWeapons.UPGRADE_MAX_LEVEL]
+				var maxed_value := _track_value_text(tid, wid, wups)
+				t_info.text = "%s — LIVELLO MASSIMO (%d/%d)\n%s" % [tdef.label, level, MeleeWeapons.UPGRADE_MAX_LEVEL, maxed_value]
 				t_btn.disabled = true
 				t_btn.text = "Massimo"
 			else:
+				var next_wups := wups.duplicate()
+				next_wups[tid] = level + 1
+				var preview := _track_preview_text(tid, wid, wups, next_wups)
 				var cm := MeleeWeapons.upgrade_cost_money(wid, level)
 				var cmat := MeleeWeapons.upgrade_cost_material(wid, level)
 				var mat_name2: String = MATERIAL_LABELS.get(tdef.material, tdef.material)
-				t_info.text = "%s (Lv %d/%d) — %s\ncosta %d€ + %d %s" % [tdef.label, level, MeleeWeapons.UPGRADE_MAX_LEVEL, tdef.desc, cm, cmat, mat_name2]
+				t_info.text = "%s (Lv %d/%d) — %s\n%s\ncosta %d€ + %d %s" % [tdef.label, level, MeleeWeapons.UPGRADE_MAX_LEVEL, tdef.desc, preview, cm, cmat, mat_name2]
 				var afford2: bool = CheckpointData.money >= cm and CheckpointData.materials.get(tdef.material, 0) >= cmat
 				t_btn.disabled = not afford2
 				t_btn.text = "Potenzia"
+
+func _track_value_text(tid: String, wid: String, wups: Dictionary) -> String:
+	match tid:
+		"portata":
+			return "Portata attuale: x%.2f" % MeleeWeapons.final_reach_mult(wid, wups)
+		"velocita":
+			return "Cooldown attuale: %.2fs" % MeleeWeapons.final_cooldown(wid, wups)
+		"danno":
+			return "Danno attuale: %d" % int(MeleeWeapons.final_damage(wid, wups))
+		"estrazione":
+			return "Estrazione attuale: %.2fs" % MeleeWeapons.final_draw_time(wid, wups)
+	return ""
+
+func _track_preview_text(tid: String, wid: String, wups: Dictionary, next_wups: Dictionary) -> String:
+	match tid:
+		"portata":
+			return "Portata: x%.2f → x%.2f" % [MeleeWeapons.final_reach_mult(wid, wups), MeleeWeapons.final_reach_mult(wid, next_wups)]
+		"velocita":
+			return "Cooldown: %.2fs → %.2fs" % [MeleeWeapons.final_cooldown(wid, wups), MeleeWeapons.final_cooldown(wid, next_wups)]
+		"danno":
+			return "Danno: %d → %d" % [int(MeleeWeapons.final_damage(wid, wups)), int(MeleeWeapons.final_damage(wid, next_wups))]
+		"estrazione":
+			return "Estrazione: %.2fs → %.2fs" % [MeleeWeapons.final_draw_time(wid, wups), MeleeWeapons.final_draw_time(wid, next_wups)]
+	return ""
 
 func _on_weapon_action_pressed(wid: String) -> void:
 	var owned: bool = CheckpointData.owned_weapons.get(wid, false)

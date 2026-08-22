@@ -86,6 +86,28 @@ theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Sconfiggere i nemici ti fa guadagnare soldi, mostrati in alto sullo schermo. Il quartiere è diviso in zone: sconfiggi tutti i nemici di un'ondata per avanzare alla zona successiva. Più vai avanti, più nemici valgono soldi, ma sono anche più numerosi, forti e veloci."
 
+[node name="HouseHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 52
+theme_override_colors/font_color = Color(0.85, 0.7, 0.5, 1)
+text = "La casa e i banchi da lavoro"
+
+[node name="HouseBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 38
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Quando ripulisci una zona hai 30 secondi per raccogliere gli ultimi materiali, poi torni automaticamente a casa: puoi anche premere subito \"Torna a casa\" oppure \"Prosegui subito\" per restare in campo e passare alla zona successiva senza tornare a casa. Puoi anche entrare in casa in qualunque momento (ma solo a zona già ripulita) camminando fino alla porta della tenda visibile nel campo da gioco. Dentro casa trovi il banco della casa: nella scheda \"Potenziamenti\" compri scarpe (velocità), salute, saccheggio (più soldi dai nemici), sicurezza (meno furti) e zaino (più materiali); nella scheda \"Banchi da lavoro\" compri nuovi banchi e li posizioni liberamente nella stanza trascinandoli con un dito, con un tasto per ruotarli di 90°."
+
+[node name="WeaponBenchHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 52
+theme_override_colors/font_color = Color(0.75, 0.8, 1, 1)
+text = "Banco delle armi bianche"
+
+[node name="WeaponBenchBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 38
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Una volta posizionato, il banco delle armi bianche apre un menu con le categorie coltelli, spade, mazze, martelli e lance: ogni categoria ha 5 armi via via più forti e più costose. Comprare un'arma la rende disponibile; premendo di nuovo la equipaggi, sostituendo i pugni in combattimento. Ogni arma posseduta ha 4 potenziamenti separati fino a 10 livelli ciascuno: portata (quanto è ampio il colpo), velocità d'attacco (quanto spesso colpisci), danno e velocità di estrazione (quanto sei veloce a impugnarla). Le statistiche attuali dell'arma equipaggiata restano sempre visibili nel menu anche dopo l'acquisto, e ogni riga di potenziamento mostra il valore attuale e quello dopo il prossimo livello, così sai sempre cosa cambia prima di spendere."
+
 [node name="PauseHeading" type="Label" parent="Scroll/Box"]
 theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
