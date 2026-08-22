@@ -28,6 +28,8 @@ var stun_duration := 0.0
 
 var _traveled := 0.0
 var _stuck := false
+var _stuck_body: Node3D = null
+var _stuck_offset := Vector3.ZERO
 
 func _ready() -> void:
 	collision_layer = 0
@@ -37,6 +39,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if _stuck:
+		if _stuck_body != null and is_instance_valid(_stuck_body):
+			global_position = _stuck_body.global_position + _stuck_offset
 		return
 	var step := travel * delta
 	global_position += step
@@ -44,15 +48,19 @@ func _process(delta: float) -> void:
 	if _traveled >= max_distance:
 		_arrive()
 
-func _on_body_entered(_body: Node3D) -> void:
+func _on_body_entered(body: Node3D) -> void:
 	if _stuck:
 		return
+	if grenade_type == "sticky" and body.is_in_group("enemies"):
+		_stuck_body = body
 	_arrive()
 
 func _arrive() -> void:
 	if grenade_type == "sticky":
 		_stuck = true
 		travel = Vector3.ZERO
+		if _stuck_body != null and is_instance_valid(_stuck_body):
+			_stuck_offset = global_position - _stuck_body.global_position
 		stuck.emit()
 		return
 	_explode()

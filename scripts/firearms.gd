@@ -193,7 +193,7 @@ const WEAPONS := {
 	},
 }
 
-const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mirino"]
+const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mirino", "caricatore"]
 
 const UPGRADE_TRACKS := {
 	"portata": {"label": "Portata", "desc": "Aumenta la gittata dell'arma", "material": "legno", "per_level": 0.03},
@@ -201,7 +201,15 @@ const UPGRADE_TRACKS := {
 	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "per_level": 0.06},
 	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "per_level": 0.08},
 	"mirino": {"label": "Mirino", "desc": "Allunga la linea di mira e aumenta la precisione dell'arma", "material": "cablaggi", "per_level": 0.08},
+	"caricatore": {"label": "Caricatore", "desc": "Aumenta di un intero caricatore la scorta massima di proiettili che puoi portare con te", "material": "metallo", "per_level": 0.0},
 }
+
+const RESERVE_CAP_MAGAZINES := 3
+
+static func final_reserve_cap(weapon_id: String, upgrades: Dictionary) -> int:
+	var mag: int = WEAPONS[weapon_id].magazine_size
+	var level: int = upgrades.get("caricatore", 0)
+	return mag * (RESERVE_CAP_MAGAZINES + level)
 
 # Velocità del proiettile e dispersione di base per categoria (non per singola
 # arma, per evitare di dover ripetere gli stessi due campi su 25 armi): le

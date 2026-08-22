@@ -297,6 +297,13 @@ func _handle_firearm(delta: float) -> void:
 	if firearm_id == "":
 		return
 
+	# Con un'arma da lancio equipaggiata l'arma da fuoco resta inutilizzabile,
+	# a meno che non ci sia una granata appiccicosa già lanciata in attesa di
+	# detonazione: in quel caso il player può tornare a sparare normalmente.
+	var firearm_active: bool = throwable_id == "" or active_sticky_grenade != null
+	if not firearm_active:
+		return
+
 	if firearm_reloading:
 		firearm_reload_timer -= delta
 		if firearm_reload_timer <= 0.0:

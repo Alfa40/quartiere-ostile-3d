@@ -724,10 +724,15 @@ func _refresh_firearm_menu() -> void:
 				action_btn.text = "Equipaggia"
 
 			var reserve: int = int(CheckpointData.firearm_ammo.get(wid, 0))
+			var cap: int = Firearms.final_reserve_cap(wid, fups)
 			var pack_amt: int = int(def.ammo_pack_amount)
 			var pack_cost: int = int(def.ammo_pack_price_money)
-			ammo_info.text = "Munizioni in riserva: %d\nCompra %d colpi per %d€" % [reserve, pack_amt, pack_cost]
-			ammo_btn.disabled = CheckpointData.money < pack_cost
+			if reserve >= cap:
+				ammo_info.text = "Munizioni in riserva: %d/%d (al massimo)" % [reserve, cap]
+				ammo_btn.disabled = true
+			else:
+				ammo_info.text = "Munizioni in riserva: %d/%d\nCompra %d colpi per %d€" % [reserve, cap, pack_amt, pack_cost]
+				ammo_btn.disabled = CheckpointData.money < pack_cost
 			ammo_btn.text = "Compra munizioni"
 
 		for tid in Firearms.UPGRADE_TRACK_ORDER:
@@ -779,6 +784,8 @@ func _firearm_track_value_text(tid: String, wid: String, fups: Dictionary) -> St
 			return "Estrazione attuale: %.2fs" % Firearms.final_draw_time(wid, fups)
 		"mirino":
 			return "Linea di mira attuale: %.1fm" % Firearms.final_aim_line_length(wid, fups)
+		"caricatore":
+			return "Scorta massima attuale: %d" % Firearms.final_reserve_cap(wid, fups)
 	return ""
 
 func _firearm_track_preview_text(tid: String, wid: String, fups: Dictionary, next_fups: Dictionary) -> String:
@@ -793,6 +800,8 @@ func _firearm_track_preview_text(tid: String, wid: String, fups: Dictionary, nex
 			return "Estrazione: %.2fs → %.2fs" % [Firearms.final_draw_time(wid, fups), Firearms.final_draw_time(wid, next_fups)]
 		"mirino":
 			return "Mirino: %.1fm → %.1fm" % [Firearms.final_aim_line_length(wid, fups), Firearms.final_aim_line_length(wid, next_fups)]
+		"caricatore":
+			return "Scorta massima: %d → %d" % [Firearms.final_reserve_cap(wid, fups), Firearms.final_reserve_cap(wid, next_fups)]
 	return ""
 
 func _on_firearm_action_pressed(wid: String) -> void:
@@ -812,11 +821,16 @@ func _on_firearm_action_pressed(wid: String) -> void:
 
 func _on_buy_ammo_pressed(wid: String) -> void:
 	var def: Dictionary = Firearms.WEAPONS[wid]
+	var fups: Dictionary = CheckpointData.firearm_upgrades.get(wid, {})
+	var cap := Firearms.final_reserve_cap(wid, fups)
+	var current: int = int(CheckpointData.firearm_ammo.get(wid, 0))
+	if current >= cap:
+		return
 	var cost: int = int(def.ammo_pack_price_money)
 	if CheckpointData.money < cost:
 		return
 	CheckpointData.money -= cost
-	CheckpointData.firearm_ammo[wid] = int(CheckpointData.firearm_ammo.get(wid, 0)) + int(def.ammo_pack_amount)
+	CheckpointData.firearm_ammo[wid] = min(cap, current + int(def.ammo_pack_amount))
 	_refresh_firearm_menu()
 
 func _on_upgrade_firearm_pressed(wid: String, tid: String) -> void:
@@ -892,10 +906,14 @@ func _refresh_throwable_menu() -> void:
 				action_btn.text = "Equipaggia"
 
 			var reserve: int = int(CheckpointData.throwable_ammo.get(wid, 0))
-			var pack_amt: int = int(def.ammo_pack_amount)
+			var cap: int = Throwables.final_reserve_cap(wid, tups)
 			var pack_cost: int = int(def.ammo_pack_price_money)
-			ammo_info.text = "Scorta: %d\nCompra %d unità per %d€" % [reserve, pack_amt, pack_cost]
-			ammo_btn.disabled = CheckpointData.money < pack_cost
+			if reserve >= cap:
+				ammo_info.text = "Scorta: %d/%d (al massimo)" % [reserve, cap]
+				ammo_btn.disabled = true
+			else:
+				ammo_info.text = "Scorta: %d/%d\nCompra 1 unità per %d€" % [reserve, cap, pack_cost]
+				ammo_btn.disabled = CheckpointData.money < pack_cost
 			ammo_btn.text = "Compra scorta"
 
 		for tid in Throwables.UPGRADE_TRACK_ORDER:
@@ -937,6 +955,8 @@ func _throwable_track_value_text(tid: String, wid: String, tups: Dictionary) -> 
 			return "Estrazione attuale: %.2fs" % Throwables.final_draw_time(wid, tups)
 		"mira":
 			return "Linea di mira attuale: %.1fm" % Throwables.final_aim_line_length(wid, tups)
+		"scorta":
+			return "Scorta massima attuale: %d" % Throwables.final_reserve_cap(wid, tups)
 	return ""
 
 func _throwable_track_preview_text(tid: String, wid: String, tups: Dictionary, next_tups: Dictionary) -> String:
@@ -951,6 +971,8 @@ func _throwable_track_preview_text(tid: String, wid: String, tups: Dictionary, n
 			return "Mira: %.1fm → %.1fm" % [Throwables.final_aim_line_length(wid, tups), Throwables.final_aim_line_length(wid, next_tups)]
 		"estrazione":
 			return "Estrazione: %.2fs → %.2fs" % [Throwables.final_draw_time(wid, tups), Throwables.final_draw_time(wid, next_tups)]
+		"scorta":
+			return "Scorta massima: %d → %d" % [Throwables.final_reserve_cap(wid, tups), Throwables.final_reserve_cap(wid, next_tups)]
 	return ""
 
 func _on_throwable_action_pressed(wid: String) -> void:
@@ -971,11 +993,16 @@ func _on_throwable_action_pressed(wid: String) -> void:
 
 func _on_buy_throwable_ammo_pressed(wid: String) -> void:
 	var def: Dictionary = Throwables.WEAPONS[wid]
+	var tups: Dictionary = CheckpointData.throwable_upgrades.get(wid, {})
+	var cap := Throwables.final_reserve_cap(wid, tups)
+	var current: int = int(CheckpointData.throwable_ammo.get(wid, 0))
+	if current >= cap:
+		return
 	var cost: int = int(def.ammo_pack_price_money)
 	if CheckpointData.money < cost:
 		return
 	CheckpointData.money -= cost
-	CheckpointData.throwable_ammo[wid] = int(CheckpointData.throwable_ammo.get(wid, 0)) + int(def.ammo_pack_amount)
+	CheckpointData.throwable_ammo[wid] = current + 1
 	_refresh_throwable_menu()
 
 func _on_upgrade_throwable_pressed(wid: String, tid: String) -> void:

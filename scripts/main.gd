@@ -218,9 +218,12 @@ func _on_throw_type_pressed() -> void:
 	var owned: Array = CheckpointData.owned_throwables.keys()
 	if owned.is_empty():
 		return
-	var idx := owned.find(CheckpointData.equipped_throwable)
-	idx = (idx + 1) % owned.size()
-	CheckpointData.equipped_throwable = owned[idx]
+	# La rotazione include anche "nessuna arma da lancio equipaggiata", perché
+	# con un'arma da lancio selezionata l'arma da fuoco resta inutilizzabile.
+	var options: Array = [""] + owned
+	var idx := options.find(CheckpointData.equipped_throwable)
+	idx = (idx + 1) % options.size()
+	CheckpointData.equipped_throwable = options[idx]
 	_apply_throwable_stats()
 
 func _on_throw_arm_pressed() -> void:
