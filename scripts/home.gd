@@ -26,6 +26,14 @@ const CATEGORY_BOXES := {
 	"lance": "LanceBox",
 }
 
+const FIREARM_CATEGORY_BOXES := {
+	"pistole": "PistoleBox",
+	"mitragliette": "MitragliettaBox",
+	"mitra": "MitraBox",
+	"fucile_a_pompa": "PompaBox",
+	"cecchino": "CecchinoBox",
+}
+
 const BENCH_SCENES := {
 	"armi_bianche": preload("res://scenes/WorkbenchArmiBianche.tscn"),
 	"armi_da_fuoco": preload("res://scenes/WorkbenchArmiDaFuoco.tscn"),
@@ -70,6 +78,7 @@ var placing_row_idx := 0
 var placing_valid := false
 
 var current_weapon_category := "coltelli"
+var current_firearm_category := "pistole"
 var _current_interact := ""
 var _placed_bench_nodes := {}
 
@@ -98,15 +107,18 @@ func _ready() -> void:
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_bianche"))
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_fuoco/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_da_fuoco"))
 
-	for wid in Firearms.CATEGORY_WEAPONS["pistole"]:
-		var fbase := get_node("HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_%s" % wid)
-		var faction_btn: Button = fbase.get_node("MainRow/ActionButton")
-		faction_btn.pressed.connect(_on_firearm_action_pressed.bind(wid))
-		var fammo_btn: Button = fbase.get_node("AmmoRow/BuyButton")
-		fammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
-		for tid in Firearms.UPGRADE_TRACK_ORDER:
-			var ft_btn: Button = fbase.get_node("Track_%s/BuyButton" % tid)
-			ft_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
+	for fcat_id in Firearms.CATEGORY_ORDER:
+		var fcat_btn: Button = get_node("HUD/FirearmMenu/Scroll/Box/CategoryRow/Btn_%s" % fcat_id)
+		fcat_btn.pressed.connect(_show_firearm_category.bind(fcat_id))
+		for wid in Firearms.CATEGORY_WEAPONS[fcat_id]:
+			var fbase := get_node("HUD/FirearmMenu/Scroll/Box/%s/Weapon_%s" % [FIREARM_CATEGORY_BOXES[fcat_id], wid])
+			var faction_btn: Button = fbase.get_node("MainRow/ActionButton")
+			faction_btn.pressed.connect(_on_firearm_action_pressed.bind(wid))
+			var fammo_btn: Button = fbase.get_node("AmmoRow/BuyButton")
+			fammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
+			for tid in Firearms.UPGRADE_TRACK_ORDER:
+				var ft_btn: Button = fbase.get_node("Track_%s/BuyButton" % tid)
+				ft_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
 
 	for cat_id in MeleeWeapons.CATEGORY_ORDER:
 		var cat_btn: Button = get_node("HUD/WeaponMenu/Scroll/Box/CategoryRow/Btn_%s" % cat_id)
@@ -126,6 +138,7 @@ func _ready() -> void:
 
 	_show_upgrades_tab()
 	_show_weapon_category("coltelli")
+	_show_firearm_category("pistole")
 	_refresh_workbench_menu()
 
 	get_viewport().size_changed.connect(_update_menu_layout)
@@ -622,13 +635,20 @@ func _open_firearm_menu() -> void:
 func _close_firearm_menu() -> void:
 	firearm_menu.visible = false
 
+func _show_firearm_category(cat_id: String) -> void:
+	current_firearm_category = cat_id
+	for cid in Firearms.CATEGORY_ORDER:
+		get_node("HUD/FirearmMenu/Scroll/Box/%s" % FIREARM_CATEGORY_BOXES[cid]).visible = (cid == cat_id)
+	if firearm_menu.visible:
+		_refresh_firearm_menu()
+
 func _refresh_firearm_menu() -> void:
 	firearm_money_label.text = "Soldi: %d€   Legno: %d   Metallo: %d   Cablaggi: %d" % [
 		CheckpointData.money, CheckpointData.materials.get("legno", 0),
 		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
 	]
-	for wid in Firearms.CATEGORY_WEAPONS["pistole"]:
-		var base := get_node("HUD/FirearmMenu/Scroll/Box/PistoleBox/Weapon_%s" % wid)
+	for wid in Firearms.CATEGORY_WEAPONS[current_firearm_category]:
+		var base := get_node("HUD/FirearmMenu/Scroll/Box/%s/Weapon_%s" % [FIREARM_CATEGORY_BOXES[current_firearm_category], wid])
 		var main_info: Label = base.get_node("MainRow/InfoLabel")
 		var action_btn: Button = base.get_node("MainRow/ActionButton")
 		var ammo_info: Label = base.get_node("AmmoRow/InfoLabel")
