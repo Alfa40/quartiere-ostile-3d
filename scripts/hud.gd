@@ -50,7 +50,7 @@ func _ready() -> void:
 	house_enter_button.pressed.connect(func(): house_enter_pressed.emit())
 
 func set_house_button_visible(value: bool) -> void:
-	if not zone_complete_active and not pause_panel.visible and not gameover_panel.visible:
+	if not pause_panel.visible and not gameover_panel.visible:
 		house_enter_button.visible = value
 
 func _process(delta: float) -> void:

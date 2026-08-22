@@ -24,7 +24,7 @@ const OBJECT_CLEAR_RADIUS := 6.0
 const OBJECT_COUNT_MIN := 30
 const OBJECT_COUNT_MAX := 45
 
-const HOUSE_DOOR_POS := Vector3(0, 0, 10.5)
+const HOUSE_DOOR_POS := Vector3(0, 0, 17.5)
 const HOUSE_CLEAR_RADIUS := 10.0
 const HOUSE_INTERACT_RANGE := 2.5
 
@@ -141,11 +141,14 @@ func _process(delta: float) -> void:
 		get_tree().reload_current_scene()
 
 	if zone_transitioning or player.dead:
-		hud.set_house_button_visible(false)
+		if zone_transitioning and not player.dead:
+			var dist_to_house := player.global_position.distance_to(HOUSE_DOOR_POS)
+			hud.set_house_button_visible(dist_to_house <= HOUSE_INTERACT_RANGE)
+		else:
+			hud.set_house_button_visible(false)
 		return
 
-	var dist_to_house := player.global_position.distance_to(HOUSE_DOOR_POS)
-	hud.set_house_button_visible(dist_to_house <= HOUSE_INTERACT_RANGE)
+	hud.set_house_button_visible(false)
 
 	if zone_enemies_spawned < zone_enemies_total:
 		spawn_timer -= delta

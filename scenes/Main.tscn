@@ -250,6 +250,7 @@ position = Vector3(0, 0, 10)
 
 [node name="HouseExterior" type="StaticBody3D" parent="."]
 position = Vector3(0, 1.1, 14)
+rotation_degrees = Vector3(0, 180, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HouseExterior"]
 shape = SubResource("TentShape")
