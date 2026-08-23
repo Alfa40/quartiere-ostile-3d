@@ -375,14 +375,14 @@ func _refresh_workbench_menu() -> void:
 		var info: Label = row.get_node("InfoLabel")
 		var btn: Button = row.get_node("BuyButton")
 		if PlayerUpgrades.is_maxed(id, level):
-			info.text = "%s — LIVELLO MASSIMO (%d/%d)" % [def.label, level, def.max_level]
+			info.text = "%s — LIVELLO MASSIMO (%d/%d)" % [def.label, level, PlayerUpgrades.MAX_LEVEL]
 			btn.disabled = true
 			btn.text = "Massimo"
 		else:
 			var cm := PlayerUpgrades.cost_money(id, level)
 			var cmat := PlayerUpgrades.cost_material(id, level)
 			var mat_name: String = MATERIAL_LABELS.get(def.material, def.material)
-			info.text = "%s (Lv %d/%d)\n%s — costa %d€ + %d %s" % [def.label, level, def.max_level, def.desc, cm, cmat, mat_name]
+			info.text = "%s (Lv %d/%d)\n%s — costa %d€ + %d %s" % [def.label, level, PlayerUpgrades.MAX_LEVEL, def.desc, cm, cmat, mat_name]
 			var can_afford: bool = CheckpointData.money >= cm and CheckpointData.materials.get(def.material, 0) >= cmat
 			btn.disabled = not can_afford
 			btn.text = "Compra"

@@ -5,6 +5,10 @@ const GRAVITY := 20.0
 const BASE_ATTACK_DAMAGE := 20.0
 const BASE_ATTACK_COOLDOWN := 0.45
 const FLASH_TIME := 0.12
+# Leggera vibrazione tattile quando il player subisce danni (dispositivi
+# mobili con supporto Vibration API; su iOS Safari non ha effetto per un
+# limite della piattaforma, non del gioco).
+const DAMAGE_VIBRATE_MS := 60
 
 signal hp_changed(current: float, max_hp: float)
 signal died
@@ -642,6 +646,7 @@ func take_damage(amount: float, _source = null) -> void:
 		return
 	hp = max(hp - amount, 0.0)
 	hp_changed.emit(hp, max_hp)
+	Input.vibrate_handheld(DAMAGE_VIBRATE_MS)
 	if main != null and main.has_method("on_player_damaged"):
 		main.on_player_damaged(amount)
 	if hp <= 0.0:
