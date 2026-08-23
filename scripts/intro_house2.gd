@@ -17,9 +17,13 @@ func _on_door_entered(body: Node3D) -> void:
 		return
 	TutorialProgress.set_stage("done")
 	# Il gioco vero comincia sempre da zero: i soldi/materiali donati per il
-	# tutorial (e quanto ne resta dopo l'acquisto della pistola) non devono
-	# passare alla partita reale.
+	# tutorial e la pistola comprata al banco (solo per farla provare) non
+	# devono passare alla partita reale.
 	CheckpointData.money = 0
 	CheckpointData.materials = {"legno": 0, "metallo": 0, "cablaggi": 0}
+	CheckpointData.owned_firearms = {}
+	CheckpointData.firearm_upgrades = {}
+	CheckpointData.firearm_ammo = {}
+	CheckpointData.equipped_firearm = ""
 	CheckpointData.save_checkpoint(CheckpointData.zone, 0, CheckpointData.materials, CheckpointData.upgrades)
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
