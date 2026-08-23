@@ -645,6 +645,7 @@ func _on_weapon_action_pressed(wid: String) -> void:
 		CheckpointData.materials[def.price_material] = CheckpointData.materials.get(def.price_material, 0) - int(def.price_amount)
 		CheckpointData.owned_weapons[wid] = true
 		CheckpointData.weapon_upgrades[wid] = {}
+		CheckpointData.equipped_weapon = wid
 	else:
 		CheckpointData.equipped_weapon = wid
 	_refresh_weapon_menu()
@@ -815,6 +816,7 @@ func _on_firearm_action_pressed(wid: String) -> void:
 		CheckpointData.owned_firearms[wid] = true
 		CheckpointData.firearm_upgrades[wid] = {}
 		CheckpointData.firearm_ammo[wid] = int(def.magazine_size)
+		CheckpointData.equipped_firearm = wid
 	else:
 		CheckpointData.equipped_firearm = wid
 	_refresh_firearm_menu()
@@ -991,10 +993,10 @@ func _on_throwable_action_pressed(wid: String) -> void:
 		CheckpointData.materials[def.price_material] = CheckpointData.materials.get(def.price_material, 0) - int(def.price_amount)
 		CheckpointData.owned_throwables[wid] = true
 		CheckpointData.throwable_upgrades[wid] = {}
-		if CheckpointData.equipped_throwables.get(cat, "") == "":
-			CheckpointData.equipped_throwables[cat] = wid
-			if CheckpointData.equipped_throwable == "":
-				CheckpointData.equipped_throwable = wid
+		# Equipaggiata subito, anche se sostituisce quella già scelta per
+		# la stessa categoria: così il player non entra in zona disarmato.
+		CheckpointData.equipped_throwables[cat] = wid
+		CheckpointData.equipped_throwable = wid
 	else:
 		if CheckpointData.equipped_throwables.get(cat, "") == wid:
 			# Un secondo tocco sulla stessa arma la toglie dal loadout di questa categoria.
