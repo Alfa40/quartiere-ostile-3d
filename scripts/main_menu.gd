@@ -8,7 +8,30 @@ extends Control
 
 var _pending_reset_slot := 0
 
+# Estratta a parte (pura, nessun cambio scena) per poterla testare senza
+# innescare un vero change_scene_to_file.
+static func intro_redirect_scene_path() -> String:
+	match TutorialProgress.intro_stage:
+		"field2":
+			return "res://scenes/IntroField2.tscn"
+		"place_tent":
+			return "res://scenes/Main.tscn"
+		_:
+			return "res://scenes/IntroField1.tscn"
+
 func _ready() -> void:
+	# Tutorial giocabile obbligatorio al primissimo avvio del gioco: finché
+	# non è stato completato, il menu normale resta bloccato e si riprende
+	# sempre dal passo in cui il player si era fermato.
+	if not TutorialProgress.is_done():
+		if TutorialProgress.intro_stage == "place_tent":
+			CheckpointData.select_slot(1)
+		# Deferito: chiamare change_scene_to_file mentre questo stesso nodo è
+		# ancora nel bel mezzo del proprio _ready() (la scena iniziale appena
+		# caricata) può entrare in conflitto con l'albero della scena.
+		get_tree().call_deferred("change_scene_to_file", intro_redirect_scene_path())
+		return
+
 	$Box/TutorialButton.pressed.connect(_on_tutorial_pressed)
 	$CreatorButton.pressed.connect(_on_creator_pressed)
 	$PasswordPanel/Scroll/Box/BackspaceButton.pressed.connect(_on_backspace_pressed)

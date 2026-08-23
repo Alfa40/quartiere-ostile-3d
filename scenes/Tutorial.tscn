@@ -53,6 +53,16 @@ custom_minimum_size = Vector2(0, 144)
 theme_override_font_sizes/font_size = 52
 text = "Materiali"
 
+[node name="ThrowablesButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 144)
+theme_override_font_sizes/font_size = 52
+text = "Armi da lancio"
+
+[node name="ExplosivesButton" type="Button" parent="Scroll/Box"]
+custom_minimum_size = Vector2(0, 144)
+theme_override_font_sizes/font_size = 52
+text = "Armi esplosive"
+
 [node name="GuideButton" type="Button" parent="Scroll/Box"]
 custom_minimum_size = Vector2(0, 112)
 theme_override_font_sizes/font_size = 40

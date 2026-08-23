@@ -1,0 +1,141 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/npc.gd" id="1_npc"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape"]
+radius = 0.5
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="TorsoMesh"]
+radius = 0.27
+height = 0.7
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+radius = 0.16
+height = 0.32
+
+[sub_resource type="CapsuleMesh" id="ThighMesh"]
+radius = 0.115
+height = 0.38
+
+[sub_resource type="CapsuleMesh" id="CalfMesh"]
+radius = 0.095
+height = 0.38
+
+[sub_resource type="CapsuleMesh" id="UpperArmMesh"]
+radius = 0.095
+height = 0.3
+
+[sub_resource type="CapsuleMesh" id="ForearmMesh"]
+radius = 0.08
+height = 0.28
+
+[sub_resource type="BoxMesh" id="FaceMesh"]
+size = Vector3(0.14, 0.14, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="NpcMaterial"]
+albedo_color = Color(0.25, 0.45, 0.85, 1)
+metallic = 0.1
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="HeadMaterial"]
+albedo_color = Color(0.82, 0.65, 0.52, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="NpcEyeMaterial"]
+albedo_color = Color(0.3, 0.9, 1.0, 1)
+emission_enabled = true
+emission = Color(0.3, 0.8, 1.0, 1)
+emission_energy_multiplier = 1.5
+
+[node name="Npc" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 11
+script = ExtResource("1_npc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape")
+position = Vector3(0, 0.9, 0)
+
+[node name="FacingPivot" type="Node3D" parent="."]
+
+[node name="VisualRoot" type="Node3D" parent="FacingPivot"]
+
+[node name="Torso" type="MeshInstance3D" parent="FacingPivot/VisualRoot"]
+mesh = SubResource("TorsoMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, 1.2, 0)
+
+[node name="Head" type="MeshInstance3D" parent="FacingPivot/VisualRoot"]
+mesh = SubResource("HeadMesh")
+surface_material_override/0 = SubResource("HeadMaterial")
+position = Vector3(0, 1.71, 0)
+
+[node name="Face" type="MeshInstance3D" parent="FacingPivot/VisualRoot"]
+mesh = SubResource("FaceMesh")
+surface_material_override/0 = SubResource("NpcEyeMaterial")
+position = Vector3(0, 1.71, -0.16)
+
+[node name="LeftHip" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(-0.13, 0.85, 0)
+
+[node name="LeftThigh" type="MeshInstance3D" parent="FacingPivot/VisualRoot/LeftHip"]
+mesh = SubResource("ThighMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.19, 0)
+
+[node name="LeftKnee" type="Node3D" parent="FacingPivot/VisualRoot/LeftHip"]
+position = Vector3(0, -0.38, 0)
+
+[node name="LeftCalf" type="MeshInstance3D" parent="FacingPivot/VisualRoot/LeftHip/LeftKnee"]
+mesh = SubResource("CalfMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.19, 0)
+
+[node name="RightHip" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(0.13, 0.85, 0)
+
+[node name="RightThigh" type="MeshInstance3D" parent="FacingPivot/VisualRoot/RightHip"]
+mesh = SubResource("ThighMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.19, 0)
+
+[node name="RightKnee" type="Node3D" parent="FacingPivot/VisualRoot/RightHip"]
+position = Vector3(0, -0.38, 0)
+
+[node name="RightCalf" type="MeshInstance3D" parent="FacingPivot/VisualRoot/RightHip/RightKnee"]
+mesh = SubResource("CalfMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.19, 0)
+
+[node name="LeftShoulder" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(-0.32, 1.4, 0)
+
+[node name="LeftUpperArm" type="MeshInstance3D" parent="FacingPivot/VisualRoot/LeftShoulder"]
+mesh = SubResource("UpperArmMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.15, 0)
+
+[node name="LeftElbow" type="Node3D" parent="FacingPivot/VisualRoot/LeftShoulder"]
+position = Vector3(0, -0.3, 0)
+
+[node name="LeftForearm" type="MeshInstance3D" parent="FacingPivot/VisualRoot/LeftShoulder/LeftElbow"]
+mesh = SubResource("ForearmMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.14, 0)
+
+[node name="RightShoulder" type="Node3D" parent="FacingPivot/VisualRoot"]
+position = Vector3(0.32, 1.4, 0)
+
+[node name="RightUpperArm" type="MeshInstance3D" parent="FacingPivot/VisualRoot/RightShoulder"]
+mesh = SubResource("UpperArmMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.15, 0)
+
+[node name="RightElbow" type="Node3D" parent="FacingPivot/VisualRoot/RightShoulder"]
+position = Vector3(0, -0.3, 0)
+
+[node name="RightForearm" type="MeshInstance3D" parent="FacingPivot/VisualRoot/RightShoulder/RightElbow"]
+mesh = SubResource("ForearmMesh")
+surface_material_override/0 = SubResource("NpcMaterial")
+position = Vector3(0, -0.14, 0)

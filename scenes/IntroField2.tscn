@@ -1,0 +1,242 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://scripts/intro_field2.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/Npc.tscn" id="3_npc"]
+[ext_resource type="Script" path="res://scripts/tutorial_hud.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/touch_controls.gd" id="5_touch"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
+sky_top_color = Color(0.15, 0.18, 0.35, 1)
+sky_horizon_color = Color(0.45, 0.4, 0.4, 1)
+ground_bottom_color = Color(0.05, 0.05, 0.06, 1)
+ground_horizon_color = Color(0.3, 0.28, 0.28, 1)
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("SkyMat_1")
+
+[sub_resource type="Environment" id="Env_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+ambient_light_source = 3
+ambient_light_color = Color(0.6, 0.6, 0.7, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="WorldBoundaryShape3D" id="FloorShape"]
+plane = Plane(0, 1, 0, 0)
+
+[sub_resource type="PlaneMesh" id="FloorMesh"]
+size = Vector2(22, 52)
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.42, 0.58, 0.32, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="WallMeshNS"]
+size = Vector3(24, 3, 1)
+
+[sub_resource type="BoxShape3D" id="WallShapeNS"]
+size = Vector3(24, 3, 1)
+
+[sub_resource type="BoxMesh" id="WallMeshEW"]
+size = Vector3(54, 3, 1)
+
+[sub_resource type="BoxShape3D" id="WallShapeEW"]
+size = Vector3(54, 3, 1)
+
+[sub_resource type="StandardMaterial3D" id="WallMaterial"]
+albedo_color = Color(0.35, 0.18, 0.16, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="HutMesh"]
+size = Vector3(4, 2.4, 4)
+
+[sub_resource type="BoxShape3D" id="HutShape"]
+size = Vector3(4, 2.4, 4)
+
+[sub_resource type="StandardMaterial3D" id="HutMaterial"]
+albedo_color = Color(0.55, 0.4, 0.32, 1)
+roughness = 0.85
+
+[node name="IntroField2" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_1")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -30, 0)
+light_energy = 1.1
+shadow_enabled = false
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+surface_material_override/0 = SubResource("FloorMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.5, -25.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallNorth"]
+mesh = SubResource("WallMeshNS")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("WallShapeNS")
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.5, 25.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallSouth"]
+mesh = SubResource("WallMeshNS")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("WallShapeNS")
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+position = Vector3(11.5, 1.5, 0)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("WallMeshEW")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("WallShapeEW")
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+position = Vector3(-11.5, 1.5, 0)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("WallMeshEW")
+surface_material_override/0 = SubResource("WallMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("WallShapeEW")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector3(0, 0, 15)
+
+[node name="Npc" parent="." instance=ExtResource("3_npc")]
+position = Vector3(0, 0, 5)
+
+[node name="NpcHouse" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.2, -21)
+
+[node name="Hut" type="MeshInstance3D" parent="NpcHouse"]
+mesh = SubResource("HutMesh")
+surface_material_override/0 = SubResource("HutMaterial")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NpcHouse"]
+shape = SubResource("HutShape")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
+
+[node name="HealthBar" type="ProgressBar" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 560.0
+offset_bottom = 90.0
+min_value = 0.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HPText" type="Label" parent="HUD/HealthBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 7
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100 / 100"
+
+[node name="ObjectiveLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -480.0
+offset_top = 150.0
+offset_right = 480.0
+offset_bottom = 290.0
+theme_override_font_sizes/font_size = 42
+theme_override_colors/font_color = Color(1, 0.95, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+horizontal_alignment = 1
+autowrap_mode = 2
+text = ""
+
+[node name="ProgressLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 300.0
+offset_right = 260.0
+offset_bottom = 350.0
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+horizontal_alignment = 1
+text = ""
+
+[node name="TouchControls" type="Control" parent="HUD"]
+script = ExtResource("5_touch")
+
+[node name="ThrowArmButton" type="Button" parent="HUD"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -260.0
+offset_right = -130.0
+offset_bottom = -130.0
+theme_override_font_sizes/font_size = 22
+text = "Lancia"
+visible = false
+
+[node name="CompletePanel" type="Control" parent="HUD"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/CompletePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.07, 0.85)
+
+[node name="Box" type="VBoxContainer" parent="HUD/CompletePanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -100.0
+offset_right = 300.0
+offset_bottom = 100.0
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="HUD/CompletePanel/Box"]
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Ottimo lavoro!"
+
+[node name="BackButton" type="Button" parent="HUD/CompletePanel/Box"]
+custom_minimum_size = Vector2(0, 70)
+theme_override_font_sizes/font_size = 28
+text = "Avanti"
+
+[node name="ExitButton" type="Button" parent="HUD"]
+visible = false
