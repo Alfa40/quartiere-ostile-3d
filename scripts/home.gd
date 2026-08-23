@@ -121,6 +121,10 @@ var current_throwable_category := "armi_bianche_lancio"
 var current_explosive_category := "lanciagranate"
 var _current_interact := ""
 var _placed_bench_nodes := {}
+# Stato "a tendina" dei menu delle armi: quali armi hanno statistiche e
+# potenziamenti espansi, tenuti chiusi di default per non lasciare blocchi di
+# testo troppo lunghi. Chiave = id arma, per tutti e 4 i banchi insieme.
+var _expanded_weapons := {}
 
 func _ready() -> void:
 	_apply_house_tier_geometry()
@@ -167,6 +171,9 @@ func _ready() -> void:
 			var tbase := get_node("HUD/ThrowableMenu/Scroll/Box/%s/Weapon_%s" % [THROWABLE_CATEGORY_BOXES[tcat_id], wid])
 			var taction_btn: Button = tbase.get_node("MainRow/ActionButton")
 			taction_btn.pressed.connect(_on_throwable_action_pressed.bind(wid))
+			var tname_label: Label = tbase.get_node("MainRow/InfoLabel")
+			tname_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			tname_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_throwable_menu))
 			var tammo_btn: Button = tbase.get_node("AmmoRow/BuyButton")
 			tammo_btn.pressed.connect(_on_buy_throwable_ammo_pressed.bind(wid))
 			for tid in Throwables.UPGRADE_TRACK_ORDER:
@@ -180,6 +187,9 @@ func _ready() -> void:
 			var fbase := get_node("HUD/FirearmMenu/Scroll/Box/%s/Weapon_%s" % [FIREARM_CATEGORY_BOXES[fcat_id], wid])
 			var faction_btn: Button = fbase.get_node("MainRow/ActionButton")
 			faction_btn.pressed.connect(_on_firearm_action_pressed.bind(wid))
+			var fname_label: Label = fbase.get_node("MainRow/InfoLabel")
+			fname_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			fname_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_firearm_menu))
 			var fammo_btn: Button = fbase.get_node("AmmoRow/BuyButton")
 			fammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
 			for tid in Firearms.UPGRADE_TRACK_ORDER:
@@ -193,6 +203,9 @@ func _ready() -> void:
 			var ebase := get_node("HUD/ExplosiveMenu/Scroll/Box/%s/Weapon_%s" % [EXPLOSIVE_CATEGORY_BOXES[ecat_id], wid])
 			var eaction_btn: Button = ebase.get_node("MainRow/ActionButton")
 			eaction_btn.pressed.connect(_on_firearm_action_pressed.bind(wid))
+			var ename_label: Label = ebase.get_node("MainRow/InfoLabel")
+			ename_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			ename_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_explosive_menu))
 			var eammo_btn: Button = ebase.get_node("AmmoRow/BuyButton")
 			eammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
 			for tid in Firearms.UPGRADE_TRACK_ORDER:
@@ -206,6 +219,9 @@ func _ready() -> void:
 			var base := get_node("HUD/WeaponMenu/Scroll/Box/%s/Weapon_%s" % [CATEGORY_BOXES[cat_id], wid])
 			var action_btn: Button = base.get_node("MainRow/ActionButton")
 			action_btn.pressed.connect(_on_weapon_action_pressed.bind(wid))
+			var name_label: Label = base.get_node("MainRow/InfoLabel")
+			name_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			name_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_weapon_menu))
 			for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
 				var t_btn: Button = base.get_node("Track_%s/BuyButton" % tid)
 				t_btn.pressed.connect(_on_upgrade_weapon_pressed.bind(wid, tid))
@@ -1011,6 +1027,20 @@ func _open_weapon_menu() -> void:
 func _close_weapon_menu() -> void:
 	weapon_menu.visible = false
 
+# Tocca il nome di un'arma per aprire/chiudere il suo "menu a tendina" con
+# statistiche e potenziamenti (nascosti di default, per non lasciare blocchi
+# di testo troppo lunghi nella lista). Ritoccando il nome si richiude.
+func _on_weapon_name_gui_input(event: InputEvent, wid: String, refresh_callable: Callable) -> void:
+	var pressed := false
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		pressed = true
+	elif event is InputEventScreenTouch and event.pressed:
+		pressed = true
+	if not pressed:
+		return
+	_expanded_weapons[wid] = not _expanded_weapons.get(wid, false)
+	refresh_callable.call()
+
 func _show_weapon_category(cat_id: String) -> void:
 	current_weapon_category = cat_id
 	for cid in MeleeWeapons.CATEGORY_ORDER:
@@ -1056,8 +1086,15 @@ func _refresh_weapon_menu() -> void:
 				action_btn.text = "Equipaggia"
 				action_btn.modulate = OWNED_BUTTON_MODULATE
 
+		# Statistiche e potenziamenti restano chiusi finché non si tocca il
+		# nome dell'arma, per non lasciare blocchi di testo troppo lunghi.
+		var expanded: bool = _expanded_weapons.get(wid, false)
+		if not expanded:
+			main_info.text = main_info.text.split("\n")[0]
+
 		for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
+			track_row.visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = wups.get(tid, 0)
@@ -1210,8 +1247,14 @@ func _refresh_firearm_menu() -> void:
 				ammo_btn.disabled = CheckpointData.money < pack_cost
 			ammo_btn.text = "Compra munizioni"
 
+		var expanded: bool = _expanded_weapons.get(wid, false)
+		if not expanded:
+			main_info.text = main_info.text.split("\n")[0]
+		base.get_node("AmmoRow").visible = expanded
+
 		for tid in Firearms.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
+			track_row.visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = fups.get(tid, 0)
@@ -1312,8 +1355,14 @@ func _refresh_explosive_menu() -> void:
 				ammo_btn.disabled = CheckpointData.money < pack_cost
 			ammo_btn.text = "Compra munizioni"
 
+		var expanded: bool = _expanded_weapons.get(wid, false)
+		if not expanded:
+			main_info.text = main_info.text.split("\n")[0]
+		base.get_node("AmmoRow").visible = expanded
+
 		for tid in Firearms.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
+			track_row.visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = fups.get(tid, 0)
@@ -1507,8 +1556,14 @@ func _refresh_throwable_menu() -> void:
 				ammo_btn.disabled = CheckpointData.money < pack_cost
 			ammo_btn.text = "Compra scorta"
 
+		var expanded: bool = _expanded_weapons.get(wid, false)
+		if not expanded:
+			main_info.text = main_info.text.split("\n")[0]
+		base.get_node("AmmoRow").visible = expanded
+
 		for tid in Throwables.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
+			track_row.visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = tups.get(tid, 0)
