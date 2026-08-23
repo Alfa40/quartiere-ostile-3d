@@ -18,13 +18,12 @@ const MENU_SCROLL_RIGHT_LANDSCAPE := -10.0
 const INTERACT_RANGE := 2.2
 const MATERIAL_LABELS := {"legno": "Legno", "metallo": "Metallo", "cablaggi": "Cablaggi"}
 
-const FIXED_BENCH_CELLS := ["0:0", "1:0"]
 const DOOR_GAP := 1.4
 var col_values: Array = [-1.0, 1.0]
 var row_values: Array = [-2.0, 0.0, 2.0]
 var current_floor := 0
-var reorganize_mode := false
 var moving_bench_from_index := -1
+var moving_house_bench := false
 var stairs_cooldown_timer := 0.0
 var _floor_mesh_instances := {}
 
@@ -61,6 +60,10 @@ const BENCH_SCENES := {
 	"armi_da_fuoco": preload("res://scenes/WorkbenchArmiDaFuoco.tscn"),
 	"armi_da_lancio": preload("res://scenes/WorkbenchArmiDaLancio.tscn"),
 	"armi_esplosive": preload("res://scenes/WorkbenchArmiEsplosive.tscn"),
+	# Usato solo per l'anteprima "fantasma" durante lo spostamento: il banco
+	# della casa vero e proprio resta sempre il nodo $Workbench già presente
+	# in scena, mai duplicato.
+	"casa": preload("res://scenes/WorkbenchCasa.tscn"),
 }
 const BENCH_COSTS := {
 	"armi_bianche": {"money": 250, "material": "metallo", "amount": 20},
@@ -73,6 +76,7 @@ const BENCH_LABELS := {
 	"armi_da_fuoco": "Banco delle armi da fuoco",
 	"armi_da_lancio": "Banco delle armi da lancio",
 	"armi_esplosive": "Banco delle armi esplosive e speciali",
+	"casa": "Banco della casa",
 }
 const BENCH_UNLOCK_DESC := {
 	"armi_bianche": "Sblocca coltelli, spade, mazze, martelli e lance",
@@ -83,6 +87,7 @@ const BENCH_UNLOCK_DESC := {
 
 @onready var player: Node3D = $Player
 @onready var interact_button: Button = $HUD/InteractButton
+@onready var move_button: Button = $HUD/MoveButton
 @onready var workbench_menu: Control = $HUD/WorkbenchMenu
 @onready var money_materials_label: Label = $HUD/WorkbenchMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var upgrades_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/UpgradesTab
@@ -106,7 +111,6 @@ const BENCH_UNLOCK_DESC := {
 @onready var bench_ghost_holder: Node3D = $BenchGhostHolder
 @onready var placed_benches_root: Node3D = $PlacedBenches
 @onready var touch_controls = $HUD/TouchControls
-@onready var reorganize_panel: Control = $HUD/ReorganizePanel
 
 var placing_bench_type := ""
 var placing_ghost: Node3D = null
@@ -136,6 +140,7 @@ func _ready() -> void:
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))
 	interact_button.visible = false
+	move_button.visible = false
 	workbench_menu.visible = false
 	weapon_menu.visible = false
 	firearm_menu.visible = false
@@ -143,10 +148,9 @@ func _ready() -> void:
 	explosive_menu.visible = false
 	placement_ui.visible = false
 	placement_highlight.visible = false
-	reorganize_panel.visible = false
 
 	interact_button.pressed.connect(_on_interact_pressed)
-	$HUD/ReorganizePanel/FinishButton.pressed.connect(_exit_reorganize_mode)
+	move_button.pressed.connect(_on_move_pressed)
 	$HUD/WorkbenchMenu/Scroll/Box/CloseButton.pressed.connect(_close_house_menu)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/UpgradesTabButton.pressed.connect(_show_upgrades_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/BenchesTabButton.pressed.connect(_show_benches_tab)
@@ -284,15 +288,15 @@ func _process(delta: float) -> void:
 		stairs_cooldown_timer = maxf(0.0, stairs_cooldown_timer - delta)
 	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible:
 		interact_button.visible = false
+		move_button.visible = false
 		return
 
 	var best_id := ""
 	var best_dist := INTERACT_RANGE
-	if not reorganize_mode:
-		var d_casa := player.global_position.distance_to($Workbench.global_position)
-		if d_casa <= best_dist:
-			best_dist = d_casa
-			best_id = "casa"
+	var d_casa := player.global_position.distance_to($Workbench.global_position)
+	if d_casa <= best_dist:
+		best_dist = d_casa
+		best_id = "casa"
 	for type_id in _placed_bench_nodes:
 		var node: Node3D = _placed_bench_nodes[type_id]
 		var d := player.global_position.distance_to(node.global_position)
@@ -301,19 +305,19 @@ func _process(delta: float) -> void:
 			best_id = type_id
 	_current_interact = best_id
 	interact_button.visible = best_id != ""
-	if reorganize_mode:
-		if best_id != "":
-			interact_button.text = "Sposta %s" % BENCH_LABELS.get(best_id, best_id)
-	elif best_id == "casa":
+	move_button.visible = best_id != ""
+	if best_id == "casa":
 		interact_button.text = "Usa il banco della casa"
 	elif best_id != "":
 		interact_button.text = "Usa %s" % BENCH_LABELS.get(best_id, best_id)
+	if best_id != "":
+		move_button.text = "Sposta %s" % BENCH_LABELS.get(best_id, best_id)
+
+func _on_move_pressed() -> void:
+	if _current_interact != "":
+		_start_bench_move(_current_interact)
 
 func _on_interact_pressed() -> void:
-	if reorganize_mode:
-		if _current_interact != "":
-			_start_bench_move(_current_interact)
-		return
 	if _current_interact == "casa":
 		_open_house_menu()
 	elif _current_interact == "armi_bianche":
@@ -326,6 +330,10 @@ func _on_interact_pressed() -> void:
 		_open_explosive_menu()
 
 func _start_bench_move(type_id: String) -> void:
+	if type_id == "casa":
+		moving_house_bench = true
+		_start_bench_placement(type_id)
+		return
 	var idx := -1
 	for i in range(CheckpointData.placed_benches.size()):
 		var b: Dictionary = CheckpointData.placed_benches[i]
@@ -335,7 +343,6 @@ func _start_bench_move(type_id: String) -> void:
 	if idx < 0:
 		return
 	moving_bench_from_index = idx
-	reorganize_panel.visible = false
 	_start_bench_placement(type_id)
 
 func _open_house_menu() -> void:
@@ -467,7 +474,6 @@ func _on_buy_house_tier_pressed() -> void:
 	_close_house_menu()
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))
-	_enter_reorganize_mode()
 
 func _relocate_benches_for_shrunk_floors() -> void:
 	var new_floor_count := HouseTiers.floor_count(CheckpointData.house_tier)
@@ -482,16 +488,6 @@ func _relocate_benches_for_shrunk_floors() -> void:
 func _interior_spawn_position() -> Vector3:
 	var depth: float = float(HouseTiers.floor_data(CheckpointData.house_tier, 0).rows) * 2.0
 	return Vector3(0, 0, depth / 2.0 - 1.2)
-
-func _enter_reorganize_mode() -> void:
-	reorganize_mode = true
-	reorganize_panel.visible = true
-
-func _exit_reorganize_mode() -> void:
-	reorganize_mode = false
-	moving_bench_from_index = -1
-	reorganize_panel.visible = false
-	_refresh_workbench_menu()
 
 func _apply_house_tier_geometry() -> void:
 	var floors := HouseTiers.own_floors(CheckpointData.house_tier)
@@ -524,6 +520,9 @@ func _apply_house_tier_geometry() -> void:
 func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 	var width: float = float(dims.cols) * 2.0
 	var depth: float = float(dims.rows) * 2.0
+	# Griglia del piano terra ricalcolata al volo: i col_values/row_values
+	# membro riflettono ancora il tier precedente finché _set_current_floor(0)
+	# non li aggiorna, più sotto in questa stessa funzione chiamante.
 	var cvals := HouseTiers.col_values(CheckpointData.house_tier, 0)
 	var rvals := HouseTiers.row_values(CheckpointData.house_tier, 0)
 
@@ -585,7 +584,14 @@ func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 	]
 
 	$DoorTrigger.position = Vector3(0, 1, depth / 2.0 + 0.6)
-	$Workbench.position = Vector3(cvals[1] + 0.3, 0, rvals[0] - 0.2)
+	var wb_orientation := CheckpointData.house_bench_orientation
+	var wb_col: int = CheckpointData.house_bench_col_idx
+	var wb_row: int = CheckpointData.house_bench_row_idx
+	if wb_orientation == "h":
+		$Workbench.position = Vector3((cvals[wb_col] + cvals[wb_col + 1]) / 2.0, 0, rvals[wb_row])
+	else:
+		$Workbench.position = Vector3(cvals[wb_col], 0, (rvals[wb_row] + rvals[wb_row + 1]) / 2.0)
+	$Workbench.rotation_degrees.y = _bench_rotation_y(wb_orientation)
 
 func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wall_color: Color) -> void:
 	var width: float = float(dims.cols) * 2.0
@@ -802,6 +808,7 @@ func _start_bench_placement(type_id: String) -> void:
 	placing_bench_type = type_id
 	workbench_menu.visible = false
 	interact_button.visible = false
+	move_button.visible = false
 	touch_controls.input_enabled = false
 	touch_controls.move_vector = Vector2.ZERO
 	touch_controls.attack_held = false
@@ -835,8 +842,8 @@ func _footprint_cells(orientation: String, col_idx: int, row_idx: int) -> Array:
 
 func _occupied_cells() -> Dictionary:
 	var occ := {}
-	if current_floor == 0:
-		for key in FIXED_BENCH_CELLS:
+	if current_floor == 0 and not moving_house_bench:
+		for key in _footprint_cells(CheckpointData.house_bench_orientation, CheckpointData.house_bench_col_idx, CheckpointData.house_bench_row_idx):
 			occ[key] = true
 	for i in range(CheckpointData.placed_benches.size()):
 		if i == moving_bench_from_index:
@@ -988,6 +995,14 @@ func _on_confirm_placement_pressed() -> void:
 	if not placing_valid:
 		return
 	var type_id := placing_bench_type
+	if type_id == "casa":
+		CheckpointData.house_bench_orientation = placing_orientation
+		CheckpointData.house_bench_col_idx = placing_col_idx
+		CheckpointData.house_bench_row_idx = placing_row_idx
+		$Workbench.position = _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx, current_floor)
+		$Workbench.rotation_degrees.y = _bench_rotation_y(placing_orientation)
+		_end_placement()
+		return
 	if moving_bench_from_index >= 0:
 		CheckpointData.placed_benches[moving_bench_from_index] = {
 			"type": type_id, "orientation": placing_orientation,
@@ -1013,14 +1028,13 @@ func _on_cancel_placement_pressed() -> void:
 func _end_placement() -> void:
 	placing_bench_type = ""
 	moving_bench_from_index = -1
+	moving_house_bench = false
 	if placing_ghost != null:
 		placing_ghost.queue_free()
 		placing_ghost = null
 	placement_ui.visible = false
 	placement_highlight.visible = false
 	touch_controls.input_enabled = true
-	if reorganize_mode:
-		reorganize_panel.visible = true
 	_refresh_workbench_menu()
 
 func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: int, row_idx: int, floor_idx: int = 0) -> void:

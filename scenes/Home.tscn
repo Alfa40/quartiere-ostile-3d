@@ -229,6 +229,18 @@ offset_bottom = 40.0
 theme_override_font_sizes/font_size = 35
 text = "Usa il banco"
 
+[node name="MoveButton" type="Button" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 0.6
+anchor_right = 0.5
+anchor_bottom = 0.6
+offset_left = -140.0
+offset_top = 56.0
+offset_right = 140.0
+offset_bottom = 126.0
+theme_override_font_sizes/font_size = 28
+text = "Sposta"
+
 [node name="ReorganizePanel" type="Control" parent="HUD"]
 anchor_left = 0.5
 anchor_right = 0.5

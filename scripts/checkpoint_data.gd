@@ -66,6 +66,12 @@ var equipped_throwables := {}
 # e lanciabile sul campo tramite i tasti arma/lancio).
 var equipped_throwable := ""
 var house_tier := 0
+# Posizione del banco della casa nella griglia del piano terra: di default
+# occupa le celle 0:0/1:0 (posizione originale), ma il player può spostarlo
+# con lo stesso sistema di posizionamento degli altri banchi.
+var house_bench_orientation := "h"
+var house_bench_col_idx := 0
+var house_bench_row_idx := 0
 
 # Statistiche cumulative dell'intera partita, dalla zona 1: a differenza di
 # zone/money/materiali (che un checkpoint riporta indietro all'ultimo
@@ -179,6 +185,9 @@ func _reset_to_defaults() -> void:
 	equipped_throwables = {}
 	equipped_throwable = ""
 	house_tier = 0
+	house_bench_orientation = "h"
+	house_bench_col_idx = 0
+	house_bench_row_idx = 0
 	stats_zone_reached = 1
 	stats_money_earned = 0
 	stats_enemies_defeated = 0
@@ -259,6 +268,9 @@ func _apply_state(data: Dictionary) -> void:
 	else:
 		equipped_throwables = {}
 	house_tier = int(data.get("house_tier", 0))
+	house_bench_orientation = String(data.get("house_bench_orientation", "h"))
+	house_bench_col_idx = int(data.get("house_bench_col_idx", 0))
+	house_bench_row_idx = int(data.get("house_bench_row_idx", 0))
 	# max invece di sovrascrivere: un checkpoint più vecchio (o un continue
 	# save invalidato dalla morte) non deve mai far tornare indietro le
 	# statistiche cumulative della partita.
@@ -293,6 +305,9 @@ func _state_dict() -> Dictionary:
 		"equipped_throwable": equipped_throwable,
 		"equipped_throwables": equipped_throwables,
 		"house_tier": house_tier,
+		"house_bench_orientation": house_bench_orientation,
+		"house_bench_col_idx": house_bench_col_idx,
+		"house_bench_row_idx": house_bench_row_idx,
 		"stats_zone_reached": stats_zone_reached,
 		"stats_money_earned": stats_money_earned,
 		"stats_enemies_defeated": stats_enemies_defeated,
