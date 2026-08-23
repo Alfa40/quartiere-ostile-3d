@@ -442,7 +442,13 @@ func _apply_weapon_stats() -> void:
 
 func _apply_firearm_stats() -> void:
 	var fid: String = CheckpointData.equipped_firearm
-	touch_controls.aim_enabled = not CheckpointData.owned_firearms.is_empty()
+	# Il joystick di mira (e con esso il riposizionamento dei tasti
+	# arma/lancio) serve anche a chi possiede solo armi da lancio e nessuna
+	# arma da fuoco: senza il "or" qui i tasti restavano bloccati nel
+	# segnaposto in alto a sinistra del .tscn, mai spostati vicino al
+	# joystick perché _update_throw_button_positions() dipende da questo
+	# stesso flag.
+	touch_controls.aim_enabled = not CheckpointData.owned_firearms.is_empty() or not CheckpointData.owned_throwables.is_empty()
 	if fid == "" or not Firearms.WEAPONS.has(fid):
 		player.unequip_firearm()
 		return
@@ -481,6 +487,7 @@ func consume_firearm_reserve_ammo(fid: String, amount: int) -> void:
 	CheckpointData.firearm_ammo[fid] = max(0, int(CheckpointData.firearm_ammo.get(fid, 0)) - amount)
 
 func _apply_throwable_stats() -> void:
+	touch_controls.aim_enabled = not CheckpointData.owned_firearms.is_empty() or not CheckpointData.owned_throwables.is_empty()
 	var tid: String = CheckpointData.equipped_throwable
 	# L'arma "in mano" deve sempre far parte del loadout attuale (al massimo
 	# un'arma per categoria): se non lo è più (es. tolta dal banco), scelgo
