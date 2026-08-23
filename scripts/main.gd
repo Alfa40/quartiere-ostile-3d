@@ -162,6 +162,7 @@ func _apply_house_exterior() -> void:
 	accent_mat.albedo_color = tier.accent_color
 	accent_mat.roughness = 0.7
 
+	var top_y: float = height / 2.0
 	if floors >= 2 and not underground:
 		var upper_mesh := BoxMesh.new()
 		var upper_w: float = width * 0.7
@@ -172,6 +173,20 @@ func _apply_house_exterior() -> void:
 		upper.set_surface_override_material(0, accent_mat)
 		upper.position = Vector3(0, height / 2.0 + height * 0.4, 0)
 		accents.add_child(upper)
+		top_y = upper.position.y + upper_mesh.size.y / 2.0
+
+	if tier.has("roof_color"):
+		var roof_height: float = height * 0.6
+		var roof_mesh := PrismMesh.new()
+		roof_mesh.size = Vector3(width * 1.08, roof_height, depth * 1.08)
+		var roof_mat := StandardMaterial3D.new()
+		roof_mat.albedo_color = tier.roof_color
+		roof_mat.roughness = 0.85
+		var roof := MeshInstance3D.new()
+		roof.mesh = roof_mesh
+		roof.set_surface_override_material(0, roof_mat)
+		roof.position = Vector3(0, top_y + roof_height / 2.0, 0)
+		accents.add_child(roof)
 
 	if int(tier.towers) > 0:
 		var tower_mesh := CylinderMesh.new()
