@@ -63,9 +63,9 @@ func _start_step() -> void:
 			_door_ready = true
 
 func _advance_step() -> void:
-	# Pausa di 2s a fine di ogni passo: lascia al player il tempo di leggere
+	# Pausa di 1s a fine di ogni passo: lascia al player il tempo di leggere
 	# e ambientarsi prima che compaia il prossimo obiettivo.
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	step_index += 1
 	_start_step()
 

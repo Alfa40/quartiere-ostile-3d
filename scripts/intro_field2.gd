@@ -94,8 +94,8 @@ func _on_attacker_died() -> void:
 	_attackers_alive -= 1
 	if _attackers_alive <= 0:
 		stage = "rescue_pausing"
-		# Pausa di 2s a fine passo: lascia il tempo di leggere/ambientarsi.
-		await get_tree().create_timer(2.0).timeout
+		# Pausa di 1s a fine passo: lascia il tempo di leggere/ambientarsi.
+		await get_tree().create_timer(1.0).timeout
 		stage = "help"
 		hud.set_objective("Avvicinati all'npc per aiutarlo ad alzarsi")
 		hud.set_progress(2, 5)
@@ -106,7 +106,7 @@ func _process(_delta: float) -> void:
 		_delayed_start_horde()
 
 func _delayed_start_horde() -> void:
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	_start_horde()
 
 func _start_horde() -> void:
@@ -158,8 +158,8 @@ func _on_horde_died() -> void:
 	if _horde_alive <= 0:
 		stage = "horde_pausing"
 		throw_arm_button.visible = false
-		# Pausa di 2s a fine passo: lascia il tempo di leggere/ambientarsi.
-		await get_tree().create_timer(2.0).timeout
+		# Pausa di 1s a fine passo: lascia il tempo di leggere/ambientarsi.
+		await get_tree().create_timer(1.0).timeout
 		_start_escort()
 
 func _start_escort() -> void:
@@ -173,8 +173,8 @@ func _on_npc_arrived() -> void:
 	stage = "arriving_pausing"
 	hud.set_progress(5, 5)
 	hud.set_objective("Siete arrivati!")
-	# Pausa di 2s a fine passo: lascia il tempo di leggere/ambientarsi.
-	await get_tree().create_timer(2.0).timeout
+	# Pausa di 1s a fine passo: lascia il tempo di leggere/ambientarsi.
+	await get_tree().create_timer(1.0).timeout
 	stage = "arrived"
 	hud.set_objective("Entra in casa con l'npc: là vi aspettano una tenda e un banco tutti per te")
 

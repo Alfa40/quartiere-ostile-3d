@@ -1,7 +1,8 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/intro_house2.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/touch_controls.gd" id="3_touch"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.1, 0.11, 0.16, 1)
@@ -158,6 +159,9 @@ position = Vector3(0, 0, 2.5)
 rotation_degrees = Vector3(0, 180, 0)
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="TouchControls" type="Control" parent="HUD"]
+script = ExtResource("3_touch")
 
 [node name="HintLabel" type="Label" parent="HUD"]
 anchor_left = 0.5
