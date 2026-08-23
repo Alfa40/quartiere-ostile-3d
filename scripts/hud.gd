@@ -113,10 +113,6 @@ func set_throw_buttons_visible(value: bool) -> void:
 		throw_type_button.visible = value
 		throw_arm_button.visible = value
 
-func update_throw_type_label(label: String) -> void:
-	var has_throwable: bool = label != "-"
-	throw_arm_button.modulate = THROW_ARM_ACTIVE_MODULATE if has_throwable else THROW_ARM_IDLE_MODULATE
-
 func flash_throw_type_toast(label: String) -> void:
 	var has_throwable: bool = label != "-"
 	if _throw_toast_tween != null and _throw_toast_tween.is_valid():
@@ -138,6 +134,13 @@ func _process(delta: float) -> void:
 	_update_throw_button_positions()
 	_update_ammo_label()
 	_update_throw_type_cooldown()
+	_update_throw_arm_modulate()
+
+func _update_throw_arm_modulate() -> void:
+	# Il tasto "Lancia" si illumina solo quando l'arma da lancio è
+	# effettivamente in mano (armata), non solo quando è equipaggiata.
+	var armed: bool = main != null and main.player != null and main.player.throw_armed
+	throw_arm_button.modulate = THROW_ARM_ACTIVE_MODULATE if armed else THROW_ARM_IDLE_MODULATE
 
 func _update_throw_type_cooldown() -> void:
 	if main == null or main.player == null or main.player.throwable_id == "":

@@ -187,7 +187,6 @@ func _apply_throwable_stats() -> void:
 	var tid: String = CheckpointData.equipped_throwable
 	if tid == "" or not Throwables.WEAPONS.has(tid):
 		player.unequip_throwable()
-		hud.update_throw_type_label("-")
 		return
 	var tups: Dictionary = CheckpointData.throwable_upgrades.get(tid, {})
 	var def: Dictionary = Throwables.WEAPONS[tid]
@@ -206,7 +205,6 @@ func _apply_throwable_stats() -> void:
 		Throwables.final_aim_line_length(tid, tups),
 		float(def.get("stun_duration", 0.0)),
 	)
-	hud.update_throw_type_label(String(def.label))
 
 func get_throwable_reserve_ammo(tid: String) -> int:
 	return int(CheckpointData.throwable_ammo.get(tid, 0))
