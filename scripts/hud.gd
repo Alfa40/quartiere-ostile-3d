@@ -63,12 +63,13 @@ const AMMO_LOW_MAG_RATIO := 0.25
 # affianca la vibrazione tattile (senza effetto su iOS Safari, limite della
 # piattaforma) con un riscontro visivo su qualunque dispositivo. Due
 # componenti che si sommano:
-# - una base legata alla vita ATTUALE: quasi nulla a vita piena, cresce man
-#   mano che la vita scende, fino a restare permanente (piena, mai sfumata
-#   via) sotto DAMAGE_FLASH_LOW_HP_FRAC;
+# - una base legata alla vita ATTUALE: zero finché la vita resta sopra
+#   DAMAGE_FLASH_LOW_HP_FRAC, poi scatta piena e permanente (mai sfumata
+#   via) sotto quella soglia;
 # - un picco temporaneo a ogni colpo, proporzionale a quanta % della vita
 #   massima è stata appena persa (un graffio è quasi impercettibile, un
-#   colpo pesante molto più visibile), che si esaurisce da solo.
+#   colpo pesante molto più visibile), che si esaurisce da solo — è l'unico
+#   bagliore visibile finché la vita resta sopra la soglia critica.
 const DAMAGE_FLASH_LOW_HP_FRAC := 0.10
 const DAMAGE_FLASH_HIT_SCALE := 2.2
 const DAMAGE_FLASH_HIT_DECAY := 1.6
@@ -404,12 +405,9 @@ func on_player_hp_changed(current: float, max_hp: float) -> void:
 	health_bar.value = current
 	hp_text.text = "%d / %d" % [int(current), int(max_hp)]
 	var hp_frac: float = current / maxf(max_hp, 1.0)
-	# 0 a vita piena, sale mano a mano che la vita scende, satura a 1
-	# esattamente a DAMAGE_FLASH_LOW_HP_FRAC (e resta piena, "permanente",
-	# sotto quella soglia).
-	_damage_flash_baseline = clampf(
-		1.0 - (hp_frac - DAMAGE_FLASH_LOW_HP_FRAC) / (1.0 - DAMAGE_FLASH_LOW_HP_FRAC), 0.0, 1.0,
-	)
+	# Zero sopra la soglia critica (lì il bagliore è solo il flash istantaneo
+	# del colpo); piena e permanente non appena la vita scende a/sotto di essa.
+	_damage_flash_baseline = 1.0 if hp_frac <= DAMAGE_FLASH_LOW_HP_FRAC else 0.0
 
 func show_message(text: String) -> void:
 	message_label.text = text
