@@ -97,6 +97,10 @@ var _pre_creator_materials := {}
 
 func _ready() -> void:
 	run_start_msec = Time.get_ticks_msec()
+	# WallMaterial è condiviso dai 4 muri del perimetro: duplicarlo solo per
+	# quello sud evita che la sua dissolvenza si propaghi agli altri tre.
+	var wall_south_own_mat: StandardMaterial3D = (wall_south_mesh.get_surface_override_material(0) as StandardMaterial3D).duplicate()
+	wall_south_mesh.set_surface_override_material(0, wall_south_own_mat)
 	zone = CheckpointData.zone
 	upgrades = CheckpointData.upgrades.duplicate()
 	if DevMode.enabled:
@@ -154,6 +158,11 @@ func _apply_house_exterior() -> void:
 
 	var door := house.get_node("Door") as MeshInstance3D
 	door.position = Vector3(0, -0.3, -(depth / 2.0 + 0.02))
+	# Materiale unico anche per la porta: il sub_resource della scena
+	# sarebbe altrimenti condiviso tra le varie istanze di Main.tscn create
+	# a ogni cambio di scena, facendo persistere un'eventuale dissolvenza.
+	var door_own_mat: StandardMaterial3D = (door.get_surface_override_material(0) as StandardMaterial3D).duplicate()
+	door.set_surface_override_material(0, door_own_mat)
 
 	var light := house.get_node("Light") as OmniLight3D
 	light.position = Vector3(0, height * 0.68, -(depth / 2.0 - 1.0))
@@ -250,8 +259,13 @@ func _update_occlusion_fade(delta: float) -> void:
 func _fade_toward(mesh_inst: MeshInstance3D, blocking: bool, delta: float) -> void:
 	if mesh_inst == null:
 		return
-	var target: float = OCCLUDER_FADE_TRANSPARENCY if blocking else 0.0
-	mesh_inst.transparency = move_toward(mesh_inst.transparency, target, OCCLUDER_FADE_SPEED * delta)
+	var mat := mesh_inst.get_surface_override_material(0) as StandardMaterial3D
+	if mat == null:
+		return
+	var target: float = 1.0 - OCCLUDER_FADE_TRANSPARENCY if blocking else 1.0
+	var new_alpha: float = move_toward(mat.albedo_color.a, target, OCCLUDER_FADE_SPEED * delta)
+	mat.albedo_color.a = new_alpha
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if new_alpha < 1.0 else BaseMaterial3D.TRANSPARENCY_DISABLED
 
 # Test segmento-vs-AABB (metodo delle slab) usato per far svanire un
 # ostacolo (muro sud, esterno della casa) quando si trova esattamente sulla

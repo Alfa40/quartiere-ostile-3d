@@ -500,6 +500,10 @@ func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 
 	var floor_mesh: PlaneMesh = $Floor/Mesh.mesh
 	floor_mesh.size = Vector2(width, depth)
+	# Materiale unico (non condiviso) per poterne cambiare l'alpha in
+	# dissolvenza senza toccare altri mesh.
+	var floor_own_mat: StandardMaterial3D = ($Floor/Mesh.get_surface_override_material(0) as StandardMaterial3D).duplicate()
+	$Floor/Mesh.set_surface_override_material(0, floor_own_mat)
 	# Una shape delimitata invece del WorldBoundaryShape3D (piano infinito)
 	# originale: un piano infinito a y=0 bloccherebbe fisicamente ovunque nel
 	# mondo, impedendo di scendere ai piani sotterranei del bunker che stanno
@@ -717,9 +721,19 @@ func _update_floor_visibility() -> void:
 	for f in _floor_mesh_instances.keys():
 		var floor_y: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
 		var above: bool = floor_y > current_y + 0.1
-		var alpha: float = FLOOR_FADE_TRANSPARENCY if above else 0.0
+		var alpha: float = 1.0 - FLOOR_FADE_TRANSPARENCY if above else 1.0
 		for mesh_inst in _floor_mesh_instances[f]:
-			mesh_inst.transparency = alpha
+			_set_material_alpha(mesh_inst, alpha)
+
+# GeometryInstance3D.transparency non è supportato dal renderer di
+# compatibilità (usato dall'export Web), quindi la dissolvenza va fatta
+# modificando direttamente l'alpha del materiale, che funziona ovunque.
+func _set_material_alpha(mesh_inst: MeshInstance3D, alpha: float) -> void:
+	var mat := mesh_inst.get_surface_override_material(0) as StandardMaterial3D
+	if mat == null:
+		return
+	mat.albedo_color.a = alpha
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if alpha < 1.0 else BaseMaterial3D.TRANSPARENCY_DISABLED
 
 func _tinted_wall_material(color: Color) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
