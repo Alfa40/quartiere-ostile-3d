@@ -25,6 +25,7 @@ var row_values: Array = [-2.0, 0.0, 2.0]
 var current_floor := 0
 var reorganize_mode := false
 var moving_bench_from_index := -1
+var stairs_cooldown_timer := 0.0
 
 const CATEGORY_BOXES := {
 	"coltelli": "KnivesBox",
@@ -248,7 +249,9 @@ func _update_menu_layout() -> void:
 	explosive_scroll.offset_left = left
 	explosive_scroll.offset_right = right
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if stairs_cooldown_timer > 0.0:
+		stairs_cooldown_timer = maxf(0.0, stairs_cooldown_timer - delta)
 	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible:
 		interact_button.visible = false
 		return
@@ -591,6 +594,19 @@ func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wal
 		wc.shape = bs
 		wall.add_child(wc)
 
+func _corner_pos(cvals: Array, rvals: Array, corner: int) -> Vector2:
+	var last_c: int = cvals.size() - 1
+	var last_r: int = rvals.size() - 1
+	match corner:
+		0:
+			return Vector2(cvals[0] + 0.5, rvals[0] + 0.5)
+		1:
+			return Vector2(cvals[last_c] - 0.5, rvals[last_r] - 0.5)
+		2:
+			return Vector2(cvals[last_c] - 0.5, rvals[0] + 0.5)
+		_:
+			return Vector2(cvals[0] + 0.5, rvals[last_r] - 0.5)
+
 func _build_stairs(container: Node3D, floors: Array) -> void:
 	var stair_mat := _tinted_wall_material(Color(0.55, 0.5, 0.42, 1))
 	var marker_mesh := BoxMesh.new()
@@ -601,18 +617,19 @@ func _build_stairs(container: Node3D, floors: Array) -> void:
 		var upper_cols := HouseTiers.col_values(CheckpointData.house_tier, f + 1)
 		var upper_rows := HouseTiers.row_values(CheckpointData.house_tier, f + 1)
 		# Ogni piano intermedio partecipa a due scale (una verso il piano
-		# sotto, una verso quello sopra): usando l'angolo sinistro per le
-		# coppie di piani pari e quello destro per le coppie dispari, le due
-		# scale di uno stesso piano non si sovrappongono mai nello stesso
-		# punto fisico.
-		var use_right: bool = (f % 2) == 1
-		var lci: int = lower_cols.size() - 1 if use_right else 0
-		var uci: int = upper_cols.size() - 1 if use_right else 0
-		var l_edge_offset: float = -0.5 if use_right else 0.5
-		var lx: float = lower_cols[lci] + l_edge_offset
-		var lz: float = lower_rows[0] + 0.5
-		var ux: float = upper_cols[uci] + l_edge_offset
-		var uz: float = upper_rows[0] + 0.5
+		# sotto, una verso quello sopra). Il punto "scendi" di un piano usa
+		# sempre uno dei due angoli 0/1, quello "sali" sempre uno dei due
+		# angoli 2/3 (diagonalmente opposti): così, qualunque sia la
+		# combinazione di piani, le due scale di uno stesso piano non
+		# coincidono mai nello stesso punto fisico.
+		var up_corner: int = 2 + (f % 2)
+		var down_corner: int = (f + 1) % 2
+		var lpos := _corner_pos(lower_cols, lower_rows, up_corner)
+		var upos := _corner_pos(upper_cols, upper_rows, down_corner)
+		var lx: float = lpos.x
+		var lz: float = lpos.y
+		var ux: float = upos.x
+		var uz: float = upos.y
 		var ly: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
 		var uy: float = HouseTiers.floor_y(CheckpointData.house_tier, f + 1)
 		# I punti di arrivo (dove il player compare dopo aver salito/sceso)
@@ -660,8 +677,12 @@ func _build_stairs(container: Node3D, floors: Array) -> void:
 		container.add_child(down_trigger)
 		down_trigger.body_entered.connect(_on_stairs_entered.bind(f, 0.0, ly + 0.1, arrive_down_z))
 
+const STAIRS_COOLDOWN := 0.5
+
 func _on_stairs_entered(body: Node3D, target_floor: int, target_x: float, target_y: float, target_z: float) -> void:
 	if not body.is_in_group("player"):
+		return
+	if stairs_cooldown_timer > 0.0:
 		return
 	if placing_bench_type != "":
 		_end_placement()
@@ -669,6 +690,7 @@ func _on_stairs_entered(body: Node3D, target_floor: int, target_x: float, target
 	if body is CharacterBody3D:
 		(body as CharacterBody3D).velocity = Vector3.ZERO
 	_set_current_floor(target_floor)
+	stairs_cooldown_timer = STAIRS_COOLDOWN
 
 func _set_current_floor(floor_idx: int) -> void:
 	current_floor = floor_idx

@@ -176,9 +176,12 @@ func _apply_house_exterior() -> void:
 		top_y = upper.position.y + upper_mesh.size.y / 2.0
 
 	if tier.has("roof_color"):
+		var top_floor: Dictionary = tier.floors[tier.floors.size() - 1]
+		var roof_width: float = float(top_floor.cols) * 2.0
+		var roof_depth: float = float(top_floor.rows) * 2.0
 		var roof_height: float = height * 0.6
 		var roof_mesh := PrismMesh.new()
-		roof_mesh.size = Vector3(width * 1.08, roof_height, depth * 1.08)
+		roof_mesh.size = Vector3(roof_width * 1.08, roof_height, roof_depth * 1.08)
 		var roof_mat := StandardMaterial3D.new()
 		roof_mat.albedo_color = tier.roof_color
 		roof_mat.roughness = 0.85

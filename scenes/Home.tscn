@@ -233,7 +233,7 @@ anchor_right = 0.5
 offset_left = -320.0
 offset_top = 70.0
 offset_right = 320.0
-offset_bottom = 168.0
+offset_bottom = 210.0
 visible = false
 
 [node name="Bg" type="ColorRect" parent="HUD/ReorganizePanel"]
@@ -244,9 +244,9 @@ color = Color(0.07, 0.08, 0.11, 0.85)
 [node name="HintLabel" type="Label" parent="HUD/ReorganizePanel"]
 anchor_right = 1.0
 offset_left = 12.0
-offset_top = 8.0
+offset_top = 10.0
 offset_right = -12.0
-offset_bottom = 54.0
+offset_bottom = 90.0
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 horizontal_alignment = 1
@@ -257,9 +257,9 @@ text = "Riorganizza la casa: avvicinati a un banco e premi \"Sposta\" per riposi
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -110.0
-offset_top = 58.0
+offset_top = 100.0
 offset_right = 110.0
-offset_bottom = 94.0
+offset_bottom = 136.0
 theme_override_font_sizes/font_size = 28
 text = "Fine"
 
