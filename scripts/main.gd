@@ -69,11 +69,23 @@ const SPAWN_RETRY_DELAY := 0.2
 @onready var hud = $HUD
 @onready var player: Node3D = $Player
 @onready var touch_controls = $HUD/TouchControls
-@onready var wall_south_mesh: MeshInstance3D = $WallSouth/MeshInstance3D
 
 const OCCLUDER_FADE_TRANSPARENCY := 0.85
 const OCCLUDER_FADE_SPEED := 4.0
-const WALL_SOUTH_HALF_EXTENTS := Vector3(42.0, 1.5, 0.5)
+const OBJECT_OCCLUDER_RADIUS := 1.3
+# Margine aggiunto al test di occlusione: non solo il punto esatto in cui si
+# trova il player, ma un raggio più ampio intorno a lui, così quando è dietro
+# un grande ostacolo l'area che sparisce è larga abbastanza da fargli vedere
+# cosa ha davanti (più vicino alla sua visuale reale che a un singolo punto).
+const PLAYER_VISIBILITY_MARGIN := 3.0
+const PLAYER_VISIBILITY_MARGIN_OBJECT := 1.5
+const PARK_WALL_CONFIGS := [
+	{"path": "WallNorth", "half_extents": Vector3(42.0, 1.5, 0.5)},
+	{"path": "WallSouth", "half_extents": Vector3(42.0, 1.5, 0.5)},
+	{"path": "WallEast", "half_extents": Vector3(0.5, 1.5, 42.0)},
+	{"path": "WallWest", "half_extents": Vector3(0.5, 1.5, 42.0)},
+]
+var _wall_occluders: Array = []
 var _house_half_extents := Vector3(2.0, 3.5, 3.0)
 var _house_exterior_meshes: Array = []
 
@@ -97,10 +109,14 @@ var _pre_creator_materials := {}
 
 func _ready() -> void:
 	run_start_msec = Time.get_ticks_msec()
-	# WallMaterial è condiviso dai 4 muri del perimetro: duplicarlo solo per
-	# quello sud evita che la sua dissolvenza si propaghi agli altri tre.
-	var wall_south_own_mat: StandardMaterial3D = (wall_south_mesh.get_surface_override_material(0) as StandardMaterial3D).duplicate()
-	wall_south_mesh.set_surface_override_material(0, wall_south_own_mat)
+	# WallMaterial è condiviso dai 4 muri del perimetro: un duplicato unico a
+	# testa evita che la dissolvenza dell'uno si propaghi agli altri.
+	for cfg in PARK_WALL_CONFIGS:
+		var wall_node := get_node(String(cfg.path)) as StaticBody3D
+		var wall_mesh := wall_node.get_node("MeshInstance3D") as MeshInstance3D
+		var own_mat: StandardMaterial3D = (wall_mesh.get_surface_override_material(0) as StandardMaterial3D).duplicate()
+		wall_mesh.set_surface_override_material(0, own_mat)
+		_wall_occluders.append({"mesh": wall_mesh, "node": wall_node, "half_extents": cfg.half_extents})
 	zone = CheckpointData.zone
 	upgrades = CheckpointData.upgrades.duplicate()
 	if DevMode.enabled:
@@ -178,26 +194,33 @@ func _apply_house_exterior() -> void:
 	accent_mat.albedo_color = tier.accent_color
 	accent_mat.roughness = 0.7
 
+	# Ogni piano sopra il terreno usa le sue vere dimensioni interne (non una
+	# scala arbitraria del piano terra), impilato via via più in alto: così
+	# l'esterno riflette fedelmente la pianta reale di ciascun piano, come
+	# la villetta col primo piano più stretto del piano terra.
 	var top_y: float = height / 2.0
-	if floors >= 2 and not underground:
-		var upper_mesh := BoxMesh.new()
-		var upper_w: float = width * 0.7
-		var upper_d: float = depth * 0.7
-		upper_mesh.size = Vector3(upper_w, height * 0.8, upper_d)
-		var upper := MeshInstance3D.new()
-		upper.mesh = upper_mesh
-		upper.set_surface_override_material(0, accent_mat)
-		upper.position = Vector3(0, height / 2.0 + height * 0.4, 0)
-		accents.add_child(upper)
-		top_y = upper.position.y + upper_mesh.size.y / 2.0
+	var top_width: float = width
+	var top_depth: float = depth
+	if not underground:
+		for f in range(1, tier.floors.size()):
+			var fdims: Dictionary = tier.floors[f]
+			var fw: float = float(fdims.cols) * 2.0
+			var fd: float = float(fdims.rows) * 2.0
+			var fmesh := BoxMesh.new()
+			fmesh.size = Vector3(fw, height, fd)
+			var fbox := MeshInstance3D.new()
+			fbox.mesh = fmesh
+			fbox.set_surface_override_material(0, accent_mat)
+			fbox.position = Vector3(0, top_y + height / 2.0, 0)
+			accents.add_child(fbox)
+			top_y = fbox.position.y + height / 2.0
+			top_width = fw
+			top_depth = fd
 
 	if tier.has("roof_color"):
-		var top_floor: Dictionary = tier.floors[tier.floors.size() - 1]
-		var roof_width: float = float(top_floor.cols) * 2.0
-		var roof_depth: float = float(top_floor.rows) * 2.0
 		var roof_height: float = height * 0.6
 		var roof_mesh := PrismMesh.new()
-		roof_mesh.size = Vector3(roof_width * 1.08, roof_height, roof_depth * 1.08)
+		roof_mesh.size = Vector3(top_width * 1.08, roof_height, top_depth * 1.08)
 		var roof_mat := StandardMaterial3D.new()
 		roof_mat.albedo_color = tier.roof_color
 		roof_mat.roughness = 0.85
@@ -206,12 +229,7 @@ func _apply_house_exterior() -> void:
 		roof.set_surface_override_material(0, roof_mat)
 		roof.position = Vector3(0, top_y + roof_height / 2.0, 0)
 		accents.add_child(roof)
-
-	_house_half_extents = Vector3(width / 2.0 + 1.5, 3.5, depth / 2.0 + 1.5)
-	_house_exterior_meshes = [tent, door]
-	for child in accents.get_children():
-		if child is MeshInstance3D:
-			_house_exterior_meshes.append(child)
+		top_y = roof.position.y + roof_height / 2.0
 
 	if int(tier.towers) > 0:
 		var tower_mesh := CylinderMesh.new()
@@ -238,6 +256,27 @@ func _apply_house_exterior() -> void:
 		moat.position = Vector3(0, -height / 2.0 - 0.05, 0)
 		accents.add_child(moat)
 
+		# Una passerella di legno sopra il fossato, sul lato della porta,
+		# per poterla raggiungere a piedi invece di dover attraversare
+		# l'acqua.
+		var bridge_length := 3.4
+		var bridge_mesh := BoxMesh.new()
+		bridge_mesh.size = Vector3(2.4, 0.15, bridge_length)
+		var bridge_mat := StandardMaterial3D.new()
+		bridge_mat.albedo_color = Color(0.42, 0.32, 0.22, 1)
+		bridge_mat.roughness = 0.85
+		var bridge := MeshInstance3D.new()
+		bridge.mesh = bridge_mesh
+		bridge.set_surface_override_material(0, bridge_mat)
+		bridge.position = Vector3(0, -height / 2.0, -(depth / 2.0 + bridge_length / 2.0 - 0.1))
+		accents.add_child(bridge)
+
+	_house_half_extents = Vector3(max(width, top_width) / 2.0 + 1.5, top_y + 1.0, max(depth, top_depth) / 2.0 + 1.5)
+	_house_exterior_meshes = [tent, door]
+	for child in accents.get_children():
+		if child is MeshInstance3D:
+			_house_exterior_meshes.append(child)
+
 	var door_world_z: float = house.position.z + depth / 2.0 + 0.02
 	player.global_position = Vector3(0, 0, door_world_z + 2.5)
 	player.face_direction(Vector3(0, 0, 1))
@@ -249,15 +288,48 @@ func _update_occlusion_fade(delta: float) -> void:
 	var p0 := cam.global_position
 	var p1 := player.global_position
 
-	var wall_blocking := _segment_hits_aabb(p0, p1, $WallSouth.global_position, WALL_SOUTH_HALF_EXTENTS)
-	_fade_toward(wall_south_mesh, wall_blocking, delta)
+	var margin := Vector3.ONE * PLAYER_VISIBILITY_MARGIN
+	for w in _wall_occluders:
+		var blocking: bool = _segment_hits_aabb(p0, p1, (w.node as Node3D).global_position, w.half_extents + margin)
+		_fade_toward(w.mesh, blocking, delta)
 
 	# A zona già ripulita il player viene guidato verso casa (pulsante
 	# "Torna a casa", raggio d'interazione sulla porta): la casa deve
 	# restare sempre ben visibile in quel momento, non sfumare.
-	var house_blocking := not zone_transitioning and _segment_hits_aabb(p0, p1, $HouseExterior.global_position, _house_half_extents)
+	var house_blocking := not zone_transitioning and _segment_hits_aabb(p0, p1, $HouseExterior.global_position, _house_half_extents + margin)
 	for m in _house_exterior_meshes:
 		_fade_toward(m, house_blocking, delta)
+
+	for obj in get_tree().get_nodes_in_group("park_objects"):
+		if not is_instance_valid(obj) or bool(obj.get("low_object")):
+			continue
+		var obj3d := obj as Node3D
+		var obj_blocking: bool = _segment_hits_sphere(p0, p1, obj3d.global_position, OBJECT_OCCLUDER_RADIUS + PLAYER_VISIBILITY_MARGIN_OBJECT)
+		if not obj_blocking and not obj.has_meta("occluder_meshes"):
+			continue
+		for m in _object_occluder_meshes(obj):
+			_fade_toward(m, obj_blocking, delta)
+
+# Materiali unici per gli oggetti creati la prima volta che servono (un
+# albero/lampione/ecc. può avere più mesh, es. tronco+chioma), non subito
+# per tutti i 30-45 oggetti del parco a ogni frame.
+func _object_occluder_meshes(obj: Node) -> Array:
+	if obj.has_meta("occluder_meshes"):
+		return obj.get_meta("occluder_meshes")
+	var meshes: Array = []
+	_collect_unique_meshes(obj, meshes)
+	obj.set_meta("occluder_meshes", meshes)
+	return meshes
+
+func _collect_unique_meshes(node: Node, out: Array) -> void:
+	if node is MeshInstance3D:
+		var mesh_inst := node as MeshInstance3D
+		var mat := mesh_inst.get_surface_override_material(0) as StandardMaterial3D
+		if mat != null:
+			mesh_inst.set_surface_override_material(0, mat.duplicate())
+		out.append(mesh_inst)
+	for child in node.get_children():
+		_collect_unique_meshes(child, out)
 
 func _fade_toward(mesh_inst: MeshInstance3D, blocking: bool, delta: float) -> void:
 	if mesh_inst == null:
@@ -296,6 +368,17 @@ func _segment_hits_aabb(p0: Vector3, p1: Vector3, box_center: Vector3, half_exte
 			if tmin > tmax:
 				return false
 	return true
+
+# Come sopra ma per un ostacolo approssimato a una sfera (usato per gli
+# oggetti del parco, più economico di un AABB orientato correttamente).
+func _segment_hits_sphere(p0: Vector3, p1: Vector3, center: Vector3, radius: float) -> bool:
+	var d := p1 - p0
+	var len2 := d.length_squared()
+	if len2 < 0.0001:
+		return p0.distance_to(center) <= radius
+	var t: float = clampf((center - p0).dot(d) / len2, 0.0, 1.0)
+	var closest := p0 + d * t
+	return closest.distance_to(center) <= radius
 
 func _build_spawn_points() -> void:
 	spawn_points.clear()
