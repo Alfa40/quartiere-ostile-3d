@@ -67,6 +67,17 @@ var equipped_throwables := {}
 var equipped_throwable := ""
 var house_tier := 0
 
+# Statistiche cumulative dell'intera partita, dalla zona 1: a differenza di
+# zone/money/materiali (che un checkpoint riporta indietro all'ultimo
+# traguardo superato in caso di morte), queste non tornano mai indietro —
+# _apply_state() le aggiorna solo verso l'alto (max), così un game over
+# mostra sempre il totale giocato, non solo l'ultimo tentativo dall'ultimo
+# checkpoint.
+var stats_zone_reached := 1
+var stats_money_earned := 0
+var stats_enemies_defeated := 0
+var stats_playtime_sec := 0.0
+
 func _ready() -> void:
 	_migrate_legacy_save_to_slot_1()
 
@@ -168,6 +179,10 @@ func _reset_to_defaults() -> void:
 	equipped_throwables = {}
 	equipped_throwable = ""
 	house_tier = 0
+	stats_zone_reached = 1
+	stats_money_earned = 0
+	stats_enemies_defeated = 0
+	stats_playtime_sec = 0.0
 
 # --- Checkpoint / salvataggio "riprendi partita" per lo slot corrente ---
 
@@ -244,6 +259,13 @@ func _apply_state(data: Dictionary) -> void:
 	else:
 		equipped_throwables = {}
 	house_tier = int(data.get("house_tier", 0))
+	# max invece di sovrascrivere: un checkpoint più vecchio (o un continue
+	# save invalidato dalla morte) non deve mai far tornare indietro le
+	# statistiche cumulative della partita.
+	stats_zone_reached = max(stats_zone_reached, int(data.get("stats_zone_reached", 1)))
+	stats_money_earned = max(stats_money_earned, int(data.get("stats_money_earned", 0)))
+	stats_enemies_defeated = max(stats_enemies_defeated, int(data.get("stats_enemies_defeated", 0)))
+	stats_playtime_sec = max(stats_playtime_sec, float(data.get("stats_playtime_sec", 0.0)))
 
 func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	zone = current_zone
@@ -271,6 +293,10 @@ func _state_dict() -> Dictionary:
 		"equipped_throwable": equipped_throwable,
 		"equipped_throwables": equipped_throwables,
 		"house_tier": house_tier,
+		"stats_zone_reached": stats_zone_reached,
+		"stats_money_earned": stats_money_earned,
+		"stats_enemies_defeated": stats_enemies_defeated,
+		"stats_playtime_sec": stats_playtime_sec,
 	}
 
 func _write_json(path: String, payload: Dictionary) -> void:

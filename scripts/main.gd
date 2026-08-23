@@ -70,10 +70,24 @@ const ZONE_SATURATION_ZONES := 17.0
 const MONEY_PER_ZONE := 0.025
 const BASE_ENEMY_COOLDOWN := 1.0
 
-# Quanto ci si è avvicinati al tetto massimo di difficoltà: 0 a zona 1, si
-# avvicina a 1 molto gradualmente (mai raggiunto del tutto).
+# Le prime EASY_PHASE_ZONES zone sono una fase di "rodaggio": il player ha
+# il tempo di attrezzarsi (armi, potenziamenti, casa) senza che la difficoltà
+# cresca già sul serio — resta quasi piatta, arrivando appena a
+# EASY_PHASE_SATURATION_CAP. Da lì in poi la difficoltà comincia a salire
+# davvero e continua a farlo molto gradualmente, sempre più vicina (ma senza
+# mai raggiungerlo) al tetto massimo, richiedendo abilità e strategia via
+# via crescenti per proseguire.
+const EASY_PHASE_ZONES := 25
+const EASY_PHASE_SATURATION_CAP := 0.15
+
+# Quanto ci si è avvicinati al tetto massimo di difficoltà: 0 a zona 1, resta
+# bassa fino a EASY_PHASE_ZONES, poi si avvicina a 1 molto gradualmente (mai
+# raggiunto del tutto).
 func _zone_difficulty_saturation(current_zone: int) -> float:
-	return 1.0 - exp(-float(max(current_zone - 1, 0)) / ZONE_SATURATION_ZONES)
+	if current_zone <= EASY_PHASE_ZONES:
+		return EASY_PHASE_SATURATION_CAP * float(current_zone - 1) / float(EASY_PHASE_ZONES - 1)
+	var z := float(current_zone - EASY_PHASE_ZONES)
+	return EASY_PHASE_SATURATION_CAP + (1.0 - EASY_PHASE_SATURATION_CAP) * (1.0 - exp(-z / ZONE_SATURATION_ZONES))
 
 const ZONE_NAMES := [
 	"Ai margini del quartiere", "Vicoli stretti", "Cortili abbandonati",
@@ -87,6 +101,11 @@ const SPAWN_GRID_HALF := 32.0
 const SPAWN_HOUSE_EXCLUDE_RADIUS := 12.0
 const SPAWN_DEACTIVATE_RADIUS := 18.0
 const SPAWN_RETRY_DELAY := 0.2
+# Nelle prime EASY_PHASE_ZONES zone i nemici nascono più vicini al player
+# (ma sempre fuori dalla visuale, stesso vincolo di sempre) per rendere il
+# gioco più rapido: meno tempo di attesa/avvicinamento tra un combattimento
+# e l'altro mentre il player si sta ancora attrezzando.
+const CLOSE_SPAWN_RADIUS := 30.0
 
 @onready var hud = $HUD
 @onready var player: Node3D = $Player
@@ -113,8 +132,6 @@ var _house_exterior_meshes: Array = []
 
 var zone := 1
 var money := 0.0
-var enemies_defeated := 0
-var run_start_msec := 0
 var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
 var upgrades := {}
 var weapon_name := "Pugni"
@@ -130,7 +147,6 @@ var _pre_creator_money := 0.0
 var _pre_creator_materials := {}
 
 func _ready() -> void:
-	run_start_msec = Time.get_ticks_msec()
 	# WallMaterial è condiviso dai 4 muri del perimetro: un duplicato unico a
 	# testa evita che la dissolvenza dell'uno si propaghi agli altri.
 	for cfg in PARK_WALL_CONFIGS:
@@ -551,13 +567,11 @@ func _on_throw_arm_pressed() -> void:
 	if player.active_sticky_grenade != null and is_instance_valid(player.active_sticky_grenade):
 		player.arm_throw()
 		return
-	# Un secondo tocco mentre l'arma da lancio è già armata la disequipaggia,
-	# così il player può tornare subito a usare l'arma da fuoco senza dover
-	# sprecare un lancio o passare dal banco di casa.
+	# Un secondo tocco mentre l'arma da lancio è già armata la disarma (senza
+	# disequipaggiarla): l'arma da fuoco torna subito utilizzabile perché il
+	# blocco dipende solo dall'essere armati, non dal semplice possesso.
 	if player.throw_armed:
 		player.throw_armed = false
-		CheckpointData.equipped_throwable = ""
-		_apply_throwable_stats()
 		return
 	player.arm_throw()
 
@@ -608,6 +622,7 @@ func on_player_damaged(_amount: float) -> void:
 	hud.show_message("Un nemico ti ha rubato %d€!" % stolen)
 
 func _start_zone() -> void:
+	CheckpointData.stats_zone_reached = max(CheckpointData.stats_zone_reached, zone)
 	zone_transitioning = false
 	if zone > 1:
 		_regenerate_objects()
@@ -622,6 +637,11 @@ func _start_zone() -> void:
 		SaveData.report_run(zone, int(money))
 
 func _process(delta: float) -> void:
+	# Tempo di gioco cumulativo di tutta la partita (dalla zona 1): a
+	# differenza del resto dello stato, un checkpoint/morte non lo riporta
+	# mai indietro (vedi CheckpointData._apply_state, usa max()).
+	CheckpointData.stats_playtime_sec += delta
+
 	if Input.is_physical_key_pressed(KEY_R):
 		get_tree().paused = false
 		get_tree().reload_current_scene()
@@ -668,6 +688,13 @@ func _pick_active_spawn_point():
 			active_points.append(sp)
 	if active_points.is_empty():
 		return null
+	if zone <= EASY_PHASE_ZONES:
+		var near_points := []
+		for sp in active_points:
+			if player.global_position.distance_to(sp.pos) <= CLOSE_SPAWN_RADIUS:
+				near_points.append(sp)
+		if not near_points.is_empty():
+			return near_points[randi() % near_points.size()]
 	return active_points[randi() % active_points.size()]
 
 func _spawn_enemy() -> void:
@@ -696,11 +723,12 @@ func _spawn_enemy() -> void:
 
 func _on_enemy_died(enemy: Node3D) -> void:
 	zone_enemies_alive -= 1
-	enemies_defeated += 1
+	CheckpointData.stats_enemies_defeated += 1
 	var money_mult := 1.0 + MONEY_PER_ZONE * (zone - 1)
 	var saccheggio_mult: float = 1.0 + PlayerUpgrades.effect("saccheggio", upgrades.get("saccheggio", 0))
 	var reward := roundi(randf_range(KILL_REWARD_MIN, KILL_REWARD_MAX) * money_mult * saccheggio_mult)
 	money += reward
+	CheckpointData.stats_money_earned += reward
 	hud.update_money(money)
 
 	var msg := "Nemico sconfitto (+%d€)" % reward
@@ -812,10 +840,16 @@ func _on_player_died() -> void:
 	hud.show_game_over()
 
 func get_stats_text() -> String:
-	var elapsed_sec := int((Time.get_ticks_msec() - run_start_msec) / 1000.0)
+	# Statistiche cumulative dell'intera partita dalla zona 1: a differenza
+	# di zone/money correnti (che un checkpoint riporta indietro in caso di
+	# morte), queste contano il totale giocato, morti comprese.
+	var stats_zone: int = max(CheckpointData.stats_zone_reached, zone)
+	var elapsed_sec := int(CheckpointData.stats_playtime_sec)
 	var minutes := elapsed_sec / 60
 	var seconds := elapsed_sec % 60
-	return "Zona raggiunta: %d\nSoldi guadagnati: %d€\nNemici sconfitti: %d\nTempo: %02d:%02d" % [zone, int(money), enemies_defeated, minutes, seconds]
+	return "Zona raggiunta: %d\nSoldi guadagnati: %d€\nNemici sconfitti: %d\nTempo: %02d:%02d" % [
+		stats_zone, CheckpointData.stats_money_earned, CheckpointData.stats_enemies_defeated, minutes, seconds,
+	]
 
 func get_inventory_text() -> String:
 	if DevMode.enabled:

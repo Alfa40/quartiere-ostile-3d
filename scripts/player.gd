@@ -67,6 +67,12 @@ const LOB_MIN_ANGLE_DEGREES := 8.0
 const LOB_MAX_ANGLE_DEGREES := 82.0
 const AIM_MAGNITUDE_DEADZONE := 0.15
 const ARC_LINE_SEGMENTS := 10
+# L'arma resta "in mano" (pronta, ricarica/tempo tra i colpi in corso) finché
+# il player mira di tanto in tanto; dopo tanti secondi consecutivi senza mai
+# toccare il joystick di mira viene riposta: ricarica e cooldown si
+# congelano, e la volta successiva che si mira serve di nuovo il tempo di
+# estrazione, come alla prima equipaggiata.
+const HOLSTER_TIMEOUT := 15.0
 
 var firearm_id := ""
 var firearm_fire_mode := "auto"
@@ -108,6 +114,8 @@ var _burst_timer := 0.0
 var _burst_aim_dir := Vector3(0, 0, -1)
 var _burst_aim_magnitude := 0.0
 var _arc_line_segments: Array = []
+var weapon_holstered := true
+var holster_timer := 0.0
 
 func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0, bullet_speed: float = 40.0, spread_degrees: float = 2.0, pellet_count: int = 1, pellet_spread_degrees: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH, projectile_type: String = "bullet", grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0, stun_duration: float = 0.0) -> void:
 	firearm_id = id
@@ -312,9 +320,7 @@ func _handle_attack(delta: float) -> void:
 				body.take_damage(attack_damage, self)
 
 func _handle_firearm(delta: float) -> void:
-	firearm_fire_timer -= delta
 	firearm_flash_timer -= delta
-	throw_cooldown_timer -= delta
 	if firearm_flash_timer <= 0.0:
 		firearm_flash.visible = false
 
@@ -325,6 +331,22 @@ func _handle_firearm(delta: float) -> void:
 		last_aim_magnitude = clampf((aim.length() - AIM_MAGNITUDE_DEADZONE) / (1.0 - AIM_MAGNITUDE_DEADZONE), 0.0, 1.0)
 		facing_pivot.look_at(facing_pivot.global_position + last_aim_dir, Vector3.UP)
 
+	if firearm_id != "" or throwable_id != "":
+		if aiming:
+			if weapon_holstered:
+				firearm_fire_timer = max(firearm_fire_timer, firearm_draw_time)
+				throw_cooldown_timer = max(throw_cooldown_timer, throwable_draw_time)
+			weapon_holstered = false
+			holster_timer = HOLSTER_TIMEOUT
+		elif not weapon_holstered:
+			holster_timer -= delta
+			if holster_timer <= 0.0:
+				weapon_holstered = true
+
+	if not weapon_holstered:
+		firearm_fire_timer -= delta
+		throw_cooldown_timer -= delta
+
 	if aiming and (firearm_id != "" or throwable_id != ""):
 		# Il lancio armato (se presente) ha priorità di anteprima sull'arma
 		# da fuoco, stessa priorità usata al momento del rilascio.
@@ -333,7 +355,7 @@ func _handle_firearm(delta: float) -> void:
 		if throw_armed and throwable_grenade_type != "":
 			use_arc = true
 			lobbed_range = throwable_range
-		elif firearm_id != "" and firearm_projectile_type == "grenade_lobbed" and (throwable_id == "" or active_sticky_grenade != null):
+		elif firearm_id != "" and firearm_projectile_type == "grenade_lobbed" and not throw_armed:
 			use_arc = true
 			lobbed_range = firearm_range
 		if use_arc:
@@ -368,11 +390,17 @@ func _handle_firearm(delta: float) -> void:
 	if firearm_id == "":
 		return
 
-	# Con un'arma da lancio equipaggiata l'arma da fuoco resta inutilizzabile,
-	# a meno che non ci sia una granata appiccicosa già lanciata in attesa di
-	# detonazione: in quel caso il player può tornare a sparare normalmente.
-	var firearm_active: bool = throwable_id == "" or active_sticky_grenade != null
-	if not firearm_active:
+	# L'arma da fuoco resta inutilizzabile solo mentre un'arma da lancio è
+	# effettivamente armata (pronta a essere lanciata al rilascio del
+	# joystick di mira), non semplicemente perché una è equipaggiata: prima
+	# un'arma da lancio equipaggiata ma non armata bloccava per sempre
+	# l'arma da fuoco, un vero e proprio blocco del sistema di mira.
+	if throw_armed:
+		return
+
+	# Riposta: niente ricarica né sparo finché non si torna a mirare (a quel
+	# punto scatta di nuovo il tempo di estrazione, gestito sopra).
+	if weapon_holstered:
 		return
 
 	if firearm_reloading:
