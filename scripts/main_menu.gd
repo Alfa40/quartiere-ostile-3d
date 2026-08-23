@@ -12,6 +12,8 @@ var _pending_reset_slot := 0
 # innescare un vero change_scene_to_file.
 static func intro_redirect_scene_path() -> String:
 	match TutorialProgress.intro_stage:
+		"house1":
+			return "res://scenes/IntroHouse1.tscn"
 		"field2":
 			return "res://scenes/IntroField2.tscn"
 		"place_tent":
@@ -24,7 +26,7 @@ func _ready() -> void:
 	# non è stato completato, il menu normale resta bloccato e si riprende
 	# sempre dal passo in cui il player si era fermato.
 	if not TutorialProgress.is_done():
-		if TutorialProgress.intro_stage == "place_tent":
+		if TutorialProgress.intro_stage == "house1" or TutorialProgress.intro_stage == "place_tent":
 			CheckpointData.select_slot(1)
 		# Deferito: chiamare change_scene_to_file mentre questo stesso nodo è
 		# ancora nel bel mezzo del proprio _ready() (la scena iniziale appena

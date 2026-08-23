@@ -8,11 +8,11 @@ const WaypointScene := preload("res://scenes/Waypoint.tscn")
 const EnemyScene := preload("res://scenes/Enemy.tscn")
 const AlberoScene := preload("res://scenes/Albero.tscn")
 
-# Soldi/materiali donati entrando in casa: bastano per il banco delle armi
-# da fuoco (550€ + 40 metallo) e la pistola più forte, la Magnum (1050€ +
-# 32 metallo), con un margine per le munizioni.
-const HOUSE_MONEY_GRANT := 2000
-const HOUSE_MATERIAL_GRANT := 120
+# Soldi/materiali donati entrando in casa: pochi, bastano solo per la
+# pistola più forte già presente sul banco (la Magnum, 1050€ + 32 metallo),
+# con un margine minimo.
+const HOUSE_MONEY_GRANT := 1150
+const HOUSE_MATERIAL_GRANT := 45
 
 @onready var hud = $HUD
 @onready var player = $Player
@@ -75,5 +75,8 @@ func _on_door_entered(body: Node3D) -> void:
 	CheckpointData.start_new_game(1)
 	CheckpointData.money = HOUSE_MONEY_GRANT
 	CheckpointData.materials = {"legno": HOUSE_MATERIAL_GRANT, "metallo": HOUSE_MATERIAL_GRANT, "cablaggi": HOUSE_MATERIAL_GRANT}
-	TutorialProgress.set_stage("field2")
-	get_tree().change_scene_to_file("res://scenes/Home.tscn")
+	# Salvato subito: se il gioco viene chiuso proprio qui e riaperto, si deve
+	# ritrovare i soldi/materiali appena donati, non ripartire da zero.
+	CheckpointData.save_checkpoint(1, int(CheckpointData.money), CheckpointData.materials, CheckpointData.upgrades)
+	TutorialProgress.set_stage("house1")
+	get_tree().change_scene_to_file("res://scenes/IntroHouse1.tscn")

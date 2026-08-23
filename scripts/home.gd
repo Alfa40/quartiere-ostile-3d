@@ -1762,16 +1762,9 @@ func _on_upgrade_throwable_pressed(wid: String, tid: String) -> void:
 func _on_door_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
 		return
-	# Durante il tutorial giocabile obbligatorio del primo avvio, la porta
-	# di questa stessa casa porta al passo successivo invece che al
-	# quartiere normale (vedi TutorialProgress).
+	# Ultimo passo del tutorial giocabile obbligatorio del primo avvio:
+	# uscendo dalla propria tenda (appena piazzata) per la prima volta, il
+	# tutorial è concluso (vedi TutorialProgress).
 	if TutorialProgress.intro_stage == "place_tent":
 		TutorialProgress.set_stage("done")
-	get_tree().change_scene_to_file(door_exit_scene_path())
-
-# Estratta a parte (pura, nessun cambio scena) per poterla testare senza
-# innescare un vero change_scene_to_file.
-static func door_exit_scene_path() -> String:
-	if TutorialProgress.intro_stage == "field2":
-		return "res://scenes/IntroField2.tscn"
-	return "res://scenes/Main.tscn"
+	get_tree().change_scene_to_file("res://scenes/Main.tscn")
