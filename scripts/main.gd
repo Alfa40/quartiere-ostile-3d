@@ -118,10 +118,11 @@ func _ready() -> void:
 
 func _apply_house_exterior() -> void:
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
-	var floors: int = int(tier.floors)
+	var floors: int = int(tier.floors.size())
 	var underground: bool = bool(tier.underground)
-	var width: float = 3.0 if underground else float(tier.cols) * 2.0
-	var depth: float = 3.0 if underground else float(tier.rows) * 2.0
+	var ground: Dictionary = tier.floors[0]
+	var width: float = 3.0 if underground else float(ground.cols) * 2.0
+	var depth: float = 3.0 if underground else float(ground.rows) * 2.0
 	var height: float = 2.2
 
 	var house := $HouseExterior

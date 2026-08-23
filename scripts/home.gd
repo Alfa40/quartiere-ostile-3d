@@ -15,7 +15,6 @@ const MENU_SCROLL_RIGHT_PORTRAIT := -60.0
 const MENU_SCROLL_LEFT_LANDSCAPE := 110.0
 const MENU_SCROLL_RIGHT_LANDSCAPE := -10.0
 
-const WORKBENCH_POS := Vector3(1.3, 0.0, -2.2)
 const INTERACT_RANGE := 2.2
 const MATERIAL_LABELS := {"legno": "Legno", "metallo": "Metallo", "cablaggi": "Cablaggi"}
 
@@ -23,6 +22,7 @@ const FIXED_BENCH_CELLS := ["0:0", "1:0"]
 const DOOR_GAP := 1.4
 var col_values: Array = [-1.0, 1.0]
 var row_values: Array = [-2.0, 0.0, 2.0]
+var current_floor := 0
 
 const CATEGORY_BOXES := {
 	"coltelli": "KnivesBox",
@@ -204,7 +204,7 @@ func _ready() -> void:
 	$DoorTrigger.body_entered.connect(_on_door_entered)
 
 	for b in CheckpointData.placed_benches:
-		_instantiate_placed_bench(String(b.get("type", "")), String(b.get("orientation", "h")), int(b.get("col_idx", 0)), int(b.get("row_idx", 0)))
+		_instantiate_placed_bench(String(b.get("type", "")), String(b.get("orientation", "h")), int(b.get("col_idx", 0)), int(b.get("row_idx", 0)), int(b.get("floor", 0)))
 
 	_show_upgrades_tab()
 	_show_weapon_category("coltelli")
@@ -248,7 +248,7 @@ func _process(_delta: float) -> void:
 
 	var best_id := ""
 	var best_dist := INTERACT_RANGE
-	var d_casa := player.global_position.distance_to(WORKBENCH_POS)
+	var d_casa := player.global_position.distance_to($Workbench.global_position)
 	if d_casa <= best_dist:
 		best_dist = d_casa
 		best_id = "casa"
@@ -365,23 +365,25 @@ func _refresh_casa_tab() -> void:
 	var info: Label = row.get_node("InfoLabel")
 	var btn: Button = row.get_node("BuyButton")
 	var cur: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
+	var cur_space := HouseTiers.describe_space(CheckpointData.house_tier)
 	if HouseTiers.is_max_tier(CheckpointData.house_tier):
-		info.text = "Abitazione attuale: %s (spazio %dx%d)\nHai raggiunto il tier massimo di abitazione." % [cur.label, cur.cols, cur.rows]
+		info.text = "Abitazione attuale: %s (%s)\nHai raggiunto il tier massimo di abitazione." % [cur.label, cur_space]
 		btn.disabled = true
 		btn.text = "Massimo"
 		return
 	var next_idx := HouseTiers.next_tier_index(CheckpointData.house_tier)
 	var nxt: Dictionary = HouseTiers.tier_data(next_idx)
+	var nxt_space := HouseTiers.describe_space(next_idx)
 	var mat_name: String = MATERIAL_LABELS.get(nxt.cost_material, nxt.cost_material)
 	if CheckpointData.zone < int(nxt.zone_required):
-		info.text = "Abitazione attuale: %s (spazio %dx%d)\nProssima abitazione: %s (spazio %dx%d) — si sblocca alla zona %d" % [
-			cur.label, cur.cols, cur.rows, nxt.label, nxt.cols, nxt.rows, nxt.zone_required,
+		info.text = "Abitazione attuale: %s (%s)\nProssima abitazione: %s (%s) — si sblocca alla zona %d" % [
+			cur.label, cur_space, nxt.label, nxt_space, nxt.zone_required,
 		]
 		btn.disabled = true
 		btn.text = "Bloccata"
 		return
-	info.text = "Abitazione attuale: %s (spazio %dx%d)\nProssima abitazione: %s (spazio %dx%d) — costa %d€ + %d %s" % [
-		cur.label, cur.cols, cur.rows, nxt.label, nxt.cols, nxt.rows, nxt.cost_money, nxt.cost_amount, mat_name,
+	info.text = "Abitazione attuale: %s (%s)\nProssima abitazione: %s (%s) — costa %d€ + %d %s" % [
+		cur.label, cur_space, nxt.label, nxt_space, nxt.cost_money, nxt.cost_amount, mat_name,
 	]
 	var afford: bool = CheckpointData.money >= int(nxt.cost_money) and CheckpointData.materials.get(String(nxt.cost_material), 0) >= int(nxt.cost_amount)
 	btn.disabled = not afford
@@ -403,12 +405,36 @@ func _on_buy_house_tier_pressed() -> void:
 	_refresh_workbench_menu()
 
 func _apply_house_tier_geometry() -> void:
-	col_values = HouseTiers.col_values(CheckpointData.house_tier)
-	row_values = HouseTiers.row_values(CheckpointData.house_tier)
+	var floors := HouseTiers.effective_floors(CheckpointData.house_tier)
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
-	var width: float = float(tier.cols) * 2.0
-	var depth: float = float(tier.rows) * 2.0
 	var wall_color: Color = tier.wall_color
+
+	_build_floor0_geometry(floors[0], wall_color)
+
+	var upper := get_node_or_null("UpperFloors")
+	if upper != null:
+		upper.free()
+	upper = Node3D.new()
+	upper.name = "UpperFloors"
+	add_child(upper)
+	for f in range(1, floors.size()):
+		_build_upper_floor(upper, f, floors[f], wall_color)
+
+	var stairs := get_node_or_null("Stairs")
+	if stairs != null:
+		stairs.free()
+	stairs = Node3D.new()
+	stairs.name = "Stairs"
+	add_child(stairs)
+	_build_stairs(stairs, floors)
+
+	_set_current_floor(0)
+
+func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
+	var width: float = float(dims.cols) * 2.0
+	var depth: float = float(dims.rows) * 2.0
+	var cvals := HouseTiers.col_values(CheckpointData.house_tier, 0)
+	var rvals := HouseTiers.row_values(CheckpointData.house_tier, 0)
 
 	var floor_mesh: PlaneMesh = $Floor/Mesh.mesh
 	floor_mesh.size = Vector2(width, depth)
@@ -453,7 +479,117 @@ func _apply_house_tier_geometry() -> void:
 	$WallSouthRight/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
 
 	$DoorTrigger.position = Vector3(0, 1, depth / 2.0 + 0.6)
-	$Workbench.position = Vector3(col_values[1] + 0.3, 0, row_values[0] - 0.2)
+	$Workbench.position = Vector3(cvals[1] + 0.3, 0, rvals[0] - 0.2)
+
+func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wall_color: Color) -> void:
+	var width: float = float(dims.cols) * 2.0
+	var depth: float = float(dims.rows) * 2.0
+	var y: float = float(floor_idx) * HouseTiers.FLOOR_HEIGHT
+
+	var floor_body := StaticBody3D.new()
+	floor_body.name = "Floor%d" % floor_idx
+	floor_body.position = Vector3(0, y, 0)
+	container.add_child(floor_body)
+
+	var floor_mesh_inst := MeshInstance3D.new()
+	var pm := PlaneMesh.new()
+	pm.size = Vector2(width, depth)
+	floor_mesh_inst.mesh = pm
+	floor_mesh_inst.set_surface_override_material(0, _tinted_wall_material(Color(0.32, 0.28, 0.24, 1)))
+	floor_body.add_child(floor_mesh_inst)
+
+	var floor_shape_inst := CollisionShape3D.new()
+	var wb := WorldBoundaryShape3D.new()
+	wb.plane = Plane(0, 1, 0, 0)
+	floor_shape_inst.shape = wb
+	floor_body.add_child(floor_shape_inst)
+
+	var wall_specs := [
+		{"pos": Vector3(0, y + 1.25, -depth / 2.0), "size": Vector3(width, 2.5, 0.2)},
+		{"pos": Vector3(0, y + 1.25, depth / 2.0), "size": Vector3(width, 2.5, 0.2)},
+		{"pos": Vector3(width / 2.0, y + 1.25, 0), "size": Vector3(0.2, 2.5, depth)},
+		{"pos": Vector3(-width / 2.0, y + 1.25, 0), "size": Vector3(0.2, 2.5, depth)},
+	]
+	for i in range(wall_specs.size()):
+		var spec: Dictionary = wall_specs[i]
+		var wall := StaticBody3D.new()
+		wall.name = "Wall%d_%d" % [floor_idx, i]
+		wall.position = spec.pos
+		container.add_child(wall)
+		var wm := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = spec.size
+		wm.mesh = bm
+		wm.set_surface_override_material(0, _tinted_wall_material(wall_color))
+		wall.add_child(wm)
+		var wc := CollisionShape3D.new()
+		var bs := BoxShape3D.new()
+		bs.size = spec.size
+		wc.shape = bs
+		wall.add_child(wc)
+
+func _build_stairs(container: Node3D, floors: Array) -> void:
+	var stair_mat := _tinted_wall_material(Color(0.38, 0.34, 0.3, 1))
+	for f in range(floors.size() - 1):
+		var lower_cols := HouseTiers.col_values(CheckpointData.house_tier, f)
+		var lower_rows := HouseTiers.row_values(CheckpointData.house_tier, f)
+		var upper_cols := HouseTiers.col_values(CheckpointData.house_tier, f + 1)
+		var upper_rows := HouseTiers.row_values(CheckpointData.house_tier, f + 1)
+		var lx: float = lower_cols[0] + 0.5
+		var lz: float = lower_rows[0] + 0.5
+		var ux: float = upper_cols[0] + 0.5
+		var uz: float = upper_rows[0] + 0.5
+		var ly: float = float(f) * HouseTiers.FLOOR_HEIGHT
+		var uy: float = float(f + 1) * HouseTiers.FLOOR_HEIGHT
+
+		var ramp := MeshInstance3D.new()
+		var ramp_mesh := BoxMesh.new()
+		ramp_mesh.size = Vector3(1.6, 0.2, 2.6)
+		ramp.mesh = ramp_mesh
+		ramp.set_surface_override_material(0, stair_mat)
+		ramp.position = Vector3((lx + ux) / 2.0, (ly + uy) / 2.0 + 0.3, (lz + uz) / 2.0)
+		container.add_child(ramp)
+
+		var up_trigger := Area3D.new()
+		up_trigger.name = "StairsUp_%d" % f
+		up_trigger.collision_layer = 0
+		up_trigger.collision_mask = 2
+		up_trigger.position = Vector3(lx, ly + 1.0, lz)
+		var up_shape := CollisionShape3D.new()
+		var up_box := BoxShape3D.new()
+		up_box.size = Vector3(1.2, 2.0, 1.2)
+		up_shape.shape = up_box
+		up_trigger.add_child(up_shape)
+		container.add_child(up_trigger)
+		up_trigger.body_entered.connect(_on_stairs_entered.bind(f + 1, ux, uy + 0.1, uz))
+
+		var down_trigger := Area3D.new()
+		down_trigger.name = "StairsDown_%d" % (f + 1)
+		down_trigger.collision_layer = 0
+		down_trigger.collision_mask = 2
+		down_trigger.position = Vector3(ux, uy + 1.0, uz)
+		var down_shape := CollisionShape3D.new()
+		var down_box := BoxShape3D.new()
+		down_box.size = Vector3(1.2, 2.0, 1.2)
+		down_shape.shape = down_box
+		down_trigger.add_child(down_shape)
+		container.add_child(down_trigger)
+		down_trigger.body_entered.connect(_on_stairs_entered.bind(f, lx, ly + 0.1, lz))
+
+func _on_stairs_entered(body: Node3D, target_floor: int, target_x: float, target_y: float, target_z: float) -> void:
+	if not body.is_in_group("player"):
+		return
+	if placing_bench_type != "":
+		_end_placement()
+	body.global_position = Vector3(target_x, target_y, target_z)
+	if body is CharacterBody3D:
+		(body as CharacterBody3D).velocity = Vector3.ZERO
+	_set_current_floor(target_floor)
+
+func _set_current_floor(floor_idx: int) -> void:
+	current_floor = floor_idx
+	col_values = HouseTiers.col_values(CheckpointData.house_tier, current_floor)
+	row_values = HouseTiers.row_values(CheckpointData.house_tier, current_floor)
 
 func _tinted_wall_material(color: Color) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
@@ -526,9 +662,12 @@ func _footprint_cells(orientation: String, col_idx: int, row_idx: int) -> Array:
 
 func _occupied_cells() -> Dictionary:
 	var occ := {}
-	for key in FIXED_BENCH_CELLS:
-		occ[key] = true
+	if current_floor == 0:
+		for key in FIXED_BENCH_CELLS:
+			occ[key] = true
 	for b in CheckpointData.placed_benches:
+		if int(b.get("floor", 0)) != current_floor:
+			continue
 		var orientation: String = String(b.get("orientation", "h"))
 		var col_idx: int = int(b.get("col_idx", 0))
 		var row_idx: int = int(b.get("row_idx", 0))
@@ -552,12 +691,16 @@ func _first_free_slot(orientation: String):
 					return {"row_idx": r, "col_idx": c}
 	return null
 
-func _bench_world_position(orientation: String, col_idx: int, row_idx: int) -> Vector3:
+func _bench_world_position(orientation: String, col_idx: int, row_idx: int, floor_idx: int = -1) -> Vector3:
+	var f: int = current_floor if floor_idx < 0 else floor_idx
+	var cvals: Array = col_values if f == current_floor else HouseTiers.col_values(CheckpointData.house_tier, f)
+	var rvals: Array = row_values if f == current_floor else HouseTiers.row_values(CheckpointData.house_tier, f)
+	var y: float = float(f) * HouseTiers.FLOOR_HEIGHT
 	if orientation == "h":
-		var x: float = (col_values[col_idx] + col_values[col_idx + 1]) / 2.0
-		return Vector3(x, 0, row_values[row_idx])
-	var z: float = (row_values[row_idx] + row_values[row_idx + 1]) / 2.0
-	return Vector3(col_values[col_idx], 0, z)
+		var x: float = (cvals[col_idx] + cvals[col_idx + 1]) / 2.0
+		return Vector3(x, y, rvals[row_idx])
+	var z: float = (rvals[row_idx] + rvals[row_idx + 1]) / 2.0
+	return Vector3(cvals[col_idx], y, z)
 
 func _bench_rotation_y(orientation: String) -> float:
 	return 90.0 if orientation == "v" else 0.0
@@ -654,7 +797,8 @@ func _update_ghost_from_screen(pos: Vector2) -> void:
 	var normal := cam.project_ray_normal(pos)
 	if absf(normal.y) < 0.0001:
 		return
-	var t: float = -origin.y / normal.y
+	var floor_y: float = float(current_floor) * HouseTiers.FLOOR_HEIGHT
+	var t: float = (floor_y - origin.y) / normal.y
 	if t < 0.0:
 		return
 	var world_point := origin + normal * t
@@ -673,9 +817,9 @@ func _on_confirm_placement_pressed() -> void:
 	CheckpointData.materials[cost.material] = CheckpointData.materials.get(cost.material, 0) - int(cost.amount)
 	CheckpointData.placed_benches.append({
 		"type": type_id, "orientation": placing_orientation,
-		"col_idx": placing_col_idx, "row_idx": placing_row_idx,
+		"col_idx": placing_col_idx, "row_idx": placing_row_idx, "floor": current_floor,
 	})
-	_instantiate_placed_bench(type_id, placing_orientation, placing_col_idx, placing_row_idx)
+	_instantiate_placed_bench(type_id, placing_orientation, placing_col_idx, placing_row_idx, current_floor)
 	_end_placement()
 
 func _on_cancel_placement_pressed() -> void:
@@ -691,11 +835,11 @@ func _end_placement() -> void:
 	touch_controls.input_enabled = true
 	_refresh_workbench_menu()
 
-func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: int, row_idx: int) -> void:
+func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: int, row_idx: int, floor_idx: int = 0) -> void:
 	if not BENCH_SCENES.has(type_id):
 		return
 	var node: Node3D = BENCH_SCENES[type_id].instantiate()
-	node.position = _bench_world_position(orientation, col_idx, row_idx)
+	node.position = _bench_world_position(orientation, col_idx, row_idx, floor_idx)
 	node.rotation_degrees.y = _bench_rotation_y(orientation)
 	placed_benches_root.add_child(node)
 	_placed_bench_nodes[type_id] = node
