@@ -447,6 +447,7 @@ func _apply_weapon_stats() -> void:
 		player.attack_damage = player.BASE_ATTACK_DAMAGE
 		player.attack_cooldown = player.BASE_ATTACK_COOLDOWN
 		player.attack_reach_mult = 1.0
+		player.attack_knockback = 0.0
 		return
 	var wups: Dictionary = CheckpointData.weapon_upgrades.get(wid, {})
 	var def: Dictionary = MeleeWeapons.WEAPONS[wid]
@@ -454,6 +455,7 @@ func _apply_weapon_stats() -> void:
 	player.attack_damage = MeleeWeapons.final_damage(wid, wups)
 	player.attack_cooldown = MeleeWeapons.final_cooldown(wid, wups)
 	player.attack_reach_mult = MeleeWeapons.final_reach_mult(wid, wups)
+	player.attack_knockback = MeleeWeapons.final_knockback(wid, wups)
 	player.apply_draw_delay(MeleeWeapons.final_draw_time(wid, wups))
 
 func _apply_firearm_stats() -> void:

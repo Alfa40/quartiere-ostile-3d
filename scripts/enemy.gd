@@ -55,6 +55,31 @@ var wander_timer := 0.0
 var stun_timer := 0.0
 var blind_timer := 0.0
 
+# Spinta temporanea dalle armi bianche più pesanti (vedi
+# MeleeWeapons.KNOCKBACK_CATEGORIES): un vettore che si aggiunge alla
+# velocità normale e si esaurisce da solo per attrito, invece di sostituire
+# del tutto il comportamento dell'IA (il nemico continua a inseguire/
+# attaccare, solo spinto all'indietro nel frattempo).
+const KNOCKBACK_FRICTION := 12.0
+var knockback_velocity := Vector3.ZERO
+
+func apply_knockback(direction: Vector3, force: float) -> void:
+	if force <= 0.0 or dead:
+		return
+	var dir := direction
+	dir.y = 0.0
+	if dir.length() > 0.001:
+		dir = dir.normalized()
+	knockback_velocity = dir * force
+
+func _consume_knockback(delta: float) -> void:
+	if knockback_velocity.length() > 0.01:
+		velocity.x += knockback_velocity.x
+		velocity.z += knockback_velocity.z
+		knockback_velocity = knockback_velocity.move_toward(Vector3.ZERO, KNOCKBACK_FRICTION * delta)
+	else:
+		knockback_velocity = Vector3.ZERO
+
 func apply_stun(duration: float) -> void:
 	stun_timer = max(stun_timer, duration)
 
@@ -105,6 +130,7 @@ func _physics_process(delta: float) -> void:
 			velocity.y = 0.0
 		velocity.x = move_toward(velocity.x, 0.0, speed * 8.0 * delta)
 		velocity.z = move_toward(velocity.z, 0.0, speed * 8.0 * delta)
+		_consume_knockback(delta)
 		move_and_slide()
 		return
 
@@ -116,6 +142,7 @@ func _physics_process(delta: float) -> void:
 			velocity.y = 0.0
 		else:
 			velocity.y -= GRAVITY * delta
+		_consume_knockback(delta)
 		move_and_slide()
 		return
 
@@ -134,6 +161,7 @@ func _physics_process(delta: float) -> void:
 				velocity.y = 0.0
 			else:
 				velocity.y -= GRAVITY * delta
+			_consume_knockback(delta)
 			move_and_slide()
 			_animate_body(delta)
 			return
@@ -144,6 +172,7 @@ func _physics_process(delta: float) -> void:
 			velocity.y = 0.0
 		else:
 			velocity.y -= GRAVITY * delta
+		_consume_knockback(delta)
 		move_and_slide()
 		_animate_body(delta)
 		return
@@ -160,6 +189,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= GRAVITY * delta
 
+	_consume_knockback(delta)
 	move_and_slide()
 	_animate_body(delta)
 

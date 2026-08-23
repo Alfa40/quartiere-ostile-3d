@@ -237,8 +237,8 @@ func _ready() -> void:
 			var name_label: Label = base.get_node("MainRow/InfoLabel")
 			name_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			name_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_weapon_menu))
-			for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
-				var track_row := base.get_node("Track_%s" % tid)
+			for tid in MeleeWeapons.weapon_upgrade_tracks(wid):
+				var track_row := _get_or_create_track_row(base, tid)
 				_insert_track_separator(base, tid, track_row)
 				var t_btn: Button = track_row.get_node("BuyButton")
 				t_btn.pressed.connect(_on_upgrade_weapon_pressed.bind(wid, tid))
@@ -1063,6 +1063,36 @@ func _insert_track_separator(base: Node, tid: String, track_row: Control) -> voi
 	base.add_child(sep)
 	base.move_child(sep, track_row.get_index())
 
+# La traccia "respinta" esiste solo per le armi bianche più pesanti (vedi
+# MeleeWeapons.KNOCKBACK_CATEGORIES) e non ha una riga propria nella scena
+# .tscn (a differenza di portata/velocità/danno/estrazione): la creiamo qui
+# a runtime, con lo stesso stile delle altre righe di potenziamento.
+func _get_or_create_track_row(base: Node, tid: String) -> HBoxContainer:
+	var row_name := "Track_%s" % tid
+	if base.has_node(row_name):
+		return base.get_node(row_name)
+	var row := HBoxContainer.new()
+	row.name = row_name
+	row.add_theme_constant_override("separation", 20)
+	base.add_child(row)
+
+	var info := Label.new()
+	info.name = "InfoLabel"
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_theme_font_size_override("font_size", 22)
+	info.add_theme_color_override("font_color", Color(0.85, 0.85, 0.9, 1))
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD
+	row.add_child(info)
+
+	var btn := Button.new()
+	btn.name = "BuyButton"
+	btn.custom_minimum_size = Vector2(150, 56)
+	btn.add_theme_font_size_override("font_size", 23)
+	btn.text = "Potenzia"
+	row.add_child(btn)
+
+	return row
+
 # Tocca il nome di un'arma per aprire/chiudere il suo "menu a tendina" con
 # statistiche e potenziamenti (nascosti di default, per non lasciare blocchi
 # di testo troppo lunghi nella lista). Ritoccando il nome si richiude.
@@ -1128,31 +1158,32 @@ func _refresh_weapon_menu() -> void:
 		if not expanded:
 			main_info.text = main_info.text.split("\n")[0]
 
-		for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
-			var track_row := base.get_node("Track_%s" % tid)
+		for tid in MeleeWeapons.weapon_upgrade_tracks(wid):
+			var track_row := _get_or_create_track_row(base, tid)
 			track_row.visible = expanded
 			base.get_node("UpSep_%s" % tid).visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = wups.get(tid, 0)
 			var tdef: Dictionary = MeleeWeapons.UPGRADE_TRACKS[tid]
+			var track_max_level: int = int(tdef.max_level)
 			if not owned:
 				t_info.text = "%s (si sblocca comprando l'arma)" % tdef.label
 				t_btn.disabled = true
 				t_btn.text = "Potenzia"
-			elif MeleeWeapons.upgrade_is_maxed(level):
+			elif MeleeWeapons.upgrade_is_maxed(level, tid):
 				var maxed_value := _track_value_text(tid, wid, wups)
-				t_info.text = "%s — LIVELLO MASSIMO (%d/%d)\n%s" % [tdef.label, level, MeleeWeapons.UPGRADE_MAX_LEVEL, maxed_value]
+				t_info.text = "%s — LIVELLO MASSIMO (%d/%d)\n%s" % [tdef.label, level, track_max_level, maxed_value]
 				t_btn.disabled = true
 				t_btn.text = "Massimo"
 			else:
 				var next_wups := wups.duplicate()
 				next_wups[tid] = level + 1
 				var preview := _track_preview_text(tid, wid, wups, next_wups)
-				var cm := MeleeWeapons.upgrade_cost_money(wid, level)
-				var cmat := MeleeWeapons.upgrade_cost_material(wid, level)
+				var cm := MeleeWeapons.upgrade_cost_money(wid, level, tid)
+				var cmat := MeleeWeapons.upgrade_cost_material(wid, level, tid)
 				var mat_name2: String = MATERIAL_LABELS.get(tdef.material, tdef.material)
-				t_info.text = "%s (Lv %d/%d) — %s\n%s\ncosta %d€ + %d %s" % [tdef.label, level, MeleeWeapons.UPGRADE_MAX_LEVEL, tdef.desc, preview, cm, cmat, mat_name2]
+				t_info.text = "%s (Lv %d/%d) — %s\n%s\ncosta %d€ + %d %s" % [tdef.label, level, track_max_level, tdef.desc, preview, cm, cmat, mat_name2]
 				var afford2: bool = CheckpointData.money >= cm and CheckpointData.materials.get(tdef.material, 0) >= cmat
 				t_btn.disabled = not afford2
 				t_btn.text = "Potenzia"
@@ -1167,6 +1198,8 @@ func _track_value_text(tid: String, wid: String, wups: Dictionary) -> String:
 			return "Danno attuale: %d" % int(MeleeWeapons.final_damage(wid, wups))
 		"estrazione":
 			return "Estrazione attuale: %.2fs" % MeleeWeapons.final_draw_time(wid, wups)
+		"respinta":
+			return "Respinta attuale: %.1f" % MeleeWeapons.final_knockback(wid, wups)
 	return ""
 
 func _track_preview_text(tid: String, wid: String, wups: Dictionary, next_wups: Dictionary) -> String:
@@ -1179,6 +1212,8 @@ func _track_preview_text(tid: String, wid: String, wups: Dictionary, next_wups: 
 			return "Danno: %d → %d" % [int(MeleeWeapons.final_damage(wid, wups)), int(MeleeWeapons.final_damage(wid, next_wups))]
 		"estrazione":
 			return "Estrazione: %.2fs → %.2fs" % [MeleeWeapons.final_draw_time(wid, wups), MeleeWeapons.final_draw_time(wid, next_wups)]
+		"respinta":
+			return "Respinta: %.1f → %.1f" % [MeleeWeapons.final_knockback(wid, wups), MeleeWeapons.final_knockback(wid, next_wups)]
 	return ""
 
 func _on_weapon_action_pressed(wid: String) -> void:
@@ -1199,10 +1234,10 @@ func _on_weapon_action_pressed(wid: String) -> void:
 func _on_upgrade_weapon_pressed(wid: String, tid: String) -> void:
 	var wups: Dictionary = CheckpointData.weapon_upgrades.get(wid, {})
 	var level: int = wups.get(tid, 0)
-	if MeleeWeapons.upgrade_is_maxed(level):
+	if MeleeWeapons.upgrade_is_maxed(level, tid):
 		return
-	var cm := MeleeWeapons.upgrade_cost_money(wid, level)
-	var cmat := MeleeWeapons.upgrade_cost_material(wid, level)
+	var cm := MeleeWeapons.upgrade_cost_money(wid, level, tid)
+	var cmat := MeleeWeapons.upgrade_cost_material(wid, level, tid)
 	var mat: String = MeleeWeapons.UPGRADE_TRACKS[tid].material
 	if CheckpointData.money < cm or CheckpointData.materials.get(mat, 0) < cmat:
 		return

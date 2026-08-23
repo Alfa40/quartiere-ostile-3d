@@ -40,6 +40,10 @@ var hp := 100.0
 var speed_mult := 1.0
 var attack_damage := BASE_ATTACK_DAMAGE
 var attack_cooldown := BASE_ATTACK_COOLDOWN
+# Forza della respinta sui nemici colpiti in mischia: 0 per pugni/coltelli e
+# per le armi bianche troppo leggere per averla (vedi
+# MeleeWeapons.KNOCKBACK_CATEGORIES).
+var attack_knockback := 0.0
 var attack_reach_mult := 1.0:
 	set(value):
 		attack_reach_mult = value
@@ -322,6 +326,9 @@ func _handle_attack(delta: float) -> void:
 		for body in attack_area.get_overlapping_bodies():
 			if (body.is_in_group("enemies") or body.is_in_group("park_objects")) and body.has_method("take_damage"):
 				body.take_damage(attack_damage, self)
+				if attack_knockback > 0.0 and body.is_in_group("enemies") and body.has_method("apply_knockback"):
+					var push_dir: Vector3 = body.global_position - global_position
+					body.apply_knockback(push_dir, attack_knockback)
 
 func _handle_firearm(delta: float) -> void:
 	firearm_flash_timer -= delta
