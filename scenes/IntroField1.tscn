@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/intro_field1.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -50,15 +50,12 @@ roughness = 0.85
 [sub_resource type="BoxMesh" id="HutMesh"]
 size = Vector3(5, 2.6, 5)
 
-[sub_resource type="BoxShape3D" id="HutShape"]
-size = Vector3(5, 2.6, 5)
-
 [sub_resource type="StandardMaterial3D" id="HutMaterial"]
 albedo_color = Color(0.5, 0.42, 0.3, 1)
 roughness = 0.85
 
-[sub_resource type="BoxMesh" id="DoorTriggerMesh"]
-size = Vector3(2, 2, 0.5)
+[sub_resource type="BoxShape3D" id="DoorTriggerShape"]
+size = Vector3(4, 2, 3)
 
 [node name="IntroField1" type="Node3D"]
 script = ExtResource("1_main")
@@ -125,23 +122,20 @@ shape = SubResource("WallShapeEW")
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 0, 20)
 
-[node name="House1" type="StaticBody3D" parent="."]
+[node name="House1" type="Node3D" parent="."]
 position = Vector3(0, 1.3, -21)
 
 [node name="Hut" type="MeshInstance3D" parent="House1"]
 mesh = SubResource("HutMesh")
 surface_material_override/0 = SubResource("HutMaterial")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="House1"]
-shape = SubResource("HutShape")
-
 [node name="DoorTrigger" type="Area3D" parent="."]
-position = Vector3(0, 1, -18.3)
+position = Vector3(0, 1, -19.5)
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="DoorTrigger"]
-shape = SubResource("DoorTriggerMesh")
+shape = SubResource("DoorTriggerShape")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("3_hud")

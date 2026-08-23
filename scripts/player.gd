@@ -654,7 +654,7 @@ func take_damage(amount: float, _source = null) -> void:
 	hp = max(hp - amount, 0.0)
 	hp_changed.emit(hp, max_hp)
 	Input.vibrate_handheld(DAMAGE_VIBRATE_MS)
-	if main != null and main.hud != null:
+	if main != null and main.hud != null and main.hud.has_method("flash_damage"):
 		main.hud.flash_damage(amount, max_hp)
 	if main != null and main.has_method("on_player_damaged"):
 		main.on_player_damaged(amount)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/intro_field2.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -49,9 +49,6 @@ albedo_color = Color(0.35, 0.18, 0.16, 1)
 roughness = 0.85
 
 [sub_resource type="BoxMesh" id="HutMesh"]
-size = Vector3(4, 2.4, 4)
-
-[sub_resource type="BoxShape3D" id="HutShape"]
 size = Vector3(4, 2.4, 4)
 
 [sub_resource type="StandardMaterial3D" id="HutMaterial"]
@@ -126,15 +123,12 @@ position = Vector3(0, 0, 15)
 [node name="Npc" parent="." instance=ExtResource("3_npc")]
 position = Vector3(0, 0, 5)
 
-[node name="NpcHouse" type="StaticBody3D" parent="."]
+[node name="NpcHouse" type="Node3D" parent="."]
 position = Vector3(0, 1.2, -21)
 
 [node name="Hut" type="MeshInstance3D" parent="NpcHouse"]
 mesh = SubResource("HutMesh")
 surface_material_override/0 = SubResource("HutMaterial")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NpcHouse"]
-shape = SubResource("HutShape")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("4_hud")
