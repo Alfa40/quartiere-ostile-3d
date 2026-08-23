@@ -1,6 +1,6 @@
 extends Control
 
-const REVEAL_DELAY := 10.0
+const REVEAL_DELAY := 5.0
 const MARGIN := 56.0
 const ARROW_SIZE := 22.0
 

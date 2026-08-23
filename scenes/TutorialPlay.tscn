@@ -142,6 +142,8 @@ offset_right = 480.0
 offset_bottom = 290.0
 theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(1, 0.95, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
 horizontal_alignment = 1
 autowrap_mode = 2
 text = ""
@@ -155,6 +157,8 @@ offset_right = 260.0
 offset_bottom = 350.0
 theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
 horizontal_alignment = 1
 text = ""
 

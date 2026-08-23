@@ -49,79 +49,79 @@ const WEAPONS := {
 	"spada_giocattolo": {
 		"label": "Spada giocattolo", "category": "spade", "tier": 1,
 		"price_money": 90, "price_material": "legno", "price_amount": 4,
-		"damage": 22.0, "cooldown": 0.40, "reach_mult": 1.20, "draw_time": 0.15,
+		"damage": 25.0, "cooldown": 0.40, "reach_mult": 1.20, "draw_time": 0.15,
 	},
 	"spada_da_scena": {
 		"label": "Spada da scena", "category": "spade", "tier": 2,
 		"price_money": 190, "price_material": "metallo", "price_amount": 6,
-		"damage": 28.0, "cooldown": 0.38, "reach_mult": 1.25, "draw_time": 0.13,
+		"damage": 33.0, "cooldown": 0.38, "reach_mult": 1.25, "draw_time": 0.13,
 	},
 	"sciabola_arrugginita": {
 		"label": "Sciabola arrugginita", "category": "spade", "tier": 3,
 		"price_money": 340, "price_material": "metallo", "price_amount": 10,
-		"damage": 36.0, "cooldown": 0.36, "reach_mult": 1.30, "draw_time": 0.11,
+		"damage": 43.0, "cooldown": 0.36, "reach_mult": 1.30, "draw_time": 0.11,
 	},
 	"katana_da_allenamento": {
 		"label": "Katana da allenamento", "category": "spade", "tier": 4,
 		"price_money": 560, "price_material": "metallo", "price_amount": 16,
-		"damage": 46.0, "cooldown": 0.34, "reach_mult": 1.35, "draw_time": 0.09,
+		"damage": 56.0, "cooldown": 0.34, "reach_mult": 1.35, "draw_time": 0.09,
 	},
 	"spadone_leggendario": {
 		"label": "Spadone leggendario", "category": "spade", "tier": 5,
 		"price_money": 950, "price_material": "metallo", "price_amount": 26,
-		"damage": 62.0, "cooldown": 0.32, "reach_mult": 1.45, "draw_time": 0.06,
+		"damage": 76.0, "cooldown": 0.32, "reach_mult": 1.45, "draw_time": 0.06,
 	},
 
 	"mazza_baseball": {
 		"label": "Mazza da baseball", "category": "mazze", "tier": 1,
 		"price_money": 100, "price_material": "legno", "price_amount": 4,
-		"damage": 30.0, "cooldown": 0.55, "reach_mult": 1.00, "draw_time": 0.20,
+		"damage": 41.0, "cooldown": 0.55, "reach_mult": 1.00, "draw_time": 0.20,
 	},
 	"spranga_ferro": {
 		"label": "Spranga di ferro", "category": "mazze", "tier": 2,
 		"price_money": 210, "price_material": "metallo", "price_amount": 8,
-		"damage": 38.0, "cooldown": 0.52, "reach_mult": 1.00, "draw_time": 0.18,
+		"damage": 53.0, "cooldown": 0.52, "reach_mult": 1.00, "draw_time": 0.18,
 	},
 	"mazza_chiodata": {
 		"label": "Mazza chiodata", "category": "mazze", "tier": 3,
 		"price_money": 380, "price_material": "metallo", "price_amount": 12,
-		"damage": 50.0, "cooldown": 0.50, "reach_mult": 1.05, "draw_time": 0.16,
+		"damage": 71.0, "cooldown": 0.50, "reach_mult": 1.05, "draw_time": 0.16,
 	},
 	"mazza_da_golf_rinforzata": {
 		"label": "Mazza da golf rinforzata", "category": "mazze", "tier": 4,
 		"price_money": 600, "price_material": "metallo", "price_amount": 18,
-		"damage": 62.0, "cooldown": 0.47, "reach_mult": 1.05, "draw_time": 0.14,
+		"damage": 92.0, "cooldown": 0.47, "reach_mult": 1.05, "draw_time": 0.14,
 	},
 	"mazza_da_guerra": {
 		"label": "Mazza da guerra", "category": "mazze", "tier": 5,
 		"price_money": 1000, "price_material": "metallo", "price_amount": 30,
-		"damage": 85.0, "cooldown": 0.45, "reach_mult": 1.10, "draw_time": 0.10,
+		"damage": 127.0, "cooldown": 0.45, "reach_mult": 1.10, "draw_time": 0.10,
 	},
 
 	"martello_carpentiere": {
 		"label": "Martello da carpentiere", "category": "martelli", "tier": 1,
 		"price_money": 110, "price_material": "legno", "price_amount": 5,
-		"damage": 40.0, "cooldown": 0.65, "reach_mult": 0.95, "draw_time": 0.25,
+		"damage": 58.0, "cooldown": 0.65, "reach_mult": 0.95, "draw_time": 0.25,
 	},
 	"martello_fabbro": {
 		"label": "Martello da fabbro", "category": "martelli", "tier": 2,
 		"price_money": 230, "price_material": "metallo", "price_amount": 9,
-		"damage": 52.0, "cooldown": 0.62, "reach_mult": 0.95, "draw_time": 0.22,
+		"damage": 76.0, "cooldown": 0.62, "reach_mult": 0.95, "draw_time": 0.22,
 	},
 	"mazzuolo_pesante": {
 		"label": "Mazzuolo pesante", "category": "martelli", "tier": 3,
 		"price_money": 420, "price_material": "metallo", "price_amount": 14,
-		"damage": 68.0, "cooldown": 0.60, "reach_mult": 1.00, "draw_time": 0.20,
+		"damage": 101.0, "cooldown": 0.60, "reach_mult": 1.00, "draw_time": 0.20,
 	},
 	"martello_demolizione": {
 		"label": "Martello da demolizione", "category": "martelli", "tier": 4,
 		"price_money": 680, "price_material": "metallo", "price_amount": 20,
-		"damage": 88.0, "cooldown": 0.57, "reach_mult": 1.00, "draw_time": 0.18,
+		"damage": 133.0, "cooldown": 0.57, "reach_mult": 1.00, "draw_time": 0.18,
 	},
 	"martello_da_guerra": {
 		"label": "Martello da guerra", "category": "martelli", "tier": 5,
 		"price_money": 1100, "price_material": "metallo", "price_amount": 34,
-		"damage": 120.0, "cooldown": 0.55, "reach_mult": 1.05, "draw_time": 0.14,
+		"damage": 185.0, "cooldown": 0.55, "reach_mult": 1.05, "draw_time": 0.14,
 	},
 
 	"bastone_appuntito": {
@@ -137,17 +137,17 @@ const WEAPONS := {
 	"lancia_da_pesca": {
 		"label": "Lancia da pesca", "category": "lance", "tier": 3,
 		"price_money": 330, "price_material": "metallo", "price_amount": 10,
-		"damage": 32.0, "cooldown": 0.36, "reach_mult": 1.60, "draw_time": 0.11,
+		"damage": 31.0, "cooldown": 0.36, "reach_mult": 1.60, "draw_time": 0.11,
 	},
 	"lancia_da_combattimento": {
 		"label": "Lancia da combattimento", "category": "lance", "tier": 4,
 		"price_money": 540, "price_material": "metallo", "price_amount": 16,
-		"damage": 42.0, "cooldown": 0.34, "reach_mult": 1.75, "draw_time": 0.09,
+		"damage": 41.0, "cooldown": 0.34, "reach_mult": 1.75, "draw_time": 0.09,
 	},
 	"lancia_cerimoniale": {
 		"label": "Lancia cerimoniale forgiata", "category": "lance", "tier": 5,
 		"price_money": 920, "price_material": "metallo", "price_amount": 26,
-		"damage": 58.0, "cooldown": 0.32, "reach_mult": 1.90, "draw_time": 0.06,
+		"damage": 55.0, "cooldown": 0.32, "reach_mult": 1.90, "draw_time": 0.06,
 	},
 }
 

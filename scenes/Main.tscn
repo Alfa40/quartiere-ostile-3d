@@ -1150,6 +1150,8 @@ offset_right = 440.0
 offset_bottom = 108.0
 theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
 text = "Zona 1 — Ai margini del quartiere"
 
 [node name="MoneyLabel" type="Label" parent="HUD"]
@@ -1159,6 +1161,8 @@ offset_right = 320.0
 offset_bottom = 134.0
 theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
 text = "Soldi: 0€"
 
 [node name="AmmoLabel" type="Label" parent="HUD"]
@@ -1168,6 +1172,8 @@ offset_right = 440.0
 offset_bottom = 160.0
 theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
 text = ""
 
 [node name="MessageLabel" type="Label" parent="HUD"]
@@ -1177,6 +1183,8 @@ offset_right = 660.0
 offset_bottom = 172.0
 theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(1, 1, 0.7, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
 text = ""
 
 [node name="TouchControls" type="Control" parent="HUD"]
