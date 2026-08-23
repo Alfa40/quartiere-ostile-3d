@@ -139,11 +139,6 @@ func _ready() -> void:
 	_apply_house_tier_geometry()
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))
-	# Ultimo passo del tutorial giocabile obbligatorio: la propria tenda
-	# appena piazzata, il player prova a spostare il banco della casa (già
-	# posseduto) con il tasto "Sposta" prima di uscire per il gioco vero.
-	if TutorialProgress.intro_stage == "place_tent":
-		$HUD/HintLabel.text = "Questa è la tua tenda! Prova a spostare il banco della casa con \"Sposta\", poi esci dalla porta per iniziare"
 	interact_button.visible = false
 	move_button.visible = false
 	workbench_menu.visible = false
@@ -1762,9 +1757,4 @@ func _on_upgrade_throwable_pressed(wid: String, tid: String) -> void:
 func _on_door_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
 		return
-	# Ultimo passo del tutorial giocabile obbligatorio del primo avvio:
-	# uscendo dalla propria tenda (appena piazzata) per la prima volta, il
-	# tutorial è concluso (vedi TutorialProgress).
-	if TutorialProgress.intro_stage == "place_tent":
-		TutorialProgress.set_stage("done")
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

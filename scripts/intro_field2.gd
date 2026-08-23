@@ -19,8 +19,9 @@ const HELP_RANGE := 2.5
 @onready var touch_controls = $HUD/TouchControls
 @onready var throw_arm_button: Button = $HUD/ThrowArmButton
 @onready var npc = $Npc
+@onready var npc_house_door: Area3D = $NpcHouseDoorTrigger
 
-# "rescue" -> "help" -> "horde" -> "escort" -> "done"
+# "rescue" -> "help" -> "horde" -> "escort" -> "arrived" -> "done"
 var stage := "rescue"
 var _attackers_alive := 0
 var _horde_alive := 0
@@ -28,6 +29,7 @@ var _horde_alive := 0
 func _ready() -> void:
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	throw_arm_button.pressed.connect(_on_throw_arm_pressed)
+	npc_house_door.body_entered.connect(_on_npc_house_entered)
 	_apply_firearm()
 
 	hud.set_objective("Un npc è nei guai! Sconfiggi i nemici che lo stanno aggredendo")
@@ -91,13 +93,21 @@ func consume_throwable_reserve_ammo(_tid: String, _amount: int) -> void:
 func _on_attacker_died() -> void:
 	_attackers_alive -= 1
 	if _attackers_alive <= 0:
+		stage = "rescue_pausing"
+		# Pausa di 2s a fine passo: lascia il tempo di leggere/ambientarsi.
+		await get_tree().create_timer(2.0).timeout
 		stage = "help"
 		hud.set_objective("Avvicinati all'npc per aiutarlo ad alzarsi")
 		hud.set_progress(2, 5)
 
 func _process(_delta: float) -> void:
 	if stage == "help" and player.global_position.distance_to(npc.global_position) <= HELP_RANGE:
-		_start_horde()
+		stage = "help_pausing"
+		_delayed_start_horde()
+
+func _delayed_start_horde() -> void:
+	await get_tree().create_timer(2.0).timeout
+	_start_horde()
 
 func _start_horde() -> void:
 	stage = "horde"
@@ -146,20 +156,31 @@ func _on_throw_arm_pressed() -> void:
 func _on_horde_died() -> void:
 	_horde_alive -= 1
 	if _horde_alive <= 0:
+		stage = "horde_pausing"
+		throw_arm_button.visible = false
+		# Pausa di 2s a fine passo: lascia il tempo di leggere/ambientarsi.
+		await get_tree().create_timer(2.0).timeout
 		_start_escort()
 
 func _start_escort() -> void:
 	stage = "escort"
-	throw_arm_button.visible = false
 	hud.set_objective("Segui l'npc: state andando verso casa sua")
 	hud.set_progress(4, 5)
 	npc.reached_target.connect(_on_npc_arrived)
 	npc.start_walking_to(NPC_HOUSE_POS)
 
 func _on_npc_arrived() -> void:
-	stage = "done"
+	stage = "arriving_pausing"
 	hud.set_progress(5, 5)
-	hud.set_objective("L'npc ti dona una tenda e il banco della casa! Tornate al quartiere...")
-	TutorialProgress.set_stage("place_tent")
-	await get_tree().create_timer(3.0).timeout
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	hud.set_objective("Siete arrivati!")
+	# Pausa di 2s a fine passo: lascia il tempo di leggere/ambientarsi.
+	await get_tree().create_timer(2.0).timeout
+	stage = "arrived"
+	hud.set_objective("Entra in casa con l'npc: là vi aspettano una tenda e un banco tutti per te")
+
+func _on_npc_house_entered(body: Node3D) -> void:
+	if stage != "arrived" or not body.is_in_group("player"):
+		return
+	stage = "done"
+	TutorialProgress.set_stage("house2")
+	get_tree().change_scene_to_file("res://scenes/IntroHouse2.tscn")

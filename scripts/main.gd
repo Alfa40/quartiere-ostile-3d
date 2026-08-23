@@ -634,10 +634,7 @@ func _start_zone() -> void:
 	spawn_timer = 0.0
 	var zone_name: String = ZONE_NAMES[min(zone - 1, ZONE_NAMES.size() - 1)]
 	hud.update_zone(zone, zone_name)
-	if TutorialProgress.intro_stage == "place_tent":
-		hud.show_message("Questo è il tuo quartiere! Vai alla tenda e premi \"Entra in casa\" per sistemarti")
-	else:
-		hud.show_message("Zona %d iniziata: ripulisci il quartiere!" % zone)
+	hud.show_message("Zona %d iniziata: ripulisci il quartiere!" % zone)
 	if not DevMode.enabled:
 		SaveData.report_run(zone, int(money))
 
@@ -662,14 +659,7 @@ func _process(delta: float) -> void:
 		hud.set_throw_buttons_visible(false)
 		return
 
-	# Ultimo passo del tutorial obbligatorio del primo avvio: il player deve
-	# poter piazzare/entrare subito nella propria tenda appena ricevuta,
-	# senza dover prima ripulire tutta la zona come nel gioco normale.
-	if TutorialProgress.intro_stage == "place_tent":
-		var dist_to_house_now := player.global_position.distance_to(HOUSE_DOOR_POS)
-		hud.set_house_button_visible(dist_to_house_now <= HOUSE_INTERACT_RANGE)
-	else:
-		hud.set_house_button_visible(false)
+	hud.set_house_button_visible(false)
 	hud.set_throw_buttons_visible(not CheckpointData.owned_throwables.is_empty())
 	_update_spawn_points()
 
