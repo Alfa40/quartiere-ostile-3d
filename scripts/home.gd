@@ -877,7 +877,7 @@ func _refresh_throwable_menu() -> void:
 		var ammo_btn: Button = base.get_node("AmmoRow/BuyButton")
 		var def: Dictionary = Throwables.WEAPONS[wid]
 		var owned: bool = CheckpointData.owned_throwables.get(wid, false)
-		var equipped: bool = CheckpointData.equipped_throwable == wid
+		var equipped: bool = CheckpointData.equipped_throwables.get(String(def.category), "") == wid
 		var tups: Dictionary = CheckpointData.throwable_upgrades.get(wid, {})
 
 		if not owned:
@@ -901,7 +901,12 @@ func _refresh_throwable_menu() -> void:
 				action_btn.disabled = false
 				action_btn.text = "Disequipaggia"
 			else:
-				main_info.text = "%s — posseduta\n%s" % [def.label, stats_line]
+				var other_equipped: String = String(CheckpointData.equipped_throwables.get(String(def.category), ""))
+				if other_equipped != "":
+					var other_label: String = String(Throwables.WEAPONS[other_equipped].label)
+					main_info.text = "%s — posseduta (sostituirà %s)\n%s" % [def.label, other_label, stats_line]
+				else:
+					main_info.text = "%s — posseduta\n%s" % [def.label, stats_line]
 				action_btn.disabled = false
 				action_btn.text = "Equipaggia"
 
@@ -977,6 +982,7 @@ func _throwable_track_preview_text(tid: String, wid: String, tups: Dictionary, n
 
 func _on_throwable_action_pressed(wid: String) -> void:
 	var owned: bool = CheckpointData.owned_throwables.get(wid, false)
+	var cat: String = String(Throwables.WEAPONS[wid].category)
 	if not owned:
 		var def: Dictionary = Throwables.WEAPONS[wid]
 		if CheckpointData.money < def.price_money or CheckpointData.materials.get(def.price_material, 0) < def.price_amount:
@@ -985,12 +991,20 @@ func _on_throwable_action_pressed(wid: String) -> void:
 		CheckpointData.materials[def.price_material] = CheckpointData.materials.get(def.price_material, 0) - int(def.price_amount)
 		CheckpointData.owned_throwables[wid] = true
 		CheckpointData.throwable_upgrades[wid] = {}
-		if CheckpointData.equipped_throwable == "":
-			CheckpointData.equipped_throwable = wid
+		if CheckpointData.equipped_throwables.get(cat, "") == "":
+			CheckpointData.equipped_throwables[cat] = wid
+			if CheckpointData.equipped_throwable == "":
+				CheckpointData.equipped_throwable = wid
 	else:
-		if CheckpointData.equipped_throwable == wid:
-			CheckpointData.equipped_throwable = ""
+		if CheckpointData.equipped_throwables.get(cat, "") == wid:
+			# Un secondo tocco sulla stessa arma la toglie dal loadout di questa categoria.
+			CheckpointData.equipped_throwables[cat] = ""
+			if CheckpointData.equipped_throwable == wid:
+				CheckpointData.equipped_throwable = ""
 		else:
+			# Al massimo un'arma equipaggiata per categoria: questa sostituisce
+			# quella eventualmente già scelta per la stessa categoria.
+			CheckpointData.equipped_throwables[cat] = wid
 			CheckpointData.equipped_throwable = wid
 	_refresh_throwable_menu()
 

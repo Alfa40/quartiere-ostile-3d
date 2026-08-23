@@ -185,6 +185,17 @@ func consume_firearm_reserve_ammo(fid: String, amount: int) -> void:
 
 func _apply_throwable_stats() -> void:
 	var tid: String = CheckpointData.equipped_throwable
+	# L'arma "in mano" deve sempre far parte del loadout attuale (al massimo
+	# un'arma per categoria): se non lo è più (es. tolta dal banco), scelgo
+	# la prima arma ancora equipaggiata, se ce n'è una.
+	if tid == "" or not CheckpointData.equipped_throwables.values().has(tid):
+		tid = ""
+		for cat_id in CheckpointData.equipped_throwables:
+			var cat_wid: String = String(CheckpointData.equipped_throwables[cat_id])
+			if cat_wid != "":
+				tid = cat_wid
+				break
+		CheckpointData.equipped_throwable = tid
 	if tid == "" or not Throwables.WEAPONS.has(tid):
 		player.unequip_throwable()
 		return
@@ -213,12 +224,18 @@ func consume_throwable_reserve_ammo(tid: String, amount: int) -> void:
 	CheckpointData.throwable_ammo[tid] = max(0, int(CheckpointData.throwable_ammo.get(tid, 0)) - amount)
 
 func _on_throw_type_pressed() -> void:
-	var owned: Array = CheckpointData.owned_throwables.keys()
-	if owned.is_empty():
+	# Il ciclo passa solo tra le armi effettivamente equipaggiate (al massimo
+	# una per categoria), non tra tutte quelle possedute.
+	var loadout: Array = []
+	for cat_id in Throwables.CATEGORY_ORDER:
+		var wid: String = String(CheckpointData.equipped_throwables.get(cat_id, ""))
+		if wid != "":
+			loadout.append(wid)
+	if loadout.is_empty():
 		return
-	var idx := owned.find(CheckpointData.equipped_throwable)
-	idx = (idx + 1) % owned.size()
-	CheckpointData.equipped_throwable = owned[idx]
+	var idx := loadout.find(CheckpointData.equipped_throwable)
+	idx = (idx + 1) % loadout.size()
+	CheckpointData.equipped_throwable = loadout[idx]
 	_apply_throwable_stats()
 	var new_tid: String = CheckpointData.equipped_throwable
 	var new_label: String = String(Throwables.WEAPONS[new_tid].label) if Throwables.WEAPONS.has(new_tid) else "-"

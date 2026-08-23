@@ -1,5 +1,7 @@
 extends Node
 
+const Throwables := preload("res://scripts/throwables.gd")
+
 const CHECKPOINT_INTERVAL := 50
 const SAVE_PATH := "user://checkpoint.json"
 
@@ -28,6 +30,11 @@ var equipped_firearm := ""
 var owned_throwables := {}
 var throwable_upgrades := {}
 var throwable_ammo := {}
+# Al massimo un'arma da lancio equipaggiata per categoria (armi bianche da
+# lancio, granate esplosive, granate speciali): {categoria: id_arma}.
+var equipped_throwables := {}
+# Tra le armi da lancio equipaggiate, quella attualmente "in mano" (armabile
+# e lanciabile sul campo tramite i tasti arma/lancio).
 var equipped_throwable := ""
 
 func _ready() -> void:
@@ -74,6 +81,16 @@ func load_checkpoint() -> void:
 	var tammo = data.get("throwable_ammo", {})
 	throwable_ammo = tammo.duplicate() if typeof(tammo) == TYPE_DICTIONARY else {}
 	equipped_throwable = String(data.get("equipped_throwable", ""))
+	var eqt = data.get("equipped_throwables", null)
+	if typeof(eqt) == TYPE_DICTIONARY:
+		equipped_throwables = eqt.duplicate()
+	elif equipped_throwable != "" and Throwables.WEAPONS.has(equipped_throwable):
+		# Salvataggio precedente a quando l'equip era diviso per categoria:
+		# ricostruisco il caricamento a partire dall'unica arma equipaggiata.
+		var cat: String = String(Throwables.WEAPONS[equipped_throwable].category)
+		equipped_throwables = {cat: equipped_throwable}
+	else:
+		equipped_throwables = {}
 
 func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	zone = current_zone
@@ -103,6 +120,7 @@ func save_checkpoint(current_zone: int, current_money: int, current_materials: D
 		"throwable_upgrades": throwable_upgrades,
 		"throwable_ammo": throwable_ammo,
 		"equipped_throwable": equipped_throwable,
+		"equipped_throwables": equipped_throwables,
 	}))
 	f.close()
 
