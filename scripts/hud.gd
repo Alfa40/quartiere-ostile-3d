@@ -49,6 +49,14 @@ const HP_TEXT_FONT_PORTRAIT := 42
 const HP_TEXT_FONT_LANDSCAPE := 24
 const TOP_LABEL_FONT_PORTRAIT := 32
 const TOP_LABEL_FONT_LANDSCAPE := 18
+# Le munizioni sono l'informazione più critica durante uno scontro a fuoco:
+# un font più grande delle altre etichette in alto e un colore acceso (che
+# passa al rosso quando il caricatore sta per finire) la fanno risaltare
+# molto di più a colpo d'occhio.
+const AMMO_LABEL_FONT_BONUS := 10
+const AMMO_COLOR_NORMAL := Color(1.0, 0.82, 0.1, 1)
+const AMMO_COLOR_LOW := Color(1.0, 0.15, 0.1, 1)
+const AMMO_LOW_MAG_RATIO := 0.25
 
 const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
 const ZONE_COMPLETE_BOX_PORTRAIT := Rect2(-310.0, 140.0, 620.0, 190.0)
@@ -152,6 +160,9 @@ func _update_ammo_label() -> void:
 	var reserve: int = main.get_firearm_reserve_ammo(p.firearm_id) if main.has_method("get_firearm_reserve_ammo") else 0
 	var mags_left: int = int(reserve / max(mag_size, 1))
 	ammo_label.text = "Munizioni: %d/%d · Caricatori: %d" % [p.firearm_ammo_in_mag, mag_size, mags_left]
+	var mag_ratio: float = float(p.firearm_ammo_in_mag) / float(max(mag_size, 1))
+	var low: bool = p.firearm_ammo_in_mag <= 0 or mag_ratio <= AMMO_LOW_MAG_RATIO
+	ammo_label.add_theme_color_override("font_color", AMMO_COLOR_LOW if low else AMMO_COLOR_NORMAL)
 
 func _update_throw_button_positions() -> void:
 	if not touch_controls.aim_enabled:
@@ -215,7 +226,7 @@ func _update_top_hud_layout() -> void:
 	var top_label_font := TOP_LABEL_FONT_PORTRAIT if is_portrait else TOP_LABEL_FONT_LANDSCAPE
 	zone_label.add_theme_font_size_override("font_size", top_label_font)
 	money_label.add_theme_font_size_override("font_size", top_label_font)
-	ammo_label.add_theme_font_size_override("font_size", top_label_font)
+	ammo_label.add_theme_font_size_override("font_size", top_label_font + AMMO_LABEL_FONT_BONUS)
 	message_label.add_theme_font_size_override("font_size", top_label_font)
 
 	UIScale.apply_orientation_scale(pause_panel, is_portrait)
@@ -245,9 +256,9 @@ func _update_top_hud_layout() -> void:
 		money_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 		ammo_label.offset_left = bar_right + 570.0
-		ammo_label.offset_right = bar_right + 900.0
-		ammo_label.offset_top = health_bar.offset_top
-		ammo_label.offset_bottom = health_bar.offset_bottom
+		ammo_label.offset_right = bar_right + 960.0
+		ammo_label.offset_top = health_bar.offset_top - 6.0
+		ammo_label.offset_bottom = health_bar.offset_bottom + 6.0
 		ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 		message_label.offset_top = health_bar.offset_bottom + 6.0
@@ -266,13 +277,13 @@ func _update_top_hud_layout() -> void:
 		money_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 		ammo_label.offset_left = 24.0
-		ammo_label.offset_right = 460.0
+		ammo_label.offset_right = 500.0
 		ammo_label.offset_top = 176.0
-		ammo_label.offset_bottom = 220.0
+		ammo_label.offset_bottom = 230.0
 		ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
-		message_label.offset_top = 224.0
-		message_label.offset_bottom = 264.0
+		message_label.offset_top = 234.0
+		message_label.offset_bottom = 274.0
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:

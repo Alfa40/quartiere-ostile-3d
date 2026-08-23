@@ -1171,9 +1171,9 @@ offset_top = 134.0
 offset_right = 440.0
 offset_bottom = 160.0
 theme_override_font_sizes/font_size = 21
-theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+theme_override_colors/font_color = Color(1.0, 0.82, 0.1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
+theme_override_constants/outline_size = 9
 text = ""
 
 [node name="MessageLabel" type="Label" parent="HUD"]
