@@ -1381,6 +1381,12 @@ func _firearm_track_preview_text(tid: String, wid: String, fups: Dictionary, nex
 			return "Scorta massima: %d → %d" % [Firearms.final_reserve_cap(wid, fups), Firearms.final_reserve_cap(wid, next_fups)]
 	return ""
 
+func _refresh_firearm_or_explosive_menu() -> void:
+	if explosive_menu.visible:
+		_refresh_explosive_menu()
+	else:
+		_refresh_firearm_menu()
+
 func _on_firearm_action_pressed(wid: String) -> void:
 	var owned: bool = CheckpointData.owned_firearms.get(wid, false)
 	if not owned:
@@ -1395,7 +1401,7 @@ func _on_firearm_action_pressed(wid: String) -> void:
 		CheckpointData.equipped_firearm = wid
 	else:
 		CheckpointData.equipped_firearm = wid
-	_refresh_firearm_menu()
+	_refresh_firearm_or_explosive_menu()
 
 func _on_buy_ammo_pressed(wid: String) -> void:
 	var def: Dictionary = Firearms.WEAPONS[wid]
@@ -1409,7 +1415,7 @@ func _on_buy_ammo_pressed(wid: String) -> void:
 		return
 	CheckpointData.money -= cost
 	CheckpointData.firearm_ammo[wid] = min(cap, current + int(def.ammo_pack_amount))
-	_refresh_firearm_menu()
+	_refresh_firearm_or_explosive_menu()
 
 func _on_upgrade_firearm_pressed(wid: String, tid: String) -> void:
 	var fups: Dictionary = CheckpointData.firearm_upgrades.get(wid, {})
@@ -1425,7 +1431,7 @@ func _on_upgrade_firearm_pressed(wid: String, tid: String) -> void:
 	CheckpointData.materials[mat] = CheckpointData.materials.get(mat, 0) - cmat
 	fups[tid] = level + 1
 	CheckpointData.firearm_upgrades[wid] = fups
-	_refresh_firearm_menu()
+	_refresh_firearm_or_explosive_menu()
 
 func _open_throwable_menu() -> void:
 	throwable_menu.visible = true
