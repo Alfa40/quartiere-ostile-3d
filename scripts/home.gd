@@ -23,6 +23,8 @@ const DOOR_GAP := 1.4
 var col_values: Array = [-1.0, 1.0]
 var row_values: Array = [-2.0, 0.0, 2.0]
 var current_floor := 0
+var reorganize_mode := false
+var moving_bench_from_index := -1
 
 const CATEGORY_BOXES := {
 	"coltelli": "KnivesBox",
@@ -102,6 +104,7 @@ const BENCH_UNLOCK_DESC := {
 @onready var bench_ghost_holder: Node3D = $BenchGhostHolder
 @onready var placed_benches_root: Node3D = $PlacedBenches
 @onready var touch_controls = $HUD/TouchControls
+@onready var reorganize_panel: Control = $HUD/ReorganizePanel
 
 var placing_bench_type := ""
 var placing_ghost: Node3D = null
@@ -119,6 +122,8 @@ var _placed_bench_nodes := {}
 
 func _ready() -> void:
 	_apply_house_tier_geometry()
+	player.global_position = _interior_spawn_position()
+	player.face_direction(Vector3(0, 0, -1))
 	interact_button.visible = false
 	workbench_menu.visible = false
 	weapon_menu.visible = false
@@ -127,8 +132,10 @@ func _ready() -> void:
 	explosive_menu.visible = false
 	placement_ui.visible = false
 	placement_highlight.visible = false
+	reorganize_panel.visible = false
 
 	interact_button.pressed.connect(_on_interact_pressed)
+	$HUD/ReorganizePanel/FinishButton.pressed.connect(_exit_reorganize_mode)
 	$HUD/WorkbenchMenu/Scroll/Box/CloseButton.pressed.connect(_close_house_menu)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/UpgradesTabButton.pressed.connect(_show_upgrades_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/BenchesTabButton.pressed.connect(_show_benches_tab)
@@ -248,10 +255,11 @@ func _process(_delta: float) -> void:
 
 	var best_id := ""
 	var best_dist := INTERACT_RANGE
-	var d_casa := player.global_position.distance_to($Workbench.global_position)
-	if d_casa <= best_dist:
-		best_dist = d_casa
-		best_id = "casa"
+	if not reorganize_mode:
+		var d_casa := player.global_position.distance_to($Workbench.global_position)
+		if d_casa <= best_dist:
+			best_dist = d_casa
+			best_id = "casa"
 	for type_id in _placed_bench_nodes:
 		var node: Node3D = _placed_bench_nodes[type_id]
 		var d := player.global_position.distance_to(node.global_position)
@@ -260,12 +268,19 @@ func _process(_delta: float) -> void:
 			best_id = type_id
 	_current_interact = best_id
 	interact_button.visible = best_id != ""
-	if best_id == "casa":
+	if reorganize_mode:
+		if best_id != "":
+			interact_button.text = "Sposta %s" % BENCH_LABELS.get(best_id, best_id)
+	elif best_id == "casa":
 		interact_button.text = "Usa il banco della casa"
 	elif best_id != "":
 		interact_button.text = "Usa %s" % BENCH_LABELS.get(best_id, best_id)
 
 func _on_interact_pressed() -> void:
+	if reorganize_mode:
+		if _current_interact != "":
+			_start_bench_move(_current_interact)
+		return
 	if _current_interact == "casa":
 		_open_house_menu()
 	elif _current_interact == "armi_bianche":
@@ -276,6 +291,19 @@ func _on_interact_pressed() -> void:
 		_open_throwable_menu()
 	elif _current_interact == "armi_esplosive":
 		_open_explosive_menu()
+
+func _start_bench_move(type_id: String) -> void:
+	var idx := -1
+	for i in range(CheckpointData.placed_benches.size()):
+		var b: Dictionary = CheckpointData.placed_benches[i]
+		if String(b.get("type", "")) == type_id and int(b.get("floor", 0)) == current_floor:
+			idx = i
+			break
+	if idx < 0:
+		return
+	moving_bench_from_index = idx
+	reorganize_panel.visible = false
+	_start_bench_placement(type_id)
 
 func _open_house_menu() -> void:
 	workbench_menu.visible = true
@@ -401,11 +429,39 @@ func _on_buy_house_tier_pressed() -> void:
 	CheckpointData.money -= int(nxt.cost_money)
 	CheckpointData.materials[String(nxt.cost_material)] = CheckpointData.materials.get(String(nxt.cost_material), 0) - int(nxt.cost_amount)
 	CheckpointData.house_tier = next_idx
+	_relocate_benches_for_shrunk_floors()
 	_apply_house_tier_geometry()
+	_close_house_menu()
+	player.global_position = _interior_spawn_position()
+	player.face_direction(Vector3(0, 0, -1))
+	_enter_reorganize_mode()
+
+func _relocate_benches_for_shrunk_floors() -> void:
+	var new_floor_count := HouseTiers.floor_count(CheckpointData.house_tier)
+	for i in range(CheckpointData.placed_benches.size()):
+		var b: Dictionary = CheckpointData.placed_benches[i]
+		if int(b.get("floor", 0)) >= new_floor_count:
+			b["floor"] = new_floor_count - 1
+			b["col_idx"] = 0
+			b["row_idx"] = 0
+			CheckpointData.placed_benches[i] = b
+
+func _interior_spawn_position() -> Vector3:
+	var depth: float = float(HouseTiers.floor_data(CheckpointData.house_tier, 0).rows) * 2.0
+	return Vector3(0, 0, depth / 2.0 - 1.2)
+
+func _enter_reorganize_mode() -> void:
+	reorganize_mode = true
+	reorganize_panel.visible = true
+
+func _exit_reorganize_mode() -> void:
+	reorganize_mode = false
+	moving_bench_from_index = -1
+	reorganize_panel.visible = false
 	_refresh_workbench_menu()
 
 func _apply_house_tier_geometry() -> void:
-	var floors := HouseTiers.effective_floors(CheckpointData.house_tier)
+	var floors := HouseTiers.own_floors(CheckpointData.house_tier)
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
 	var wall_color: Color = tier.wall_color
 
@@ -438,8 +494,14 @@ func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 
 	var floor_mesh: PlaneMesh = $Floor/Mesh.mesh
 	floor_mesh.size = Vector2(width, depth)
-	var floor_shape: WorldBoundaryShape3D = $Floor/CollisionShape3D.shape
-	floor_shape.plane = Plane(0, 1, 0, 0)
+	# Una shape delimitata invece del WorldBoundaryShape3D (piano infinito)
+	# originale: un piano infinito a y=0 bloccherebbe fisicamente ovunque nel
+	# mondo, impedendo di scendere ai piani sotterranei del bunker che stanno
+	# a y negative.
+	var floor_shape := BoxShape3D.new()
+	floor_shape.size = Vector3(width, 0.2, depth)
+	$Floor/CollisionShape3D.shape = floor_shape
+	$Floor/CollisionShape3D.position = Vector3(0, -0.1, 0)
 
 	var ns_mesh := BoxMesh.new()
 	ns_mesh.size = Vector3(width, 2.5, 0.2)
@@ -484,7 +546,7 @@ func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wall_color: Color) -> void:
 	var width: float = float(dims.cols) * 2.0
 	var depth: float = float(dims.rows) * 2.0
-	var y: float = float(floor_idx) * HouseTiers.FLOOR_HEIGHT
+	var y: float = HouseTiers.floor_y(CheckpointData.house_tier, floor_idx)
 
 	var floor_body := StaticBody3D.new()
 	floor_body.name = "Floor%d" % floor_idx
@@ -499,9 +561,10 @@ func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wal
 	floor_body.add_child(floor_mesh_inst)
 
 	var floor_shape_inst := CollisionShape3D.new()
-	var wb := WorldBoundaryShape3D.new()
-	wb.plane = Plane(0, 1, 0, 0)
-	floor_shape_inst.shape = wb
+	var box_shape := BoxShape3D.new()
+	box_shape.size = Vector3(width, 0.2, depth)
+	floor_shape_inst.shape = box_shape
+	floor_shape_inst.position = Vector3(0, -0.1, 0)
 	floor_body.add_child(floor_shape_inst)
 
 	var wall_specs := [
@@ -529,26 +592,47 @@ func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wal
 		wall.add_child(wc)
 
 func _build_stairs(container: Node3D, floors: Array) -> void:
-	var stair_mat := _tinted_wall_material(Color(0.38, 0.34, 0.3, 1))
+	var stair_mat := _tinted_wall_material(Color(0.55, 0.5, 0.42, 1))
+	var marker_mesh := BoxMesh.new()
+	marker_mesh.size = Vector3(1.2, 0.12, 1.2)
 	for f in range(floors.size() - 1):
 		var lower_cols := HouseTiers.col_values(CheckpointData.house_tier, f)
 		var lower_rows := HouseTiers.row_values(CheckpointData.house_tier, f)
 		var upper_cols := HouseTiers.col_values(CheckpointData.house_tier, f + 1)
 		var upper_rows := HouseTiers.row_values(CheckpointData.house_tier, f + 1)
-		var lx: float = lower_cols[0] + 0.5
+		# Ogni piano intermedio partecipa a due scale (una verso il piano
+		# sotto, una verso quello sopra): usando l'angolo sinistro per le
+		# coppie di piani pari e quello destro per le coppie dispari, le due
+		# scale di uno stesso piano non si sovrappongono mai nello stesso
+		# punto fisico.
+		var use_right: bool = (f % 2) == 1
+		var lci: int = lower_cols.size() - 1 if use_right else 0
+		var uci: int = upper_cols.size() - 1 if use_right else 0
+		var l_edge_offset: float = -0.5 if use_right else 0.5
+		var lx: float = lower_cols[lci] + l_edge_offset
 		var lz: float = lower_rows[0] + 0.5
-		var ux: float = upper_cols[0] + 0.5
+		var ux: float = upper_cols[uci] + l_edge_offset
 		var uz: float = upper_rows[0] + 0.5
-		var ly: float = float(f) * HouseTiers.FLOOR_HEIGHT
-		var uy: float = float(f + 1) * HouseTiers.FLOOR_HEIGHT
+		var ly: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
+		var uy: float = HouseTiers.floor_y(CheckpointData.house_tier, f + 1)
+		# I punti di arrivo (dove il player compare dopo aver salito/sceso)
+		# sono volutamente lontani dagli angoli usati dai trigger: se
+		# coincidessero con il trigger di partenza dell'altro verso, il
+		# player rientrerebbe subito nella zona e rimbalzerebbe su e giù.
+		var arrive_up_z: float = upper_rows[0] + 0.5
+		var arrive_down_z: float = lower_rows[0] + 0.5
 
-		var ramp := MeshInstance3D.new()
-		var ramp_mesh := BoxMesh.new()
-		ramp_mesh.size = Vector3(1.6, 0.2, 2.6)
-		ramp.mesh = ramp_mesh
-		ramp.set_surface_override_material(0, stair_mat)
-		ramp.position = Vector3((lx + ux) / 2.0, (ly + uy) / 2.0 + 0.3, (lz + uz) / 2.0)
-		container.add_child(ramp)
+		var up_marker := MeshInstance3D.new()
+		up_marker.mesh = marker_mesh
+		up_marker.set_surface_override_material(0, stair_mat)
+		up_marker.position = Vector3(lx, ly + 0.06, lz)
+		container.add_child(up_marker)
+
+		var down_marker := MeshInstance3D.new()
+		down_marker.mesh = marker_mesh
+		down_marker.set_surface_override_material(0, stair_mat)
+		down_marker.position = Vector3(ux, uy + 0.06, uz)
+		container.add_child(down_marker)
 
 		var up_trigger := Area3D.new()
 		up_trigger.name = "StairsUp_%d" % f
@@ -561,7 +645,7 @@ func _build_stairs(container: Node3D, floors: Array) -> void:
 		up_shape.shape = up_box
 		up_trigger.add_child(up_shape)
 		container.add_child(up_trigger)
-		up_trigger.body_entered.connect(_on_stairs_entered.bind(f + 1, ux, uy + 0.1, uz))
+		up_trigger.body_entered.connect(_on_stairs_entered.bind(f + 1, 0.0, uy + 0.1, arrive_up_z))
 
 		var down_trigger := Area3D.new()
 		down_trigger.name = "StairsDown_%d" % (f + 1)
@@ -574,7 +658,7 @@ func _build_stairs(container: Node3D, floors: Array) -> void:
 		down_shape.shape = down_box
 		down_trigger.add_child(down_shape)
 		container.add_child(down_trigger)
-		down_trigger.body_entered.connect(_on_stairs_entered.bind(f, lx, ly + 0.1, lz))
+		down_trigger.body_entered.connect(_on_stairs_entered.bind(f, 0.0, ly + 0.1, arrive_down_z))
 
 func _on_stairs_entered(body: Node3D, target_floor: int, target_x: float, target_y: float, target_z: float) -> void:
 	if not body.is_in_group("player"):
@@ -665,7 +749,10 @@ func _occupied_cells() -> Dictionary:
 	if current_floor == 0:
 		for key in FIXED_BENCH_CELLS:
 			occ[key] = true
-	for b in CheckpointData.placed_benches:
+	for i in range(CheckpointData.placed_benches.size()):
+		if i == moving_bench_from_index:
+			continue
+		var b: Dictionary = CheckpointData.placed_benches[i]
 		if int(b.get("floor", 0)) != current_floor:
 			continue
 		var orientation: String = String(b.get("orientation", "h"))
@@ -695,7 +782,7 @@ func _bench_world_position(orientation: String, col_idx: int, row_idx: int, floo
 	var f: int = current_floor if floor_idx < 0 else floor_idx
 	var cvals: Array = col_values if f == current_floor else HouseTiers.col_values(CheckpointData.house_tier, f)
 	var rvals: Array = row_values if f == current_floor else HouseTiers.row_values(CheckpointData.house_tier, f)
-	var y: float = float(f) * HouseTiers.FLOOR_HEIGHT
+	var y: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
 	if orientation == "h":
 		var x: float = (cvals[col_idx] + cvals[col_idx + 1]) / 2.0
 		return Vector3(x, y, rvals[row_idx])
@@ -797,7 +884,7 @@ func _update_ghost_from_screen(pos: Vector2) -> void:
 	var normal := cam.project_ray_normal(pos)
 	if absf(normal.y) < 0.0001:
 		return
-	var floor_y: float = float(current_floor) * HouseTiers.FLOOR_HEIGHT
+	var floor_y: float = HouseTiers.floor_y(CheckpointData.house_tier, current_floor)
 	var t: float = (floor_y - origin.y) / normal.y
 	if t < 0.0:
 		return
@@ -812,13 +899,22 @@ func _on_confirm_placement_pressed() -> void:
 	if not placing_valid:
 		return
 	var type_id := placing_bench_type
-	var cost: Dictionary = BENCH_COSTS[type_id]
-	CheckpointData.money -= int(cost.money)
-	CheckpointData.materials[cost.material] = CheckpointData.materials.get(cost.material, 0) - int(cost.amount)
-	CheckpointData.placed_benches.append({
-		"type": type_id, "orientation": placing_orientation,
-		"col_idx": placing_col_idx, "row_idx": placing_row_idx, "floor": current_floor,
-	})
+	if moving_bench_from_index >= 0:
+		CheckpointData.placed_benches[moving_bench_from_index] = {
+			"type": type_id, "orientation": placing_orientation,
+			"col_idx": placing_col_idx, "row_idx": placing_row_idx, "floor": current_floor,
+		}
+	else:
+		var cost: Dictionary = BENCH_COSTS[type_id]
+		CheckpointData.money -= int(cost.money)
+		CheckpointData.materials[cost.material] = CheckpointData.materials.get(cost.material, 0) - int(cost.amount)
+		CheckpointData.placed_benches.append({
+			"type": type_id, "orientation": placing_orientation,
+			"col_idx": placing_col_idx, "row_idx": placing_row_idx, "floor": current_floor,
+		})
+	if _placed_bench_nodes.has(type_id):
+		_placed_bench_nodes[type_id].queue_free()
+		_placed_bench_nodes.erase(type_id)
 	_instantiate_placed_bench(type_id, placing_orientation, placing_col_idx, placing_row_idx, current_floor)
 	_end_placement()
 
@@ -827,12 +923,15 @@ func _on_cancel_placement_pressed() -> void:
 
 func _end_placement() -> void:
 	placing_bench_type = ""
+	moving_bench_from_index = -1
 	if placing_ghost != null:
 		placing_ghost.queue_free()
 		placing_ghost = null
 	placement_ui.visible = false
 	placement_highlight.visible = false
 	touch_controls.input_enabled = true
+	if reorganize_mode:
+		reorganize_panel.visible = true
 	_refresh_workbench_menu()
 
 func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: int, row_idx: int, floor_idx: int = 0) -> void:

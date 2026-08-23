@@ -225,6 +225,12 @@ func _ready() -> void:
 	add_to_group("player")
 	hp_changed.emit(hp, max_hp)
 
+func face_direction(dir: Vector3) -> void:
+	if dir.length() < 0.0001:
+		return
+	facing = dir.normalized()
+	facing_pivot.look_at(facing_pivot.global_position + facing, Vector3.UP)
+
 func _physics_process(delta: float) -> void:
 	if dead:
 		velocity.y -= GRAVITY * delta

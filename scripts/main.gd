@@ -130,10 +130,15 @@ func _apply_house_exterior() -> void:
 	wall_mat.albedo_color = tier.wall_color
 	wall_mat.roughness = 0.9
 
-	var tent_mesh := PrismMesh.new()
-	tent_mesh.size = Vector3(width, height, depth)
 	var tent := house.get_node("Tent") as MeshInstance3D
-	tent.mesh = tent_mesh
+	if String(tier.shape) == "tent":
+		var tent_mesh := PrismMesh.new()
+		tent_mesh.size = Vector3(width, height, depth)
+		tent.mesh = tent_mesh
+	else:
+		var box_mesh := BoxMesh.new()
+		box_mesh.size = Vector3(width, height, depth)
+		tent.mesh = box_mesh
 	tent.set_surface_override_material(0, wall_mat)
 
 	var box_shape := BoxShape3D.new()
@@ -157,7 +162,7 @@ func _apply_house_exterior() -> void:
 	accent_mat.albedo_color = tier.accent_color
 	accent_mat.roughness = 0.7
 
-	if floors >= 2:
+	if floors >= 2 and not underground:
 		var upper_mesh := BoxMesh.new()
 		var upper_w: float = width * 0.7
 		var upper_d: float = depth * 0.7
@@ -192,6 +197,10 @@ func _apply_house_exterior() -> void:
 		moat.set_surface_override_material(0, moat_mat)
 		moat.position = Vector3(0, -height / 2.0 - 0.05, 0)
 		accents.add_child(moat)
+
+	var door_world_z: float = house.position.z + depth / 2.0 + 0.02
+	player.global_position = Vector3(0, 0, door_world_z + 2.5)
+	player.face_direction(Vector3(0, 0, 1))
 
 func _build_spawn_points() -> void:
 	spawn_points.clear()
