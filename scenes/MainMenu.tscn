@@ -37,10 +37,71 @@ horizontal_alignment = 1
 autowrap_mode = 2
 text = "Nessuna partita completata ancora"
 
-[node name="StartButton" type="Button" parent="Box"]
-custom_minimum_size = Vector2(0, 156)
-theme_override_font_sizes/font_size = 64
-text = "Inizia partita"
+[node name="SlotsBox" type="VBoxContainer" parent="Box"]
+theme_override_constants/separation = 22
+
+[node name="Slot_1" type="HBoxContainer" parent="Box/SlotsBox"]
+theme_override_constants/separation = 16
+
+[node name="InfoLabel" type="Label" parent="Box/SlotsBox/Slot_1"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = "Partita 1: vuota"
+
+[node name="ActionButton" type="Button" parent="Box/SlotsBox/Slot_1"]
+custom_minimum_size = Vector2(260, 84)
+theme_override_font_sizes/font_size = 32
+text = "Nuova partita"
+
+[node name="ResetButton" type="Button" parent="Box/SlotsBox/Slot_1"]
+custom_minimum_size = Vector2(70, 84)
+theme_override_font_sizes/font_size = 26
+text = "🗑"
+visible = false
+
+[node name="Slot_2" type="HBoxContainer" parent="Box/SlotsBox"]
+theme_override_constants/separation = 16
+
+[node name="InfoLabel" type="Label" parent="Box/SlotsBox/Slot_2"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = "Partita 2: vuota"
+
+[node name="ActionButton" type="Button" parent="Box/SlotsBox/Slot_2"]
+custom_minimum_size = Vector2(260, 84)
+theme_override_font_sizes/font_size = 32
+text = "Nuova partita"
+
+[node name="ResetButton" type="Button" parent="Box/SlotsBox/Slot_2"]
+custom_minimum_size = Vector2(70, 84)
+theme_override_font_sizes/font_size = 26
+text = "🗑"
+visible = false
+
+[node name="Slot_3" type="HBoxContainer" parent="Box/SlotsBox"]
+theme_override_constants/separation = 16
+
+[node name="InfoLabel" type="Label" parent="Box/SlotsBox/Slot_3"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = "Partita 3: vuota"
+
+[node name="ActionButton" type="Button" parent="Box/SlotsBox/Slot_3"]
+custom_minimum_size = Vector2(260, 84)
+theme_override_font_sizes/font_size = 32
+text = "Nuova partita"
+
+[node name="ResetButton" type="Button" parent="Box/SlotsBox/Slot_3"]
+custom_minimum_size = Vector2(70, 84)
+theme_override_font_sizes/font_size = 26
+text = "🗑"
+visible = false
 
 [node name="TutorialButton" type="Button" parent="Box"]
 custom_minimum_size = Vector2(0, 136)
@@ -260,4 +321,44 @@ text = "Avanti"
 [node name="CancelButton" type="Button" parent="PasswordPanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)
 theme_override_font_sizes/font_size = 23
+text = "Annulla"
+
+[node name="ConfirmResetPanel" type="Control" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="ConfirmResetPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.9)
+
+[node name="Box" type="VBoxContainer" parent="ConfirmResetPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -160.0
+offset_right = 380.0
+offset_bottom = 160.0
+theme_override_constants/separation = 28
+
+[node name="Message" type="Label" parent="ConfirmResetPanel/Box"]
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Ricominciare questa partita? I progressi salvati andranno persi."
+
+[node name="ConfirmButton" type="Button" parent="ConfirmResetPanel/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 32
+text = "Sì, ricomincia"
+
+[node name="CancelButton" type="Button" parent="ConfirmResetPanel/Box"]
+custom_minimum_size = Vector2(0, 64)
+theme_override_font_sizes/font_size = 27
 text = "Annulla"

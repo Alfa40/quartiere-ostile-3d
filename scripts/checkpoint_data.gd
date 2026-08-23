@@ -3,16 +3,28 @@ extends Node
 const Throwables := preload("res://scripts/throwables.gd")
 
 const CHECKPOINT_INTERVAL := 50
-const SAVE_PATH := "user://checkpoint.json"
-# Salvataggio "riprendi partita", scritto ogni volta che il player entra in
-# casa: separato dal checkpoint ogni 50 zone (che resta il fallback in caso
-# di morte, invariato). Permette di chiudere il gioco e riprendere da casa
-# anche a giorni di distanza, ricominciando dalla zona non ancora completata.
-const CONTINUE_SAVE_PATH := "user://continue_save.json"
 
-# true se all'avvio è stato trovato e caricato un salvataggio "riprendi
-# partita" più recente del checkpoint: in quel caso il menu principale deve
-# far ripartire il player da casa invece che nel parco.
+# Fino a SLOT_COUNT partite separate, ognuna con il proprio checkpoint e il
+# proprio salvataggio "riprendi partita", in cartelle indipendenti.
+const SLOT_COUNT := 3
+const SLOT_DIR_FORMAT := "user://saves/slot_%d/"
+const CHECKPOINT_FILENAME := "checkpoint.json"
+const CONTINUE_SAVE_FILENAME := "continue_save.json"
+
+# Percorsi del vecchio salvataggio unico (pre-multi-partita): usati solo per
+# migrare automaticamente i progressi esistenti nello Slot 1 alla prima
+# apertura del gioco dopo l'aggiornamento.
+const LEGACY_CHECKPOINT_PATH := "user://checkpoint.json"
+const LEGACY_CONTINUE_SAVE_PATH := "user://continue_save.json"
+
+# 0 = nessuno slot ancora scelto (menu principale); 1..SLOT_COUNT = partita
+# attiva. Tutte le funzioni di salvataggio/caricamento operano sullo slot
+# corrente.
+var current_slot := 0
+
+# true se il caricamento dello slot corrente ha trovato un salvataggio
+# "riprendi partita" più recente del checkpoint: in quel caso si deve far
+# ripartire il player da casa invece che nel parco.
 var resumed_from_continue := false
 
 const DEFAULT_UPGRADES := {
@@ -49,29 +61,126 @@ var equipped_throwable := ""
 var house_tier := 0
 
 func _ready() -> void:
+	_migrate_legacy_save_to_slot_1()
+
+# --- Percorsi per slot ---
+
+func _slot_dir(slot: int) -> String:
+	return SLOT_DIR_FORMAT % slot
+
+func _slot_checkpoint_path(slot: int) -> String:
+	return _slot_dir(slot) + CHECKPOINT_FILENAME
+
+func _slot_continue_path(slot: int) -> String:
+	return _slot_dir(slot) + CONTINUE_SAVE_FILENAME
+
+# --- Migrazione dal vecchio salvataggio unico ---
+
+func _migrate_legacy_save_to_slot_1() -> void:
+	var slot1_checkpoint := _slot_checkpoint_path(1)
+	if FileAccess.file_exists(slot1_checkpoint) or FileAccess.file_exists(_slot_continue_path(1)):
+		return
+	var had_legacy := false
+	if FileAccess.file_exists(LEGACY_CHECKPOINT_PATH):
+		DirAccess.make_dir_recursive_absolute(_slot_dir(1))
+		var data = _read_json(LEGACY_CHECKPOINT_PATH)
+		if typeof(data) == TYPE_DICTIONARY:
+			_write_json(slot1_checkpoint, data)
+			had_legacy = true
+		DirAccess.remove_absolute(LEGACY_CHECKPOINT_PATH)
+	if FileAccess.file_exists(LEGACY_CONTINUE_SAVE_PATH):
+		DirAccess.make_dir_recursive_absolute(_slot_dir(1))
+		var data2 = _read_json(LEGACY_CONTINUE_SAVE_PATH)
+		if typeof(data2) == TYPE_DICTIONARY:
+			_write_json(_slot_continue_path(1), data2)
+			had_legacy = true
+		DirAccess.remove_absolute(LEGACY_CONTINUE_SAVE_PATH)
+	if had_legacy:
+		print("CheckpointData: migrata la partita esistente nello Slot 1.")
+
+# --- Anteprima di uno slot per il menu di selezione (non tocca lo stato live) ---
+
+func slot_info(slot: int) -> Dictionary:
+	var data = _read_json(_slot_continue_path(slot))
+	if typeof(data) != TYPE_DICTIONARY:
+		data = _read_json(_slot_checkpoint_path(slot))
+	if typeof(data) != TYPE_DICTIONARY:
+		return {"empty": true}
+	return {
+		"empty": false,
+		"zone": int(data.get("zone", 1)),
+		"money": int(data.get("money", 0)),
+		"house_tier": int(data.get("house_tier", 0)),
+	}
+
+func slot_has_save(slot: int) -> bool:
+	return FileAccess.file_exists(_slot_checkpoint_path(slot)) or FileAccess.file_exists(_slot_continue_path(slot))
+
+# --- Selezione partita ---
+
+# Carica lo slot scelto (se ha già dati) e lo rende quello attivo. Da
+# chiamare dal menu principale prima di entrare in Home.tscn/Main.tscn.
+func select_slot(slot: int) -> void:
+	current_slot = slot
+	_reset_to_defaults()
 	load_checkpoint()
+	resumed_from_continue = false
 	if has_continue_save():
 		load_continue()
 		resumed_from_continue = true
 
+# Azzera lo slot scelto (cancella eventuali salvataggi precedenti) e lo
+# rende quello attivo, pronta per una partita nuova.
+func start_new_game(slot: int) -> void:
+	current_slot = slot
+	_reset_to_defaults()
+	resumed_from_continue = false
+	if FileAccess.file_exists(_slot_checkpoint_path(slot)):
+		DirAccess.remove_absolute(_slot_checkpoint_path(slot))
+	if FileAccess.file_exists(_slot_continue_path(slot)):
+		DirAccess.remove_absolute(_slot_continue_path(slot))
+
+func _reset_to_defaults() -> void:
+	zone = 1
+	money = 0
+	materials = {"legno": 0, "metallo": 0, "cablaggi": 0}
+	upgrades = DEFAULT_UPGRADES.duplicate()
+	placed_benches = []
+	owned_weapons = {}
+	weapon_upgrades = {}
+	equipped_weapon = DEFAULT_EQUIPPED_WEAPON
+	owned_firearms = {}
+	firearm_upgrades = {}
+	firearm_ammo = {}
+	equipped_firearm = ""
+	owned_throwables = {}
+	throwable_upgrades = {}
+	throwable_ammo = {}
+	equipped_throwables = {}
+	equipped_throwable = ""
+	house_tier = 0
+
+# --- Checkpoint / salvataggio "riprendi partita" per lo slot corrente ---
+
 func load_checkpoint() -> void:
-	var data = _read_json(SAVE_PATH)
+	var data = _read_json(_slot_checkpoint_path(current_slot))
 	if typeof(data) != TYPE_DICTIONARY:
 		return
 	_apply_state(data)
 
 func has_continue_save() -> bool:
-	return FileAccess.file_exists(CONTINUE_SAVE_PATH)
+	return FileAccess.file_exists(_slot_continue_path(current_slot))
 
 func load_continue() -> void:
-	var data = _read_json(CONTINUE_SAVE_PATH)
+	var data = _read_json(_slot_continue_path(current_slot))
 	if typeof(data) != TYPE_DICTIONARY:
 		return
 	_apply_state(data)
 
 func clear_continue_save() -> void:
-	if FileAccess.file_exists(CONTINUE_SAVE_PATH):
-		DirAccess.remove_absolute(CONTINUE_SAVE_PATH)
+	var path := _slot_continue_path(current_slot)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
 
 func _read_json(path: String):
 	if not FileAccess.file_exists(path):
@@ -156,6 +265,7 @@ func _state_dict() -> Dictionary:
 	}
 
 func _write_json(path: String, payload: Dictionary) -> void:
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
 	var f := FileAccess.open(path, FileAccess.WRITE)
 	if f == null:
 		return
@@ -163,16 +273,16 @@ func _write_json(path: String, payload: Dictionary) -> void:
 	f.close()
 
 # Checkpoint ogni 50 zone: resta l'unico fallback usato in caso di morte
-# (vedi _on_player_died in main.gd), invariato.
+# (vedi _on_player_died in main.gd), invariato, solo ora per-slot.
 func save_checkpoint(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	set_live_state(current_zone, current_money, current_materials, current_upgrades)
-	_write_json(SAVE_PATH, _state_dict())
+	_write_json(_slot_checkpoint_path(current_slot), _state_dict())
 
 # Salvataggio "riprendi partita": scritto da home.gd ogni volta che il
 # player entra in casa (zone/money/materials/upgrades sono già stati
 # sincronizzati da main.gd tramite set_live_state prima del cambio scena).
 func save_continue() -> void:
-	_write_json(CONTINUE_SAVE_PATH, _state_dict())
+	_write_json(_slot_continue_path(current_slot), _state_dict())
 
 func is_checkpoint_zone(zone_num: int) -> bool:
 	return zone_num % CHECKPOINT_INTERVAL == 0

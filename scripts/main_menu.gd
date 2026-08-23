@@ -4,9 +4,11 @@ extends Control
 @onready var password_edit: LineEdit = $PasswordPanel/Scroll/Box/PasswordEdit
 @onready var error_label: Label = $PasswordPanel/Scroll/Box/ErrorLabel
 @onready var keyboard: GridContainer = $PasswordPanel/Scroll/Box/Keyboard
+@onready var confirm_reset_panel: Control = $ConfirmResetPanel
+
+var _pending_reset_slot := 0
 
 func _ready() -> void:
-	$Box/StartButton.pressed.connect(_on_start_pressed)
 	$Box/TutorialButton.pressed.connect(_on_tutorial_pressed)
 	$CreatorButton.pressed.connect(_on_creator_pressed)
 	$PasswordPanel/Scroll/Box/BackspaceButton.pressed.connect(_on_backspace_pressed)
@@ -15,9 +17,16 @@ func _ready() -> void:
 	password_edit.text_submitted.connect(func(_t): _on_confirm_pressed())
 	for key in keyboard.get_children():
 		key.pressed.connect(_on_key_pressed.bind(key.text))
+
+	for slot in range(1, CheckpointData.SLOT_COUNT + 1):
+		var row := get_node("Box/SlotsBox/Slot_%d" % slot)
+		(row.get_node("ActionButton") as Button).pressed.connect(_on_slot_action_pressed.bind(slot))
+		(row.get_node("ResetButton") as Button).pressed.connect(_on_slot_reset_pressed.bind(slot))
+	$ConfirmResetPanel/Box/ConfirmButton.pressed.connect(_on_confirm_reset_pressed)
+	$ConfirmResetPanel/Box/CancelButton.pressed.connect(_on_cancel_reset_pressed)
+
 	_refresh_best_label()
-	if CheckpointData.resumed_from_continue:
-		$Box/StartButton.text = "Continua partita (Zona %d)" % CheckpointData.zone
+	_refresh_slots()
 
 func _refresh_best_label() -> void:
 	if SaveData.best_zone <= 0:
@@ -25,12 +34,50 @@ func _refresh_best_label() -> void:
 	else:
 		$Box/BestLabel.text = "Miglior risultato: Zona %d — %d€ guadagnati" % [SaveData.best_zone, SaveData.best_money]
 
-func _on_start_pressed() -> void:
+func _refresh_slots() -> void:
+	for slot in range(1, CheckpointData.SLOT_COUNT + 1):
+		var row := get_node("Box/SlotsBox/Slot_%d" % slot)
+		var info: Label = row.get_node("InfoLabel")
+		var action_btn: Button = row.get_node("ActionButton")
+		var reset_btn: Button = row.get_node("ResetButton")
+		var data: Dictionary = CheckpointData.slot_info(slot)
+		if data.empty:
+			info.text = "Partita %d: vuota" % slot
+			action_btn.text = "Nuova partita"
+			reset_btn.visible = false
+		else:
+			info.text = "Partita %d: Zona %d — %d€" % [slot, int(data.zone), int(data.money)]
+			action_btn.text = "Continua"
+			reset_btn.visible = true
+
+func _on_slot_action_pressed(slot: int) -> void:
 	DevMode.enabled = false
-	if CheckpointData.resumed_from_continue:
-		get_tree().change_scene_to_file("res://scenes/Home.tscn")
-	else:
+	var data: Dictionary = CheckpointData.slot_info(slot)
+	if data.empty:
+		CheckpointData.start_new_game(slot)
 		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	else:
+		CheckpointData.select_slot(slot)
+		if CheckpointData.resumed_from_continue:
+			get_tree().change_scene_to_file("res://scenes/Home.tscn")
+		else:
+			get_tree().change_scene_to_file("res://scenes/Main.tscn")
+
+func _on_slot_reset_pressed(slot: int) -> void:
+	_pending_reset_slot = slot
+	confirm_reset_panel.visible = true
+
+func _on_confirm_reset_pressed() -> void:
+	confirm_reset_panel.visible = false
+	if _pending_reset_slot <= 0:
+		return
+	CheckpointData.start_new_game(_pending_reset_slot)
+	_pending_reset_slot = 0
+	_refresh_slots()
+
+func _on_cancel_reset_pressed() -> void:
+	confirm_reset_panel.visible = false
+	_pending_reset_slot = 0
 
 func _on_tutorial_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Tutorial.tscn")
