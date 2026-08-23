@@ -7,6 +7,7 @@ const PlayerUpgrades := preload("res://scripts/player_upgrades.gd")
 const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
 const Firearms := preload("res://scripts/firearms.gd")
 const Throwables := preload("res://scripts/throwables.gd")
+const HouseTiers := preload("res://scripts/house_tiers.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
@@ -108,11 +109,88 @@ func _ready() -> void:
 	_apply_weapon_stats()
 	_apply_firearm_stats()
 	_apply_throwable_stats()
+	_apply_house_exterior()
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 	_build_spawn_points()
 	_start_zone()
+
+func _apply_house_exterior() -> void:
+	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
+	var floors: int = int(tier.floors)
+	var underground: bool = bool(tier.underground)
+	var width: float = 3.0 if underground else float(tier.cols) * 2.0
+	var depth: float = 3.0 if underground else float(tier.rows) * 2.0
+	var height: float = 2.2
+
+	var house := $HouseExterior
+	var wall_mat := StandardMaterial3D.new()
+	wall_mat.albedo_color = tier.wall_color
+	wall_mat.roughness = 0.9
+
+	var tent_mesh := PrismMesh.new()
+	tent_mesh.size = Vector3(width, height, depth)
+	var tent := house.get_node("Tent") as MeshInstance3D
+	tent.mesh = tent_mesh
+	tent.set_surface_override_material(0, wall_mat)
+
+	var box_shape := BoxShape3D.new()
+	box_shape.size = Vector3(width, height, depth)
+	(house.get_node("CollisionShape3D") as CollisionShape3D).shape = box_shape
+
+	var door := house.get_node("Door") as MeshInstance3D
+	door.position = Vector3(0, -0.3, -(depth / 2.0 + 0.02))
+
+	var light := house.get_node("Light") as OmniLight3D
+	light.position = Vector3(0, height * 0.68, -(depth / 2.0 - 1.0))
+
+	var accents := house.get_node_or_null("Accents")
+	if accents != null:
+		accents.free()
+	accents = Node3D.new()
+	accents.name = "Accents"
+	house.add_child(accents)
+
+	var accent_mat := StandardMaterial3D.new()
+	accent_mat.albedo_color = tier.accent_color
+	accent_mat.roughness = 0.7
+
+	if floors >= 2:
+		var upper_mesh := BoxMesh.new()
+		var upper_w: float = width * 0.7
+		var upper_d: float = depth * 0.7
+		upper_mesh.size = Vector3(upper_w, height * 0.8, upper_d)
+		var upper := MeshInstance3D.new()
+		upper.mesh = upper_mesh
+		upper.set_surface_override_material(0, accent_mat)
+		upper.position = Vector3(0, height / 2.0 + height * 0.4, 0)
+		accents.add_child(upper)
+
+	if int(tier.towers) > 0:
+		var tower_mesh := CylinderMesh.new()
+		tower_mesh.top_radius = 0.35
+		tower_mesh.bottom_radius = 0.4
+		tower_mesh.height = height * 1.6
+		for sx in [-1.0, 1.0]:
+			for sz in [-1.0, 1.0]:
+				var tower := MeshInstance3D.new()
+				tower.mesh = tower_mesh
+				tower.set_surface_override_material(0, accent_mat)
+				tower.position = Vector3(sx * (width / 2.0 - 0.3), tower_mesh.height / 2.0 - height / 2.0, sz * (depth / 2.0 - 0.3))
+				accents.add_child(tower)
+
+	if bool(tier.moat):
+		var moat_mesh := BoxMesh.new()
+		moat_mesh.size = Vector3(width + 3.0, 0.15, depth + 3.0)
+		var moat_mat := StandardMaterial3D.new()
+		moat_mat.albedo_color = Color(0.15, 0.35, 0.55, 1)
+		moat_mat.roughness = 0.3
+		var moat := MeshInstance3D.new()
+		moat.mesh = moat_mesh
+		moat.set_surface_override_material(0, moat_mat)
+		moat.position = Vector3(0, -height / 2.0 - 0.05, 0)
+		accents.add_child(moat)
 
 func _build_spawn_points() -> void:
 	spawn_points.clear()

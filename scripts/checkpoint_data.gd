@@ -36,6 +36,7 @@ var equipped_throwables := {}
 # Tra le armi da lancio equipaggiate, quella attualmente "in mano" (armabile
 # e lanciabile sul campo tramite i tasti arma/lancio).
 var equipped_throwable := ""
+var house_tier := 0
 
 func _ready() -> void:
 	load_checkpoint()
@@ -91,6 +92,7 @@ func load_checkpoint() -> void:
 		equipped_throwables = {cat: equipped_throwable}
 	else:
 		equipped_throwables = {}
+	house_tier = int(data.get("house_tier", 0))
 
 func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	zone = current_zone
@@ -121,6 +123,7 @@ func save_checkpoint(current_zone: int, current_money: int, current_materials: D
 		"throwable_ammo": throwable_ammo,
 		"equipped_throwable": equipped_throwable,
 		"equipped_throwables": equipped_throwables,
+		"house_tier": house_tier,
 	}))
 	f.close()
 

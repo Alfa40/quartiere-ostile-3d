@@ -285,6 +285,11 @@ custom_minimum_size = Vector2(260, 64)
 theme_override_font_sizes/font_size = 30
 text = "Banchi da lavoro"
 
+[node name="CasaTabButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/TabsRow"]
+custom_minimum_size = Vector2(260, 64)
+theme_override_font_sizes/font_size = 30
+text = "Abitazione"
+
 [node name="UpgradesTab" type="VBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
 theme_override_constants/separation = 22
 
@@ -430,6 +435,32 @@ autowrap_mode = 2
 text = ""
 
 [node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_esplosive"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="CasaTab" type="VBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
+visible = false
+theme_override_constants/separation = 22
+
+[node name="CasaNote" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab"]
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Un'abitazione migliore offre più spazio per i banchi e un aspetto diverso"
+
+[node name="Row_house" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_house"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_house"]
 custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 30
 text = "Compra"

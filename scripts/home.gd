@@ -5,6 +5,7 @@ const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
 const Firearms := preload("res://scripts/firearms.gd")
 const Throwables := preload("res://scripts/throwables.gd")
 const UIScale := preload("res://scripts/ui_scale.gd")
+const HouseTiers := preload("res://scripts/house_tiers.gd")
 
 const EQUIPPED_BUTTON_MODULATE := Color(1.2, 1.12, 0.7, 1.0)
 const OWNED_BUTTON_MODULATE := Color(1.0, 1.0, 1.0, 1.0)
@@ -18,9 +19,10 @@ const WORKBENCH_POS := Vector3(1.3, 0.0, -2.2)
 const INTERACT_RANGE := 2.2
 const MATERIAL_LABELS := {"legno": "Legno", "metallo": "Metallo", "cablaggi": "Cablaggi"}
 
-const COL_VALUES := [-1.0, 1.0]
-const ROW_VALUES := [-2.0, 0.0, 2.0]
 const FIXED_BENCH_CELLS := ["0:0", "1:0"]
+const DOOR_GAP := 1.4
+var col_values: Array = [-1.0, 1.0]
+var row_values: Array = [-2.0, 0.0, 2.0]
 
 const CATEGORY_BOXES := {
 	"coltelli": "KnivesBox",
@@ -81,6 +83,7 @@ const BENCH_UNLOCK_DESC := {
 @onready var money_materials_label: Label = $HUD/WorkbenchMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var upgrades_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/UpgradesTab
 @onready var benches_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/BenchesTab
+@onready var casa_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/CasaTab
 @onready var weapon_menu: Control = $HUD/WeaponMenu
 @onready var weapon_money_label: Label = $HUD/WeaponMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var firearm_menu: Control = $HUD/FirearmMenu
@@ -115,6 +118,7 @@ var _current_interact := ""
 var _placed_bench_nodes := {}
 
 func _ready() -> void:
+	_apply_house_tier_geometry()
 	interact_button.visible = false
 	workbench_menu.visible = false
 	weapon_menu.visible = false
@@ -128,6 +132,8 @@ func _ready() -> void:
 	$HUD/WorkbenchMenu/Scroll/Box/CloseButton.pressed.connect(_close_house_menu)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/UpgradesTabButton.pressed.connect(_show_upgrades_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/BenchesTabButton.pressed.connect(_show_benches_tab)
+	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/CasaTabButton.pressed.connect(_show_casa_tab)
+	$HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_house/BuyButton.pressed.connect(_on_buy_house_tier_pressed)
 	$HUD/WeaponMenu/Scroll/Box/CloseButton.pressed.connect(_close_weapon_menu)
 	$HUD/FirearmMenu/Scroll/Box/CloseButton.pressed.connect(_close_firearm_menu)
 	$HUD/ThrowableMenu/Scroll/Box/CloseButton.pressed.connect(_close_throwable_menu)
@@ -282,11 +288,19 @@ func _close_house_menu() -> void:
 func _show_upgrades_tab() -> void:
 	upgrades_tab.visible = true
 	benches_tab.visible = false
+	casa_tab.visible = false
 
 func _show_benches_tab() -> void:
 	upgrades_tab.visible = false
 	benches_tab.visible = true
+	casa_tab.visible = false
 	_refresh_benches_tab()
+
+func _show_casa_tab() -> void:
+	upgrades_tab.visible = false
+	benches_tab.visible = false
+	casa_tab.visible = true
+	_refresh_casa_tab()
 
 func _refresh_workbench_menu() -> void:
 	money_materials_label.text = "Soldi: %d€   Legno: %d   Metallo: %d   Cablaggi: %d" % [
@@ -313,6 +327,8 @@ func _refresh_workbench_menu() -> void:
 			btn.text = "Compra"
 	if benches_tab.visible:
 		_refresh_benches_tab()
+	if casa_tab.visible:
+		_refresh_casa_tab()
 
 func _refresh_benches_tab() -> void:
 	money_materials_label.text = "Soldi: %d€   Legno: %d   Metallo: %d   Cablaggi: %d" % [
@@ -339,6 +355,111 @@ func _refresh_bench_row(type_id: String) -> void:
 		var afford: bool = CheckpointData.money >= cost.money and CheckpointData.materials.get(cost.material, 0) >= cost.amount
 		btn.disabled = not afford
 		btn.text = "Compra"
+
+func _refresh_casa_tab() -> void:
+	money_materials_label.text = "Soldi: %d€   Legno: %d   Metallo: %d   Cablaggi: %d" % [
+		CheckpointData.money, CheckpointData.materials.get("legno", 0),
+		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
+	]
+	var row := $HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_house
+	var info: Label = row.get_node("InfoLabel")
+	var btn: Button = row.get_node("BuyButton")
+	var cur: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
+	if HouseTiers.is_max_tier(CheckpointData.house_tier):
+		info.text = "Abitazione attuale: %s (spazio %dx%d)\nHai raggiunto il tier massimo di abitazione." % [cur.label, cur.cols, cur.rows]
+		btn.disabled = true
+		btn.text = "Massimo"
+		return
+	var next_idx := HouseTiers.next_tier_index(CheckpointData.house_tier)
+	var nxt: Dictionary = HouseTiers.tier_data(next_idx)
+	var mat_name: String = MATERIAL_LABELS.get(nxt.cost_material, nxt.cost_material)
+	if CheckpointData.zone < int(nxt.zone_required):
+		info.text = "Abitazione attuale: %s (spazio %dx%d)\nProssima abitazione: %s (spazio %dx%d) — si sblocca alla zona %d" % [
+			cur.label, cur.cols, cur.rows, nxt.label, nxt.cols, nxt.rows, nxt.zone_required,
+		]
+		btn.disabled = true
+		btn.text = "Bloccata"
+		return
+	info.text = "Abitazione attuale: %s (spazio %dx%d)\nProssima abitazione: %s (spazio %dx%d) — costa %d€ + %d %s" % [
+		cur.label, cur.cols, cur.rows, nxt.label, nxt.cols, nxt.rows, nxt.cost_money, nxt.cost_amount, mat_name,
+	]
+	var afford: bool = CheckpointData.money >= int(nxt.cost_money) and CheckpointData.materials.get(String(nxt.cost_material), 0) >= int(nxt.cost_amount)
+	btn.disabled = not afford
+	btn.text = "Compra"
+
+func _on_buy_house_tier_pressed() -> void:
+	if HouseTiers.is_max_tier(CheckpointData.house_tier):
+		return
+	var next_idx := HouseTiers.next_tier_index(CheckpointData.house_tier)
+	var nxt: Dictionary = HouseTiers.tier_data(next_idx)
+	if CheckpointData.zone < int(nxt.zone_required):
+		return
+	if CheckpointData.money < int(nxt.cost_money) or CheckpointData.materials.get(String(nxt.cost_material), 0) < int(nxt.cost_amount):
+		return
+	CheckpointData.money -= int(nxt.cost_money)
+	CheckpointData.materials[String(nxt.cost_material)] = CheckpointData.materials.get(String(nxt.cost_material), 0) - int(nxt.cost_amount)
+	CheckpointData.house_tier = next_idx
+	_apply_house_tier_geometry()
+	_refresh_workbench_menu()
+
+func _apply_house_tier_geometry() -> void:
+	col_values = HouseTiers.col_values(CheckpointData.house_tier)
+	row_values = HouseTiers.row_values(CheckpointData.house_tier)
+	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
+	var width: float = float(tier.cols) * 2.0
+	var depth: float = float(tier.rows) * 2.0
+	var wall_color: Color = tier.wall_color
+
+	var floor_mesh: PlaneMesh = $Floor/Mesh.mesh
+	floor_mesh.size = Vector2(width, depth)
+	var floor_shape: WorldBoundaryShape3D = $Floor/CollisionShape3D.shape
+	floor_shape.plane = Plane(0, 1, 0, 0)
+
+	var ns_mesh := BoxMesh.new()
+	ns_mesh.size = Vector3(width, 2.5, 0.2)
+	var ns_shape := BoxShape3D.new()
+	ns_shape.size = Vector3(width, 2.5, 0.2)
+	$WallNorth/Mesh.mesh = ns_mesh
+	$WallNorth/CollisionShape3D.shape = ns_shape
+	$WallNorth.position = Vector3(0, 1.25, -depth / 2.0)
+	$WallNorth/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
+
+	var ew_mesh := BoxMesh.new()
+	ew_mesh.size = Vector3(0.2, 2.5, depth)
+	var ew_shape := BoxShape3D.new()
+	ew_shape.size = Vector3(0.2, 2.5, depth)
+	$WallEast/Mesh.mesh = ew_mesh
+	$WallEast/CollisionShape3D.shape = ew_shape
+	$WallEast.position = Vector3(width / 2.0, 1.25, 0)
+	$WallEast/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
+	$WallWest/Mesh.mesh = ew_mesh
+	$WallWest/CollisionShape3D.shape = ew_shape
+	$WallWest.position = Vector3(-width / 2.0, 1.25, 0)
+	$WallWest/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
+
+	var seg_width: float = (width - DOOR_GAP) / 2.0
+	var seg_x: float = DOOR_GAP / 2.0 + seg_width / 2.0
+	var seg_mesh := BoxMesh.new()
+	seg_mesh.size = Vector3(seg_width, 2.5, 0.2)
+	var seg_shape := BoxShape3D.new()
+	seg_shape.size = Vector3(seg_width, 2.5, 0.2)
+	$WallSouthLeft/Mesh.mesh = seg_mesh
+	$WallSouthLeft/CollisionShape3D.shape = seg_shape
+	$WallSouthLeft.position = Vector3(-seg_x, 1.25, depth / 2.0)
+	$WallSouthLeft/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
+	$WallSouthRight/Mesh.mesh = seg_mesh
+	$WallSouthRight/CollisionShape3D.shape = seg_shape
+	$WallSouthRight.position = Vector3(seg_x, 1.25, depth / 2.0)
+	$WallSouthRight/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
+
+	$DoorTrigger.position = Vector3(0, 1, depth / 2.0 + 0.6)
+	$Workbench.position = Vector3(col_values[1] + 0.3, 0, row_values[0] - 0.2)
+
+func _tinted_wall_material(color: Color) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = color
+	mat.roughness = 0.9
+	return mat
 
 func _has_placed_bench(type_id: String) -> bool:
 	for b in CheckpointData.placed_benches:
@@ -400,7 +521,7 @@ func _cell_key(col_idx: int, row_idx: int) -> String:
 
 func _footprint_cells(orientation: String, col_idx: int, row_idx: int) -> Array:
 	if orientation == "h":
-		return [_cell_key(0, row_idx), _cell_key(1, row_idx)]
+		return [_cell_key(col_idx, row_idx), _cell_key(col_idx + 1, row_idx)]
 	return [_cell_key(col_idx, row_idx), _cell_key(col_idx, row_idx + 1)]
 
 func _occupied_cells() -> Dictionary:
@@ -418,13 +539,14 @@ func _occupied_cells() -> Dictionary:
 func _first_free_slot(orientation: String):
 	var occ := _occupied_cells()
 	if orientation == "h":
-		for r in range(ROW_VALUES.size()):
-			var cells := _footprint_cells("h", 0, r)
-			if not occ.has(cells[0]) and not occ.has(cells[1]):
-				return {"row_idx": r, "col_idx": 0}
+		for r in range(row_values.size()):
+			for c in range(col_values.size() - 1):
+				var cells := _footprint_cells("h", c, r)
+				if not occ.has(cells[0]) and not occ.has(cells[1]):
+					return {"row_idx": r, "col_idx": c}
 	else:
-		for c in range(COL_VALUES.size()):
-			for r in range(ROW_VALUES.size() - 1):
+		for c in range(col_values.size()):
+			for r in range(row_values.size() - 1):
 				var cells := _footprint_cells("v", c, r)
 				if not occ.has(cells[0]) and not occ.has(cells[1]):
 					return {"row_idx": r, "col_idx": c}
@@ -432,9 +554,10 @@ func _first_free_slot(orientation: String):
 
 func _bench_world_position(orientation: String, col_idx: int, row_idx: int) -> Vector3:
 	if orientation == "h":
-		return Vector3(0, 0, ROW_VALUES[row_idx])
-	var z: float = (ROW_VALUES[row_idx] + ROW_VALUES[row_idx + 1]) / 2.0
-	return Vector3(COL_VALUES[col_idx], 0, z)
+		var x: float = (col_values[col_idx] + col_values[col_idx + 1]) / 2.0
+		return Vector3(x, 0, row_values[row_idx])
+	var z: float = (row_values[row_idx] + row_values[row_idx + 1]) / 2.0
+	return Vector3(col_values[col_idx], 0, z)
 
 func _bench_rotation_y(orientation: String) -> float:
 	return 90.0 if orientation == "v" else 0.0
@@ -449,17 +572,21 @@ func _nearest_index(values: Array, v: float) -> int:
 			best_i = i
 	return best_i
 
+func _nearest_pair_index(values: Array, v: float) -> int:
+	var best_i := 0
+	var best_d := INF
+	for i in range(values.size() - 1):
+		var mid: float = (values[i] + values[i + 1]) / 2.0
+		var d: float = absf(v - mid)
+		if d < best_d:
+			best_d = d
+			best_i = i
+	return best_i
+
 func _nearest_anchor(orientation: String, world_point: Vector3) -> Dictionary:
 	if orientation == "h":
-		return {"row_idx": _nearest_index(ROW_VALUES, world_point.z), "col_idx": 0}
-	var col_idx := _nearest_index(COL_VALUES, world_point.x)
-	var row_idx := 0
-	if ROW_VALUES.size() >= 3:
-		var mid0: float = (ROW_VALUES[0] + ROW_VALUES[1]) / 2.0
-		var mid1: float = (ROW_VALUES[1] + ROW_VALUES[2]) / 2.0
-		if absf(world_point.z - mid1) < absf(world_point.z - mid0):
-			row_idx = 1
-	return {"row_idx": row_idx, "col_idx": col_idx}
+		return {"row_idx": _nearest_index(row_values, world_point.z), "col_idx": _nearest_pair_index(col_values, world_point.x)}
+	return {"row_idx": _nearest_pair_index(row_values, world_point.z), "col_idx": _nearest_index(col_values, world_point.x)}
 
 func _apply_ghost_transform() -> void:
 	placing_ghost.position = _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
