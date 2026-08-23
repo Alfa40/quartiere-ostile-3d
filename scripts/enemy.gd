@@ -55,6 +55,20 @@ var wander_timer := 0.0
 var stun_timer := 0.0
 var blind_timer := 0.0
 
+# Rilevamento "incastrato": senza un vero pathfinding, un nemico che punta
+# dritto verso il player può restare bloccato contro un ostacolo sottile
+# lungo il percorso diretto (es. il palo di un lampione) — se dopo
+# STUCK_CHECK_INTERVAL secondi di tentativo di movimento la posizione non è
+# avanzata a sufficienza, si spinge di lato per qualche istante finché non
+# si libera, invece di restarci incollato per sempre.
+const STUCK_CHECK_INTERVAL := 0.5
+const STUCK_MOVE_THRESHOLD := 0.35
+const UNSTUCK_DURATION := 0.7
+var _stuck_check_timer := STUCK_CHECK_INTERVAL
+var _stuck_check_pos := Vector3.ZERO
+var _unstuck_timer := 0.0
+var _unstuck_dir := Vector3.ZERO
+
 # Spinta temporanea dalle armi bianche più pesanti (vedi
 # MeleeWeapons.KNOCKBACK_CATEGORIES): un vettore che si aggiunge alla
 # velocità normale e si esaurisce da solo per attrito, invece di sostituire
@@ -213,6 +227,23 @@ func _process_wander(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, speed * 8.0 * delta)
 		velocity.z = move_toward(velocity.z, 0.0, speed * 8.0 * delta)
 
+func _resolve_move_dir(desired_dir: Vector3, delta: float) -> Vector3:
+	if _unstuck_timer > 0.0:
+		_unstuck_timer -= delta
+		return _unstuck_dir
+	_stuck_check_timer -= delta
+	if _stuck_check_timer > 0.0:
+		return desired_dir
+	_stuck_check_timer = STUCK_CHECK_INTERVAL
+	var stuck: bool = desired_dir.length() > 0.01 and global_position.distance_to(_stuck_check_pos) < STUCK_MOVE_THRESHOLD
+	_stuck_check_pos = global_position
+	if not stuck:
+		return desired_dir
+	var side := Vector3(-desired_dir.z, 0, desired_dir.x)
+	_unstuck_dir = (side if randf() < 0.5 else -side).normalized()
+	_unstuck_timer = UNSTUCK_DURATION
+	return _unstuck_dir
+
 func _process_melee(delta: float) -> void:
 	var to_player := player.global_position - global_position
 	to_player.y = 0.0
@@ -220,7 +251,7 @@ func _process_melee(delta: float) -> void:
 	var effective_range := ATTACK_RANGE * radius_mult
 
 	if dist > effective_range:
-		var move_dir := _compute_move_dir(to_player, delta)
+		var move_dir := _resolve_move_dir(_compute_move_dir(to_player, delta), delta)
 		velocity.x = move_dir.x * speed
 		velocity.z = move_dir.z * speed
 		if move_dir.length() > 0.01:
@@ -265,6 +296,8 @@ func _process_ranged(delta: float) -> void:
 		move_dir = -dir
 	elif dist > RANGED_PREFERRED * 1.15:
 		move_dir = dir
+	if move_dir.length() > 0.01:
+		move_dir = _resolve_move_dir(move_dir, delta)
 
 	if move_dir.length() > 0.01:
 		velocity.x = move_dir.x * speed

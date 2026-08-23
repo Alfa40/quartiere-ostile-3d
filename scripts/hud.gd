@@ -59,13 +59,21 @@ const AMMO_COLOR_NORMAL := Color(1.0, 0.82, 0.1, 1)
 const AMMO_COLOR_LOW := Color(1.0, 0.15, 0.1, 1)
 const AMMO_LOW_MAG_RATIO := 0.25
 
-# Bagliore rosso molto discreto su tutto lo schermo quando il player subisce
-# danni: affianca la vibrazione tattile (che su iOS Safari non ha effetto
-# per un limite della piattaforma) con un riscontro visivo che funziona
-# sempre, indipendentemente dal dispositivo.
-const DAMAGE_FLASH_COLOR := Color(1.0, 0.1, 0.08, 0.16)
-const DAMAGE_FLASH_FADE_TIME := 0.35
-var _damage_flash_tween: Tween = null
+# Vignetta rossa sui bordi dello schermo (shader, centro sempre libero) che
+# affianca la vibrazione tattile (senza effetto su iOS Safari, limite della
+# piattaforma) con un riscontro visivo su qualunque dispositivo. Due
+# componenti che si sommano:
+# - una base legata alla vita ATTUALE: quasi nulla a vita piena, cresce man
+#   mano che la vita scende, fino a restare permanente (piena, mai sfumata
+#   via) sotto DAMAGE_FLASH_LOW_HP_FRAC;
+# - un picco temporaneo a ogni colpo, proporzionale a quanta % della vita
+#   massima è stata appena persa (un graffio è quasi impercettibile, un
+#   colpo pesante molto più visibile), che si esaurisce da solo.
+const DAMAGE_FLASH_LOW_HP_FRAC := 0.10
+const DAMAGE_FLASH_HIT_SCALE := 2.2
+const DAMAGE_FLASH_HIT_DECAY := 1.6
+var _damage_flash_baseline := 0.0
+var _damage_flash_hit_boost := 0.0
 
 const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
 const ZONE_COMPLETE_BOX_PORTRAIT := Rect2(-310.0, 140.0, 620.0, 190.0)
@@ -133,16 +141,24 @@ func flash_throw_type_toast(label: String) -> void:
 	_throw_toast_tween.tween_property(throw_toast_label, "modulate:a", 0.0, 0.5)
 	_throw_toast_tween.tween_callback(func(): throw_toast_label.visible = false)
 
-func flash_damage() -> void:
-	if _damage_flash_tween != null and _damage_flash_tween.is_valid():
-		_damage_flash_tween.kill()
-	damage_flash.color = DAMAGE_FLASH_COLOR
-	damage_flash.visible = true
-	_damage_flash_tween = create_tween()
-	_damage_flash_tween.tween_property(damage_flash, "color:a", 0.0, DAMAGE_FLASH_FADE_TIME)
-	_damage_flash_tween.tween_callback(func(): damage_flash.visible = false)
+# amount/max_hp: il picco del colpo dipende da quanta % della vita massima
+# è stata appena persa, non dal valore assoluto (così scala con la vita del
+# player a qualunque livello di potenziamento).
+func flash_damage(amount: float, max_hp: float) -> void:
+	var hit_frac: float = amount / maxf(max_hp, 1.0)
+	var boost: float = clampf(hit_frac * DAMAGE_FLASH_HIT_SCALE, 0.0, 1.0)
+	_damage_flash_hit_boost = maxf(_damage_flash_hit_boost, boost)
+
+func _update_damage_flash(delta: float) -> void:
+	if _damage_flash_hit_boost > 0.0:
+		_damage_flash_hit_boost = maxf(0.0, _damage_flash_hit_boost - DAMAGE_FLASH_HIT_DECAY * delta)
+	var shown: float = clampf(_damage_flash_baseline + _damage_flash_hit_boost, 0.0, 1.0)
+	damage_flash.visible = shown > 0.001
+	if damage_flash.visible:
+		damage_flash.material.set_shader_parameter("intensity", shown)
 
 func _process(delta: float) -> void:
+	_update_damage_flash(delta)
 	if zone_complete_active:
 		zone_complete_time_left -= delta
 		zone_complete_timer_label.text = "Ritorno automatico a casa tra %d s" % int(ceil(zone_complete_time_left))
@@ -387,6 +403,13 @@ func on_player_hp_changed(current: float, max_hp: float) -> void:
 	health_bar.max_value = max_hp
 	health_bar.value = current
 	hp_text.text = "%d / %d" % [int(current), int(max_hp)]
+	var hp_frac: float = current / maxf(max_hp, 1.0)
+	# 0 a vita piena, sale mano a mano che la vita scende, satura a 1
+	# esattamente a DAMAGE_FLASH_LOW_HP_FRAC (e resta piena, "permanente",
+	# sotto quella soglia).
+	_damage_flash_baseline = clampf(
+		1.0 - (hp_frac - DAMAGE_FLASH_LOW_HP_FRAC) / (1.0 - DAMAGE_FLASH_LOW_HP_FRAC), 0.0, 1.0,
+	)
 
 func show_message(text: String) -> void:
 	message_label.text = text

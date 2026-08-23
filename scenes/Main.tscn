@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3]
+[gd_scene load_steps=53 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="6_touch"]
 [ext_resource type="Script" path="res://scripts/enemy_indicators.gd" id="7_indicators"]
 [ext_resource type="Script" path="res://scripts/throw_cooldown_overlay.gd" id="8_throwcooldown"]
+[ext_resource type="Shader" path="res://shaders/damage_vignette.gdshader" id="9_damage_vignette"]
 
 [sub_resource type="PrismMesh" id="TentMesh"]
 size = Vector3(4, 2.2, 6)
@@ -35,6 +36,12 @@ content_margin_left = 22
 content_margin_right = 22
 content_margin_top = 14
 content_margin_bottom = 14
+
+[sub_resource type="ShaderMaterial" id="DamageVignetteMat"]
+shader = ExtResource("9_damage_vignette")
+shader_parameter/vignette_color = Color(1, 0.05, 0.05, 0.85)
+shader_parameter/intensity = 0.0
+shader_parameter/edge_start = 0.25
 
 [sub_resource type="StyleBoxFlat" id="HealthBarBG"]
 bg_color = Color(0.08, 0.08, 0.08, 0.85)
@@ -1124,7 +1131,8 @@ script = ExtResource("4_hud")
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(1, 0.1, 0.08, 0)
+material = SubResource("DamageVignetteMat")
+color = Color(1, 1, 1, 1)
 visible = false
 
 [node name="HealthBar" type="ProgressBar" parent="HUD"]
