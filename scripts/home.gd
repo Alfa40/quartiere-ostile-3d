@@ -6,6 +6,9 @@ const Firearms := preload("res://scripts/firearms.gd")
 const Throwables := preload("res://scripts/throwables.gd")
 const UIScale := preload("res://scripts/ui_scale.gd")
 
+const EQUIPPED_BUTTON_MODULATE := Color(1.2, 1.12, 0.7, 1.0)
+const OWNED_BUTTON_MODULATE := Color(1.0, 1.0, 1.0, 1.0)
+
 const MENU_SCROLL_LEFT_PORTRAIT := 60.0
 const MENU_SCROLL_RIGHT_PORTRAIT := -60.0
 const MENU_SCROLL_LEFT_LANDSCAPE := 110.0
@@ -579,10 +582,12 @@ func _refresh_weapon_menu() -> void:
 				main_info.text = "%s — Equipaggiata\n%s" % [def.label, stats_line]
 				action_btn.disabled = true
 				action_btn.text = "Equipaggiata"
+				action_btn.modulate = EQUIPPED_BUTTON_MODULATE
 			else:
 				main_info.text = "%s — posseduta\n%s" % [def.label, stats_line]
 				action_btn.disabled = false
 				action_btn.text = "Equipaggia"
+				action_btn.modulate = OWNED_BUTTON_MODULATE
 
 		for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
@@ -719,10 +724,12 @@ func _refresh_firearm_menu() -> void:
 				main_info.text = "%s — Equipaggiata (%s)\n%s" % [def.label, mode_label, stats_line]
 				action_btn.disabled = true
 				action_btn.text = "Equipaggiata"
+				action_btn.modulate = EQUIPPED_BUTTON_MODULATE
 			else:
 				main_info.text = "%s — posseduta (%s)\n%s" % [def.label, mode_label, stats_line]
 				action_btn.disabled = false
 				action_btn.text = "Equipaggia"
+				action_btn.modulate = OWNED_BUTTON_MODULATE
 
 			var reserve: int = int(CheckpointData.firearm_ammo.get(wid, 0))
 			var cap: int = Firearms.final_reserve_cap(wid, fups)
@@ -902,6 +909,7 @@ func _refresh_throwable_menu() -> void:
 				main_info.text = "%s — Equipaggiata (tocca di nuovo per togliere)\n%s" % [def.label, stats_line]
 				action_btn.disabled = false
 				action_btn.text = "Disequipaggia"
+				action_btn.modulate = EQUIPPED_BUTTON_MODULATE
 			else:
 				var other_equipped: String = String(CheckpointData.equipped_throwables.get(String(def.category), ""))
 				if other_equipped != "":
@@ -911,6 +919,7 @@ func _refresh_throwable_menu() -> void:
 					main_info.text = "%s — posseduta\n%s" % [def.label, stats_line]
 				action_btn.disabled = false
 				action_btn.text = "Equipaggia"
+				action_btn.modulate = OWNED_BUTTON_MODULATE
 
 			var reserve: int = int(CheckpointData.throwable_ammo.get(wid, 0))
 			var cap: int = Throwables.final_reserve_cap(wid, tups)
