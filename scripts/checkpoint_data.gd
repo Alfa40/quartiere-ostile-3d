@@ -11,6 +11,13 @@ const SLOT_DIR_FORMAT := "user://saves/slot_%d/"
 const CHECKPOINT_FILENAME := "checkpoint.json"
 const CONTINUE_SAVE_FILENAME := "continue_save.json"
 
+# Slot speciale e completamente separato per la Modalità Creator: usa una
+# cartella propria (fuori dalla numerazione 1..SLOT_COUNT), così una partita
+# creator non tocca mai i salvataggi né le statistiche/record delle partite
+# normali.
+const CREATOR_SLOT := -1
+const CREATOR_SLOT_DIR := "user://saves/creator/"
+
 # Percorsi del vecchio salvataggio unico (pre-multi-partita): usati solo per
 # migrare automaticamente i progressi esistenti nello Slot 1 alla prima
 # apertura del gioco dopo l'aggiornamento.
@@ -66,6 +73,8 @@ func _ready() -> void:
 # --- Percorsi per slot ---
 
 func _slot_dir(slot: int) -> String:
+	if slot == CREATOR_SLOT:
+		return CREATOR_SLOT_DIR
 	return SLOT_DIR_FORMAT % slot
 
 func _slot_checkpoint_path(slot: int) -> String:

@@ -26,9 +26,6 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var dev_tools_box: Control = $PausePanel/Scroll/Box/DevToolsBox
 @onready var dev_zone_label: Label = $PausePanel/Scroll/Box/DevToolsBox/ZoneRow/ZoneValueLabel
 @onready var creator_password_panel: Control = $CreatorPasswordPanel
-@onready var creator_password_edit: LineEdit = $CreatorPasswordPanel/Scroll/Box/PasswordEdit
-@onready var creator_error_label: Label = $CreatorPasswordPanel/Scroll/Box/ErrorLabel
-@onready var creator_keyboard: GridContainer = $CreatorPasswordPanel/Scroll/Box/Keyboard
 
 signal go_home_chosen
 signal skip_home_chosen
@@ -91,12 +88,6 @@ func _ready() -> void:
 
 	creator_password_panel.visible = false
 	creator_button.pressed.connect(_on_creator_button_pressed)
-	$CreatorPasswordPanel/Scroll/Box/BackspaceButton.pressed.connect(_on_creator_backspace_pressed)
-	$CreatorPasswordPanel/Scroll/Box/ConfirmButton.pressed.connect(_on_creator_confirm_pressed)
-	$CreatorPasswordPanel/Scroll/Box/CancelButton.pressed.connect(_on_creator_cancel_pressed)
-	creator_password_edit.text_submitted.connect(func(_t): _on_creator_confirm_pressed())
-	for key in creator_keyboard.get_children():
-		key.pressed.connect(_on_creator_key_pressed.bind(key.text))
 	_refresh_creator_button()
 
 	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/MinusButton.pressed.connect(_on_dev_zone_step.bind(-1))
@@ -305,6 +296,13 @@ func set_paused(value: bool) -> void:
 		_refresh_creator_button()
 
 func _refresh_creator_button() -> void:
+	# La Modalità Creator è disponibile solo nel suo slot isolato: nelle
+	# partite normali il tasto resta nascosto e non è più possibile attivarla.
+	var in_creator_slot: bool = CheckpointData.current_slot == CheckpointData.CREATOR_SLOT
+	creator_button.visible = in_creator_slot
+	if not in_creator_slot:
+		dev_tools_box.visible = false
+		return
 	creator_button.text = "Modalità Creator: ON" if DevMode.enabled else "Modalità Creator: OFF"
 	dev_tools_box.visible = DevMode.enabled
 	if DevMode.enabled:
@@ -327,36 +325,13 @@ func _on_dev_clear_zone_pressed() -> void:
 	set_paused(false)
 
 func _on_creator_button_pressed() -> void:
-	if DevMode.enabled:
-		main.set_creator_mode(false)
-		_refresh_creator_button()
-	else:
-		creator_error_label.text = ""
-		creator_password_edit.text = ""
-		creator_password_panel.visible = true
-		creator_password_edit.grab_focus()
-
-func _on_creator_cancel_pressed() -> void:
-	creator_password_panel.visible = false
-
-func _on_creator_key_pressed(letter: String) -> void:
-	creator_password_edit.text += letter
-	creator_password_edit.caret_column = creator_password_edit.text.length()
-
-func _on_creator_backspace_pressed() -> void:
-	if creator_password_edit.text.length() > 0:
-		creator_password_edit.text = creator_password_edit.text.substr(0, creator_password_edit.text.length() - 1)
-		creator_password_edit.caret_column = creator_password_edit.text.length()
-
-func _on_creator_confirm_pressed() -> void:
-	if DevMode.check(creator_password_edit.text):
-		main.set_creator_mode(true)
-		creator_password_panel.visible = false
-		_refresh_creator_button()
-	else:
-		creator_error_label.text = "Password errata"
-		creator_password_edit.text = ""
-		creator_password_edit.grab_focus()
+	# Dentro allo slot Creator si può uscire/entrare in modalità creator a
+	# piacimento senza reinserire la password: quella è già stata verificata
+	# al menu principale per accedere a questo slot isolato.
+	if CheckpointData.current_slot != CheckpointData.CREATOR_SLOT:
+		return
+	main.set_creator_mode(not DevMode.enabled)
+	_refresh_creator_button()
 
 func show_game_over() -> void:
 	get_tree().paused = true

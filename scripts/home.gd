@@ -182,7 +182,9 @@ func _ready() -> void:
 			var tammo_btn: Button = tbase.get_node("AmmoRow/BuyButton")
 			tammo_btn.pressed.connect(_on_buy_throwable_ammo_pressed.bind(wid))
 			for tid in Throwables.UPGRADE_TRACK_ORDER:
-				var tt_btn: Button = tbase.get_node("Track_%s/BuyButton" % tid)
+				var ttrack_row := tbase.get_node("Track_%s" % tid)
+				_insert_track_separator(tbase, tid, ttrack_row)
+				var tt_btn: Button = ttrack_row.get_node("BuyButton")
 				tt_btn.pressed.connect(_on_upgrade_throwable_pressed.bind(wid, tid))
 
 	for fcat_id in FIREARM_CATEGORY_BOXES.keys():
@@ -198,7 +200,9 @@ func _ready() -> void:
 			var fammo_btn: Button = fbase.get_node("AmmoRow/BuyButton")
 			fammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
 			for tid in Firearms.UPGRADE_TRACK_ORDER:
-				var ft_btn: Button = fbase.get_node("Track_%s/BuyButton" % tid)
+				var ftrack_row := fbase.get_node("Track_%s" % tid)
+				_insert_track_separator(fbase, tid, ftrack_row)
+				var ft_btn: Button = ftrack_row.get_node("BuyButton")
 				ft_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
 
 	for ecat_id in EXPLOSIVE_CATEGORY_BOXES.keys():
@@ -214,7 +218,9 @@ func _ready() -> void:
 			var eammo_btn: Button = ebase.get_node("AmmoRow/BuyButton")
 			eammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
 			for tid in Firearms.UPGRADE_TRACK_ORDER:
-				var et_btn: Button = ebase.get_node("Track_%s/BuyButton" % tid)
+				var etrack_row := ebase.get_node("Track_%s" % tid)
+				_insert_track_separator(ebase, tid, etrack_row)
+				var et_btn: Button = etrack_row.get_node("BuyButton")
 				et_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
 
 	for cat_id in MeleeWeapons.CATEGORY_ORDER:
@@ -228,7 +234,9 @@ func _ready() -> void:
 			name_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			name_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_weapon_menu))
 			for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
-				var t_btn: Button = base.get_node("Track_%s/BuyButton" % tid)
+				var track_row := base.get_node("Track_%s" % tid)
+				_insert_track_separator(base, tid, track_row)
+				var t_btn: Button = track_row.get_node("BuyButton")
 				t_btn.pressed.connect(_on_upgrade_weapon_pressed.bind(wid, tid))
 
 	$DoorTrigger.body_entered.connect(_on_door_entered)
@@ -1032,6 +1040,15 @@ func _open_weapon_menu() -> void:
 func _close_weapon_menu() -> void:
 	weapon_menu.visible = false
 
+# Inserisce una linea sottile subito prima della riga di potenziamento tid,
+# per separare visivamente i vari potenziamenti tra loro (e dalla riga
+# principale/munizioni sopra) quando il menu a tendina è aperto.
+func _insert_track_separator(base: Node, tid: String, track_row: Control) -> void:
+	var sep := HSeparator.new()
+	sep.name = "UpSep_%s" % tid
+	base.add_child(sep)
+	base.move_child(sep, track_row.get_index())
+
 # Tocca il nome di un'arma per aprire/chiudere il suo "menu a tendina" con
 # statistiche e potenziamenti (nascosti di default, per non lasciare blocchi
 # di testo troppo lunghi nella lista). Ritoccando il nome si richiude.
@@ -1100,6 +1117,7 @@ func _refresh_weapon_menu() -> void:
 		for tid in MeleeWeapons.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
 			track_row.visible = expanded
+			base.get_node("UpSep_%s" % tid).visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = wups.get(tid, 0)
@@ -1260,6 +1278,7 @@ func _refresh_firearm_menu() -> void:
 		for tid in Firearms.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
 			track_row.visible = expanded
+			base.get_node("UpSep_%s" % tid).visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = fups.get(tid, 0)
@@ -1368,6 +1387,7 @@ func _refresh_explosive_menu() -> void:
 		for tid in Firearms.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
 			track_row.visible = expanded
+			base.get_node("UpSep_%s" % tid).visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = fups.get(tid, 0)
@@ -1569,6 +1589,7 @@ func _refresh_throwable_menu() -> void:
 		for tid in Throwables.UPGRADE_TRACK_ORDER:
 			var track_row := base.get_node("Track_%s" % tid)
 			track_row.visible = expanded
+			base.get_node("UpSep_%s" % tid).visible = expanded
 			var t_info: Label = track_row.get_node("InfoLabel")
 			var t_btn: Button = track_row.get_node("BuyButton")
 			var level: int = tups.get(tid, 0)

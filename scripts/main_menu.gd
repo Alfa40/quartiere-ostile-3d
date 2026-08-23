@@ -102,8 +102,20 @@ func _on_backspace_pressed() -> void:
 
 func _on_confirm_pressed() -> void:
 	if DevMode.check(password_edit.text):
+		password_panel.visible = false
+		# La Modalità Creator vive nel proprio slot isolato (mai 1..SLOT_COUNT):
+		# così le partite create/continuate in creator non toccano mai i
+		# salvataggi né le statistiche/record delle partite normali.
+		var data: Dictionary = CheckpointData.slot_info(CheckpointData.CREATOR_SLOT)
+		if data.empty:
+			CheckpointData.start_new_game(CheckpointData.CREATOR_SLOT)
+		else:
+			CheckpointData.select_slot(CheckpointData.CREATOR_SLOT)
 		DevMode.enabled = true
-		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+		if CheckpointData.resumed_from_continue:
+			get_tree().change_scene_to_file("res://scenes/Home.tscn")
+		else:
+			get_tree().change_scene_to_file("res://scenes/Main.tscn")
 	else:
 		error_label.text = "Password errata"
 		password_edit.text = ""
