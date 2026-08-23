@@ -57,7 +57,16 @@ const BulletScene := preload("res://scenes/Bullet.tscn")
 const GrenadeScene := preload("res://scenes/Grenade.tscn")
 const LobbedGrenadeScene := preload("res://scenes/LobbedGrenade.tscn")
 const ARC_GRAVITY := 20.0
-const ARC_LAUNCH_ANGLE_DEGREES := 42.0
+# L'angolo di lancio delle granate (a mano o da lanciagranate) dipende da
+# quanto è spinto il joystick della mira: poco spinto = angolo basso, la
+# granata cade quasi subito; a metà corsa = 45° (angolo ottimale, gittata
+# massima); tutto spinto = angolo molto alto, la granata sale a mo' di
+# mortaio e ricade lenta ma vicino. La potenza di lancio resta fissa
+# (derivata dalla gittata potenziabile "Portata"), è solo l'angolo a variare.
+const LOB_MIN_ANGLE_DEGREES := 8.0
+const LOB_MAX_ANGLE_DEGREES := 82.0
+const AIM_MAGNITUDE_DEADZONE := 0.15
+const ARC_LINE_SEGMENTS := 10
 
 var firearm_id := ""
 var firearm_fire_mode := "auto"
@@ -93,9 +102,12 @@ var firearm_reload_timer := 0.0
 var firearm_reloading := false
 var firearm_flash_timer := 0.0
 var last_aim_dir := Vector3(0, 0, -1)
+var last_aim_magnitude := 0.0
 var _burst_shots_remaining := 0
 var _burst_timer := 0.0
 var _burst_aim_dir := Vector3(0, 0, -1)
+var _burst_aim_magnitude := 0.0
+var _arc_line_segments: Array = []
 
 func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0, bullet_speed: float = 40.0, spread_degrees: float = 2.0, pellet_count: int = 1, pellet_spread_degrees: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH, projectile_type: String = "bullet", grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0, stun_duration: float = 0.0) -> void:
 	firearm_id = id
@@ -186,7 +198,7 @@ func arm_throw() -> void:
 		return
 	throw_armed = true
 
-func _throw_weapon(direction: Vector3) -> void:
+func _throw_weapon(direction: Vector3, magnitude: float = 1.0) -> void:
 	if throwable_id == "":
 		return
 	var reserve: int = main.get_throwable_reserve_ammo(throwable_id) if main != null and main.has_method("get_throwable_reserve_ammo") else 0
@@ -197,7 +209,9 @@ func _throw_weapon(direction: Vector3) -> void:
 	throw_cooldown_timer = throwable_cooldown
 	var proj: Area3D
 	if throwable_grenade_type != "":
-		proj = GrenadeScene.instantiate()
+		# Le granate lanciate a mano seguono la stessa logica a parabola dei
+		# lanciagranate: stessa scena, stesso angolo derivato dal joystick.
+		proj = LobbedGrenadeScene.instantiate()
 		get_parent().add_child(proj)
 		proj.grenade_type = throwable_grenade_type
 		proj.explosion_radius = throwable_explosion_radius
@@ -208,13 +222,17 @@ func _throw_weapon(direction: Vector3) -> void:
 		proj.stun_duration = throwable_stun_duration
 		if throwable_grenade_type == "sticky":
 			proj.stuck.connect(_on_grenade_stuck.bind(proj))
+		proj.global_position = global_position + Vector3(0, 1.0, 0) + direction * 0.8
+		var angle_rad := _lob_angle_from_magnitude(magnitude)
+		var speed: float = sqrt(max(throwable_range, 1.0) * ARC_GRAVITY)
+		proj.arc_velocity = direction * (speed * cos(angle_rad)) + Vector3(0, speed * sin(angle_rad), 0)
 	else:
 		proj = ThrownWeaponScene.instantiate()
 		get_parent().add_child(proj)
-	proj.global_position = global_position + Vector3(0, 1.0, 0) + direction * 1.0
-	proj.travel = direction * THROW_SPEED
+		proj.global_position = global_position + Vector3(0, 1.0, 0) + direction * 1.0
+		proj.travel = direction * THROW_SPEED
+		proj.max_distance = throwable_range
 	proj.damage = throwable_damage
-	proj.max_distance = throwable_range
 	proj.source = self
 	_burst_shots_remaining = 0
 
@@ -301,22 +319,41 @@ func _handle_firearm(delta: float) -> void:
 		firearm_flash.visible = false
 
 	var aim: Vector2 = touch.aim_vector if touch != null else Vector2.ZERO
-	var aiming := aim.length() > 0.15
+	var aiming := aim.length() > AIM_MAGNITUDE_DEADZONE
 	if aiming:
 		last_aim_dir = Vector3(aim.x, 0, aim.y).normalized()
+		last_aim_magnitude = clampf((aim.length() - AIM_MAGNITUDE_DEADZONE) / (1.0 - AIM_MAGNITUDE_DEADZONE), 0.0, 1.0)
 		facing_pivot.look_at(facing_pivot.global_position + last_aim_dir, Vector3.UP)
 
 	if aiming and (firearm_id != "" or throwable_id != ""):
-		var line_length := DEFAULT_AIM_LINE_LENGTH
-		if firearm_id != "":
-			line_length = max(line_length, firearm_aim_line_length)
-		if throwable_id != "":
-			line_length = max(line_length, throwable_aim_line_length)
-		aim_line.visible = true
-		aim_line.scale = Vector3(1.0, 1.0, line_length)
-		aim_line.position = Vector3(0, 1.0, -line_length * 0.5)
+		# Il lancio armato (se presente) ha priorità di anteprima sull'arma
+		# da fuoco, stessa priorità usata al momento del rilascio.
+		var lobbed_range := 0.0
+		var use_arc := false
+		if throw_armed and throwable_grenade_type != "":
+			use_arc = true
+			lobbed_range = throwable_range
+		elif firearm_id != "" and firearm_projectile_type == "grenade_lobbed" and (throwable_id == "" or active_sticky_grenade != null):
+			use_arc = true
+			lobbed_range = firearm_range
+		if use_arc:
+			aim_line.visible = false
+			var angle_rad := _lob_angle_from_magnitude(last_aim_magnitude)
+			var speed: float = sqrt(max(lobbed_range, 1.0) * ARC_GRAVITY)
+			_update_arc_aim_line(angle_rad, speed)
+		else:
+			_hide_arc_aim_line()
+			var line_length := DEFAULT_AIM_LINE_LENGTH
+			if firearm_id != "":
+				line_length = max(line_length, firearm_aim_line_length)
+			if throwable_id != "":
+				line_length = max(line_length, throwable_aim_line_length)
+			aim_line.visible = true
+			aim_line.scale = Vector3(1.0, 1.0, line_length)
+			aim_line.position = Vector3(0, 1.0, -line_length * 0.5)
 	else:
 		aim_line.visible = false
+		_hide_arc_aim_line()
 
 	var release_pending: bool = touch != null and touch.fire_release_pending
 	if touch != null:
@@ -324,7 +361,7 @@ func _handle_firearm(delta: float) -> void:
 
 	# Il lancio armato ha priorità sull'arma da fuoco equipaggiata sullo stesso rilascio.
 	if release_pending and throw_armed:
-		_throw_weapon(last_aim_dir)
+		_throw_weapon(last_aim_dir, last_aim_magnitude)
 		throw_armed = false
 		release_pending = false
 
@@ -352,7 +389,7 @@ func _handle_firearm(delta: float) -> void:
 	if _burst_shots_remaining > 0:
 		_burst_timer -= delta
 		if _burst_timer <= 0.0:
-			_fire_firearm(_burst_aim_dir)
+			_fire_firearm(_burst_aim_dir, _burst_aim_magnitude)
 			_burst_shots_remaining -= 1
 			_burst_timer = firearm_burst_delay
 			if firearm_ammo_in_mag <= 0:
@@ -362,14 +399,15 @@ func _handle_firearm(delta: float) -> void:
 	if aiming and firearm_fire_mode == "auto" and firearm_fire_timer <= 0.0:
 		var target := _find_enemy_in_aim_cone(last_aim_dir)
 		if target != null:
-			_fire_firearm(last_aim_dir)
+			_fire_firearm(last_aim_dir, last_aim_magnitude)
 
 	if release_pending and firearm_fire_timer <= 0.0:
 		if firearm_fire_mode == "single":
-			_fire_firearm(last_aim_dir)
+			_fire_firearm(last_aim_dir, last_aim_magnitude)
 		elif firearm_fire_mode == "burst":
 			_burst_aim_dir = last_aim_dir
-			_fire_firearm(_burst_aim_dir)
+			_burst_aim_magnitude = last_aim_magnitude
+			_fire_firearm(_burst_aim_dir, _burst_aim_magnitude)
 			_burst_shots_remaining = firearm_burst_count - 1
 			_burst_timer = firearm_burst_delay
 
@@ -393,7 +431,7 @@ func _find_enemy_in_aim_cone(aim_dir: Vector3) -> Node3D:
 			best = enemy
 	return best
 
-func _fire_firearm(aim_dir: Vector3) -> void:
+func _fire_firearm(aim_dir: Vector3, aim_magnitude: float = 1.0) -> void:
 	firearm_ammo_in_mag -= 1
 	firearm_fire_timer = firearm_cooldown
 	firearm_flash_timer = FIREARM_FLASH_TIME
@@ -401,7 +439,7 @@ func _fire_firearm(aim_dir: Vector3) -> void:
 		"grenade_straight":
 			_fire_grenade_straight(aim_dir)
 		"grenade_lobbed":
-			_fire_grenade_lobbed(aim_dir)
+			_fire_grenade_lobbed(aim_dir, aim_magnitude)
 		_:
 			_fire_bullets(aim_dir)
 
@@ -439,19 +477,71 @@ func _fire_grenade_straight(aim_dir: Vector3) -> void:
 	proj.travel = aim_dir * firearm_bullet_speed
 	proj.max_distance = firearm_range
 
-func _fire_grenade_lobbed(aim_dir: Vector3) -> void:
+func _fire_grenade_lobbed(aim_dir: Vector3, aim_magnitude: float = 1.0) -> void:
 	var proj: Area3D = LobbedGrenadeScene.instantiate()
 	_configure_firearm_grenade(proj)
 	get_parent().add_child(proj)
 	proj.global_position = global_position + Vector3(0, 1.0, 0) + aim_dir * 0.8
-	# Velocità di lancio derivata dalla gittata (potenziabile con "Portata")
-	# tramite la formula balistica standard, così l'upgrade allunga anche
-	# la traiettoria a parabola: R = v²·sin(2θ)/g → v = sqrt(R·g/sin(2θ)).
-	var angle_rad := deg_to_rad(ARC_LAUNCH_ANGLE_DEGREES)
-	var speed: float = sqrt(max(firearm_range, 1.0) * ARC_GRAVITY / sin(2.0 * angle_rad))
+	# Potenza di lancio fissa, derivata dalla gittata potenziabile con
+	# "Portata" (v² = R_max·g, la gittata massima che si otterrebbe
+	# esattamente a 45°); l'angolo invece dipende da quanto è spinto il
+	# joystick della mira: R(θ) = R_max·sin(2θ) — poco spinto o tutto spinto
+	# danno entrambi poca gittata (rispettivamente un tiro basso e rapido, o
+	# un mortaio lento), a metà corsa (45°) la gittata è massima.
+	var angle_rad := _lob_angle_from_magnitude(aim_magnitude)
+	var speed: float = sqrt(max(firearm_range, 1.0) * ARC_GRAVITY)
 	var horizontal_speed: float = speed * cos(angle_rad)
 	var vertical_speed: float = speed * sin(angle_rad)
 	proj.arc_velocity = aim_dir * horizontal_speed + Vector3(0, vertical_speed, 0)
+
+func _lob_angle_from_magnitude(magnitude: float) -> float:
+	var m: float = clampf(magnitude, 0.0, 1.0)
+	var angle_deg: float = LOB_MIN_ANGLE_DEGREES + m * (LOB_MAX_ANGLE_DEGREES - LOB_MIN_ANGLE_DEGREES)
+	return deg_to_rad(angle_deg)
+
+func _ensure_arc_line_segments() -> void:
+	if not _arc_line_segments.is_empty():
+		return
+	for i in range(ARC_LINE_SEGMENTS):
+		var seg := MeshInstance3D.new()
+		seg.mesh = aim_line.mesh
+		seg.set_surface_override_material(0, aim_line.get_surface_override_material(0))
+		seg.visible = false
+		facing_pivot.add_child(seg)
+		_arc_line_segments.append(seg)
+
+# Disegna un'anteprima curva della parabola (invece della linea di mira
+# dritta) campionando la stessa fisica usata dal proiettile reale, dal
+# lancio fino al primo contatto col terreno.
+func _update_arc_aim_line(angle_rad: float, speed: float) -> void:
+	_ensure_arc_line_segments()
+	var horizontal_speed: float = speed * cos(angle_rad)
+	var vertical_speed: float = speed * sin(angle_rad)
+	var t_flight: float = (2.0 * vertical_speed / ARC_GRAVITY) if vertical_speed > 0.0 else 0.0
+	if t_flight <= 0.0:
+		_hide_arc_aim_line()
+		return
+	var points: Array[Vector3] = []
+	for i in range(ARC_LINE_SEGMENTS + 1):
+		var t: float = t_flight * float(i) / float(ARC_LINE_SEGMENTS)
+		var z: float = -horizontal_speed * t
+		var y: float = 1.0 + vertical_speed * t - 0.5 * ARC_GRAVITY * t * t
+		points.append(Vector3(0, y, z))
+	for i in range(ARC_LINE_SEGMENTS):
+		var seg: MeshInstance3D = _arc_line_segments[i]
+		var p0: Vector3 = points[i]
+		var p1: Vector3 = points[i + 1]
+		var seg_vec: Vector3 = p1 - p0
+		var seg_len: float = seg_vec.length()
+		seg.visible = true
+		seg.position = (p0 + p1) * 0.5
+		seg.scale = Vector3(1.0, 1.0, max(seg_len, 0.001))
+		if seg_len > 0.0001:
+			seg.rotation = Vector3(atan2(seg_vec.y, -seg_vec.z), 0, 0)
+
+func _hide_arc_aim_line() -> void:
+	for seg in _arc_line_segments:
+		seg.visible = false
 
 func _start_reload() -> void:
 	if firearm_reloading:

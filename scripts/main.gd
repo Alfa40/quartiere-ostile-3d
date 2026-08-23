@@ -233,15 +233,15 @@ func _apply_house_exterior() -> void:
 
 	if int(tier.towers) > 0:
 		var tower_mesh := CylinderMesh.new()
-		tower_mesh.top_radius = 0.35
-		tower_mesh.bottom_radius = 0.4
-		tower_mesh.height = height * 1.6
+		tower_mesh.top_radius = 0.6
+		tower_mesh.bottom_radius = 0.7
+		tower_mesh.height = height * 2.4
 		for sx in [-1.0, 1.0]:
 			for sz in [-1.0, 1.0]:
 				var tower := MeshInstance3D.new()
 				tower.mesh = tower_mesh
 				tower.set_surface_override_material(0, accent_mat)
-				tower.position = Vector3(sx * (width / 2.0 - 0.3), tower_mesh.height / 2.0 - height / 2.0, sz * (depth / 2.0 - 0.3))
+				tower.position = Vector3(sx * (width / 2.0 - 0.6), tower_mesh.height / 2.0 - height / 2.0, sz * (depth / 2.0 - 0.6))
 				accents.add_child(tower)
 
 	if bool(tier.moat):
@@ -271,7 +271,8 @@ func _apply_house_exterior() -> void:
 		bridge.position = Vector3(0, -height / 2.0, -(depth / 2.0 + bridge_length / 2.0 - 0.1))
 		accents.add_child(bridge)
 
-	_house_half_extents = Vector3(max(width, top_width) / 2.0 + 1.5, top_y + 1.0, max(depth, top_depth) / 2.0 + 1.5)
+	var tower_top_y: float = (height * 2.4 - height / 2.0) if int(tier.towers) > 0 else 0.0
+	_house_half_extents = Vector3(max(width, top_width) / 2.0 + 1.5, max(top_y, tower_top_y) + 1.0, max(depth, top_depth) / 2.0 + 1.5)
 	_house_exterior_meshes = [tent, door]
 	for child in accents.get_children():
 		if child is MeshInstance3D:
