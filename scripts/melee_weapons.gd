@@ -153,17 +153,31 @@ const WEAPONS := {
 
 const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione"]
 
+# "max_effect" è il tetto asintotico dell'effetto (mai raggiunto del tutto,
+# solo avvicinato): stesso tetto di potenza del vecchio sistema a 10 livelli
+# (10 * il vecchio "per_level"), ma spalmato su molti più livelli con
+# rendimenti decrescenti — vedi upgrade_effect() più sotto.
 const UPGRADE_TRACKS := {
-	"portata": {"label": "Portata", "desc": "Aumenta la portata dell'arma", "material": "legno", "per_level": 0.03},
-	"velocita": {"label": "Velocità d'attacco", "desc": "Riduce il tempo tra un attacco e l'altro", "material": "metallo", "per_level": 0.02},
-	"danno": {"label": "Danno", "desc": "Aumenta il danno dell'arma", "material": "metallo", "per_level": 0.06},
-	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per sguainare l'arma", "material": "cablaggi", "per_level": 0.08},
+	"portata": {"label": "Portata", "desc": "Aumenta la portata dell'arma", "material": "legno", "max_effect": 0.30},
+	"velocita": {"label": "Velocità d'attacco", "desc": "Riduce il tempo tra un attacco e l'altro", "material": "metallo", "max_effect": 0.20},
+	"danno": {"label": "Danno", "desc": "Aumenta il danno dell'arma", "material": "metallo", "max_effect": 0.60},
+	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per sguainare l'arma", "material": "cablaggi", "max_effect": 0.80},
 }
 
-const UPGRADE_MAX_LEVEL := 10
+const UPGRADE_MAX_LEVEL := 50
 const UPGRADE_BASE_MONEY := 30
 const UPGRADE_BASE_MAT := 3
-const UPGRADE_GROWTH := 1.28
+# Il costo cresce con una potenza (non più esponenziale): resta un traguardo
+# sempre più impegnativo ma senza esplodere a livelli molto alti, così il
+# sistema regge facilmente centinaia di livelli se in futuro si alza il tetto.
+const UPGRADE_COST_POWER := 1.7
+# Scala (in livelli) della curva a rendimenti decrescenti: più è alta, più
+# lentamente l'effetto si avvicina al suo tetto massimo. A UPGRADE_MAX_LEVEL
+# si è già oltre il 94% del tetto, quindi l'utilità di ogni livello aggiuntivo
+# resta sempre positiva ma via via più piccola — mai un salto grande in un
+# solo livello, e ogni tier di livelli superiore aggiunge sempre meno del
+# precedente.
+const UPGRADE_SATURATION_LEVELS := 17.0
 
 static func weapon_price_money(weapon_id: String) -> int:
 	return int(WEAPONS[weapon_id].price_money)
@@ -176,17 +190,18 @@ static func weapon_price_amount(weapon_id: String) -> int:
 
 static func upgrade_cost_money(weapon_id: String, level: int) -> int:
 	var tier: int = WEAPONS[weapon_id].tier
-	return int(round(UPGRADE_BASE_MONEY * tier * pow(UPGRADE_GROWTH, level)))
+	return int(round(UPGRADE_BASE_MONEY * tier * pow(level + 1, UPGRADE_COST_POWER)))
 
 static func upgrade_cost_material(weapon_id: String, level: int) -> int:
 	var tier: int = WEAPONS[weapon_id].tier
-	return int(round(UPGRADE_BASE_MAT * tier * pow(UPGRADE_GROWTH, level)))
+	return int(round(UPGRADE_BASE_MAT * tier * pow(level + 1, UPGRADE_COST_POWER)))
 
 static func upgrade_is_maxed(level: int) -> bool:
 	return level >= UPGRADE_MAX_LEVEL
 
 static func upgrade_effect(track_id: String, level: int) -> float:
-	return level * float(UPGRADE_TRACKS[track_id].per_level)
+	var max_effect: float = float(UPGRADE_TRACKS[track_id].max_effect)
+	return max_effect * (1.0 - exp(-float(level) / UPGRADE_SATURATION_LEVELS))
 
 static func final_damage(weapon_id: String, upgrades: Dictionary) -> float:
 	var base: float = WEAPONS[weapon_id].damage

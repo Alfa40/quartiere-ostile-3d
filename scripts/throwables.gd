@@ -111,38 +111,40 @@ const WEAPONS := {
 const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mira", "scorta"]
 
 const UPGRADE_TRACKS := {
-	"portata": {"label": "Portata", "desc": "Aumenta la gittata del lancio", "material": "legno", "per_level": 0.03},
-	"velocita": {"label": "Velocità di lancio", "desc": "Riduce il tempo tra un lancio e l'altro", "material": "metallo", "per_level": 0.025},
-	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "per_level": 0.06},
-	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "per_level": 0.08},
-	"mira": {"label": "Mira", "desc": "Allunga la linea di mira e aumenta la precisione del lancio", "material": "cablaggi", "per_level": 0.08},
-	"scorta": {"label": "Scorta", "desc": "Aumenta di 1 il numero massimo di questa arma da lancio che puoi portare con te", "material": "cablaggi", "per_level": 1.0},
+	"portata": {"label": "Portata", "desc": "Aumenta la gittata del lancio", "material": "legno", "max_effect": 0.30},
+	"velocita": {"label": "Velocità di lancio", "desc": "Riduce il tempo tra un lancio e l'altro", "material": "metallo", "max_effect": 0.25},
+	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "max_effect": 0.60},
+	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "max_effect": 0.80},
+	"mira": {"label": "Mira", "desc": "Allunga la linea di mira e aumenta la precisione del lancio", "material": "cablaggi", "max_effect": 0.80},
+	"scorta": {"label": "Scorta", "desc": "Aumenta il numero massimo di questa arma da lancio che puoi portare con te", "material": "cablaggi", "max_effect": 10.0},
 }
 
 const BASE_RESERVE_CAP := 1
 
 static func final_reserve_cap(weapon_id: String, upgrades: Dictionary) -> int:
 	var level: int = upgrades.get("scorta", 0)
-	return BASE_RESERVE_CAP + int(upgrade_effect("scorta", level))
+	return BASE_RESERVE_CAP + int(round(upgrade_effect("scorta", level)))
 
-const UPGRADE_MAX_LEVEL := 10
+const UPGRADE_MAX_LEVEL := 50
 const UPGRADE_BASE_MONEY := 32
 const UPGRADE_BASE_MAT := 3
-const UPGRADE_GROWTH := 1.28
+const UPGRADE_COST_POWER := 1.7
+const UPGRADE_SATURATION_LEVELS := 17.0
 
 static func upgrade_cost_money(weapon_id: String, level: int) -> int:
 	var tier: int = WEAPONS[weapon_id].tier
-	return int(round(UPGRADE_BASE_MONEY * tier * pow(UPGRADE_GROWTH, level)))
+	return int(round(UPGRADE_BASE_MONEY * tier * pow(level + 1, UPGRADE_COST_POWER)))
 
 static func upgrade_cost_material(weapon_id: String, level: int) -> int:
 	var tier: int = WEAPONS[weapon_id].tier
-	return int(round(UPGRADE_BASE_MAT * tier * pow(UPGRADE_GROWTH, level)))
+	return int(round(UPGRADE_BASE_MAT * tier * pow(level + 1, UPGRADE_COST_POWER)))
 
 static func upgrade_is_maxed(level: int) -> bool:
 	return level >= UPGRADE_MAX_LEVEL
 
 static func upgrade_effect(track_id: String, level: int) -> float:
-	return level * float(UPGRADE_TRACKS[track_id].per_level)
+	var max_effect: float = float(UPGRADE_TRACKS[track_id].max_effect)
+	return max_effect * (1.0 - exp(-float(level) / UPGRADE_SATURATION_LEVELS))
 
 static func final_damage(weapon_id: String, upgrades: Dictionary) -> float:
 	var base: float = WEAPONS[weapon_id].damage

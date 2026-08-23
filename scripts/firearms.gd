@@ -321,20 +321,26 @@ const WEAPONS := {
 const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mirino", "caricatore"]
 
 const UPGRADE_TRACKS := {
-	"portata": {"label": "Portata", "desc": "Aumenta la gittata dell'arma", "material": "legno", "per_level": 0.03},
-	"velocita": {"label": "Cadenza di fuoco", "desc": "Riduce il tempo tra un colpo e l'altro", "material": "metallo", "per_level": 0.025},
-	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "per_level": 0.06},
-	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "per_level": 0.08},
-	"mirino": {"label": "Mirino", "desc": "Allunga la linea di mira e aumenta la precisione dell'arma", "material": "cablaggi", "per_level": 0.08},
-	"caricatore": {"label": "Caricatore", "desc": "Aumenta di un intero caricatore la scorta massima di proiettili che puoi portare con te", "material": "metallo", "per_level": 0.0},
+	"portata": {"label": "Portata", "desc": "Aumenta la gittata dell'arma", "material": "legno", "max_effect": 0.30},
+	"velocita": {"label": "Cadenza di fuoco", "desc": "Riduce il tempo tra un colpo e l'altro", "material": "metallo", "max_effect": 0.25},
+	"danno": {"label": "Danno", "desc": "Aumenta il danno per colpo", "material": "metallo", "max_effect": 0.60},
+	"estrazione": {"label": "Velocità di estrazione", "desc": "Riduce il tempo per impugnare l'arma", "material": "cablaggi", "max_effect": 0.80},
+	"mirino": {"label": "Mirino", "desc": "Allunga la linea di mira e aumenta la precisione dell'arma", "material": "cablaggi", "max_effect": 0.80},
+	"caricatore": {"label": "Caricatore", "desc": "Aumenta la scorta massima di proiettili che puoi portare con te", "material": "metallo", "max_effect": 0.0},
 }
 
 const RESERVE_CAP_MAGAZINES := 3
+# "caricatore" non passa da upgrade_effect() (il bonus è in caricatori
+# interi, non una percentuale) ma usa la stessa curva a rendimenti
+# decrescenti, con lo stesso tetto del vecchio sistema a 10 livelli
+# (+10 caricatori extra, prima raggiunto tutto in un colpo a lvl 10).
+const MAX_CARICATORE_BONUS_MAGAZINES := 10.0
 
 static func final_reserve_cap(weapon_id: String, upgrades: Dictionary) -> int:
 	var mag: int = WEAPONS[weapon_id].magazine_size
 	var level: int = upgrades.get("caricatore", 0)
-	return mag * (RESERVE_CAP_MAGAZINES + level)
+	var bonus: float = MAX_CARICATORE_BONUS_MAGAZINES * (1.0 - exp(-float(level) / UPGRADE_SATURATION_LEVELS))
+	return mag * (RESERVE_CAP_MAGAZINES + int(round(bonus)))
 
 # Velocità del proiettile e dispersione di base per categoria (non per singola
 # arma, per evitare di dover ripetere gli stessi due campi su 25 armi): le
@@ -379,24 +385,26 @@ static func pellet_base_spread_degrees(weapon_id: String) -> float:
 		return 0.0
 	return 11.0 - float(def.tier)
 
-const UPGRADE_MAX_LEVEL := 10
+const UPGRADE_MAX_LEVEL := 50
 const UPGRADE_BASE_MONEY := 35
 const UPGRADE_BASE_MAT := 3
-const UPGRADE_GROWTH := 1.3
+const UPGRADE_COST_POWER := 1.7
+const UPGRADE_SATURATION_LEVELS := 17.0
 
 static func upgrade_cost_money(weapon_id: String, level: int) -> int:
 	var tier: int = WEAPONS[weapon_id].tier
-	return int(round(UPGRADE_BASE_MONEY * tier * pow(UPGRADE_GROWTH, level)))
+	return int(round(UPGRADE_BASE_MONEY * tier * pow(level + 1, UPGRADE_COST_POWER)))
 
 static func upgrade_cost_material(weapon_id: String, level: int) -> int:
 	var tier: int = WEAPONS[weapon_id].tier
-	return int(round(UPGRADE_BASE_MAT * tier * pow(UPGRADE_GROWTH, level)))
+	return int(round(UPGRADE_BASE_MAT * tier * pow(level + 1, UPGRADE_COST_POWER)))
 
 static func upgrade_is_maxed(level: int) -> bool:
 	return level >= UPGRADE_MAX_LEVEL
 
 static func upgrade_effect(track_id: String, level: int) -> float:
-	return level * float(UPGRADE_TRACKS[track_id].per_level)
+	var max_effect: float = float(UPGRADE_TRACKS[track_id].max_effect)
+	return max_effect * (1.0 - exp(-float(level) / UPGRADE_SATURATION_LEVELS))
 
 static func final_damage(weapon_id: String, upgrades: Dictionary) -> float:
 	var base: float = WEAPONS[weapon_id].damage
@@ -428,9 +436,9 @@ static func final_spread_degrees(weapon_id: String, upgrades: Dictionary) -> flo
 	var def: Dictionary = WEAPONS[weapon_id]
 	var base: float = CATEGORY_BASE_SPREAD.get(def.category, 2.0)
 	var level: int = upgrades.get("mirino", 0)
-	return base * max(0.2, 1.0 - level * 0.08)
+	return base * max(0.2, 1.0 - upgrade_effect("mirino", level))
 
 static func final_pellet_spread_degrees(weapon_id: String, upgrades: Dictionary) -> float:
 	var base := pellet_base_spread_degrees(weapon_id)
 	var level: int = upgrades.get("mirino", 0)
-	return base * max(0.4, 1.0 - level * 0.06)
+	return base * max(0.4, 1.0 - upgrade_effect("mirino", level))
