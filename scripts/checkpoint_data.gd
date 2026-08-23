@@ -166,7 +166,11 @@ func start_new_game(slot: int) -> void:
 	if FileAccess.file_exists(_slot_continue_path(slot)):
 		DirAccess.remove_absolute(_slot_continue_path(slot))
 
-func _reset_to_defaults() -> void:
+# reset_stats=false quando questo reset rappresenta il checkpoint implicito
+# della zona 1 (vedi load_checkpoint()) e non l'inizio di una partita
+# davvero nuova: le statistiche cumulative dell'intera run non devono
+# azzerarsi solo perché si torna al primo checkpoint.
+func _reset_to_defaults(reset_stats: bool = true) -> void:
 	zone = 1
 	money = 0
 	materials = {"legno": 0, "metallo": 0, "cablaggi": 0}
@@ -188,16 +192,24 @@ func _reset_to_defaults() -> void:
 	house_bench_orientation = "h"
 	house_bench_col_idx = 0
 	house_bench_row_idx = 0
-	stats_zone_reached = 1
-	stats_money_earned = 0
-	stats_enemies_defeated = 0
-	stats_playtime_sec = 0.0
+	if reset_stats:
+		stats_zone_reached = 1
+		stats_money_earned = 0
+		stats_enemies_defeated = 0
+		stats_playtime_sec = 0.0
 
 # --- Checkpoint / salvataggio "riprendi partita" per lo slot corrente ---
 
 func load_checkpoint() -> void:
 	var data = _read_json(_slot_checkpoint_path(current_slot))
 	if typeof(data) != TYPE_DICTIONARY:
+		# Nessun checkpoint salvato ancora (zona < 50): la zona 1 è essa
+		# stessa un checkpoint implicito, quindi si torna allo stato di
+		# partenza invece di lasciare intatto qualunque progresso "riprendi
+		# partita" più recente accumulato nel frattempo — altrimenti
+		# "ricomincia dall'ultimo checkpoint" prima della zona 50 tornerebbe
+		# all'ultima visita a casa invece che alla zona 1.
+		_reset_to_defaults(false)
 		return
 	_apply_state(data)
 
