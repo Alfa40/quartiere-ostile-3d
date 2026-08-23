@@ -9,11 +9,6 @@ const ExplosionFlashScene := preload("res://scenes/ExplosionFlash.tscn")
 const FLASH_COLOR_DAMAGE := Color(1.0, 0.55, 0.2, 0.85)
 const FLASH_COLOR_STUN := Color(0.75, 0.85, 1.0, 0.85)
 
-# Distanza massima entro cui una granata esplode automaticamente se non
-# colpisce un nemico, indipendentemente dalla gittata (anche potenziata):
-# così il player vede sempre l'esplosione senza che voli fuori dallo schermo.
-const AUTO_DETONATE_DISTANCE := 9.0
-
 signal stuck
 
 var travel := Vector3.ZERO
@@ -54,7 +49,7 @@ func _process(delta: float) -> void:
 	var step := travel * delta
 	global_position += step
 	_traveled += step.length()
-	if _traveled >= min(max_distance, AUTO_DETONATE_DISTANCE):
+	if _traveled >= max_distance:
 		_arrive()
 
 func _on_body_entered(body: Node3D) -> void:
