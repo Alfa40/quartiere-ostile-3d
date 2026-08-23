@@ -55,6 +55,9 @@ const DEFAULT_AIM_LINE_LENGTH := 6.0
 const ThrownWeaponScene := preload("res://scenes/ThrownWeapon.tscn")
 const BulletScene := preload("res://scenes/Bullet.tscn")
 const GrenadeScene := preload("res://scenes/Grenade.tscn")
+const LobbedGrenadeScene := preload("res://scenes/LobbedGrenade.tscn")
+const ARC_GRAVITY := 20.0
+const ARC_LAUNCH_ANGLE_DEGREES := 42.0
 
 var firearm_id := ""
 var firearm_fire_mode := "auto"
@@ -71,6 +74,18 @@ var firearm_spread_degrees := 2.0
 var firearm_pellet_count := 1
 var firearm_pellet_spread_degrees := 0.0
 var firearm_aim_line_length := DEFAULT_AIM_LINE_LENGTH
+# "bullet" (proiettile normale), "grenade_straight" (granata dritta come i
+# lanciarazzi), "grenade_lobbed" (granata a parabola con rimbalzo, come i
+# lanciagranate). Le armi esplosive/speciali riusano gli stessi tipi di
+# granata (frag/molotov/cluster/stordente/fumogena/puzzosa) delle armi da lancio.
+var firearm_projectile_type := "bullet"
+var firearm_grenade_type := ""
+var firearm_explosion_radius := 3.0
+var firearm_burn_duration := 0.0
+var firearm_burn_dps := 0.0
+var firearm_cluster_count := 0
+var firearm_cluster_radius := 0.0
+var firearm_stun_duration := 0.0
 
 var firearm_ammo_in_mag := 0
 var firearm_fire_timer := 0.0
@@ -82,7 +97,7 @@ var _burst_shots_remaining := 0
 var _burst_timer := 0.0
 var _burst_aim_dir := Vector3(0, 0, -1)
 
-func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0, bullet_speed: float = 40.0, spread_degrees: float = 2.0, pellet_count: int = 1, pellet_spread_degrees: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH) -> void:
+func equip_firearm(id: String, damage: float, cooldown: float, range_val: float, draw_time: float, magazine_size: int, reload_time: float, fire_mode: String, burst_count: int = 1, burst_delay: float = 0.0, bullet_speed: float = 40.0, spread_degrees: float = 2.0, pellet_count: int = 1, pellet_spread_degrees: float = 0.0, aim_line_length: float = DEFAULT_AIM_LINE_LENGTH, projectile_type: String = "bullet", grenade_type: String = "", explosion_radius: float = 3.0, burn_duration: float = 0.0, burn_dps: float = 0.0, cluster_count: int = 0, cluster_radius: float = 0.0, stun_duration: float = 0.0) -> void:
 	firearm_id = id
 	firearm_damage = damage
 	firearm_cooldown = cooldown
@@ -98,6 +113,14 @@ func equip_firearm(id: String, damage: float, cooldown: float, range_val: float,
 	firearm_pellet_count = pellet_count
 	firearm_pellet_spread_degrees = pellet_spread_degrees
 	firearm_aim_line_length = aim_line_length
+	firearm_projectile_type = projectile_type
+	firearm_grenade_type = grenade_type
+	firearm_explosion_radius = explosion_radius
+	firearm_burn_duration = burn_duration
+	firearm_burn_dps = burn_dps
+	firearm_cluster_count = cluster_count
+	firearm_cluster_radius = cluster_radius
+	firearm_stun_duration = stun_duration
 	firearm_ammo_in_mag = magazine_size
 	firearm_reloading = false
 	firearm_reload_timer = 0.0
@@ -368,6 +391,15 @@ func _fire_firearm(aim_dir: Vector3) -> void:
 	firearm_ammo_in_mag -= 1
 	firearm_fire_timer = firearm_cooldown
 	firearm_flash_timer = FIREARM_FLASH_TIME
+	match firearm_projectile_type:
+		"grenade_straight":
+			_fire_grenade_straight(aim_dir)
+		"grenade_lobbed":
+			_fire_grenade_lobbed(aim_dir)
+		_:
+			_fire_bullets(aim_dir)
+
+func _fire_bullets(aim_dir: Vector3) -> void:
 	var shots: int = max(firearm_pellet_count, 1)
 	var half_spread: float = (firearm_pellet_spread_degrees if shots > 1 else firearm_spread_degrees) * 0.5
 	for i in range(shots):
@@ -381,6 +413,39 @@ func _fire_firearm(aim_dir: Vector3) -> void:
 		proj.damage = firearm_damage
 		proj.max_distance = firearm_range
 		proj.source = self
+
+func _configure_firearm_grenade(proj: Area3D) -> void:
+	proj.grenade_type = firearm_grenade_type
+	proj.explosion_radius = firearm_explosion_radius
+	proj.burn_duration = firearm_burn_duration
+	proj.burn_dps = firearm_burn_dps
+	proj.cluster_count = firearm_cluster_count
+	proj.cluster_radius = firearm_cluster_radius
+	proj.stun_duration = firearm_stun_duration
+	proj.damage = firearm_damage
+	proj.source = self
+
+func _fire_grenade_straight(aim_dir: Vector3) -> void:
+	var proj: Area3D = GrenadeScene.instantiate()
+	_configure_firearm_grenade(proj)
+	get_parent().add_child(proj)
+	proj.global_position = global_position + Vector3(0, 1.0, 0) + aim_dir * 0.8
+	proj.travel = aim_dir * firearm_bullet_speed
+	proj.max_distance = firearm_range
+
+func _fire_grenade_lobbed(aim_dir: Vector3) -> void:
+	var proj: Area3D = LobbedGrenadeScene.instantiate()
+	_configure_firearm_grenade(proj)
+	get_parent().add_child(proj)
+	proj.global_position = global_position + Vector3(0, 1.0, 0) + aim_dir * 0.8
+	# Velocità di lancio derivata dalla gittata (potenziabile con "Portata")
+	# tramite la formula balistica standard, così l'upgrade allunga anche
+	# la traiettoria a parabola: R = v²·sin(2θ)/g → v = sqrt(R·g/sin(2θ)).
+	var angle_rad := deg_to_rad(ARC_LAUNCH_ANGLE_DEGREES)
+	var speed: float = sqrt(max(firearm_range, 1.0) * ARC_GRAVITY / sin(2.0 * angle_rad))
+	var horizontal_speed: float = speed * cos(angle_rad)
+	var vertical_speed: float = speed * sin(angle_rad)
+	proj.arc_velocity = aim_dir * horizontal_speed + Vector3(0, vertical_speed, 0)
 
 func _start_reload() -> void:
 	if firearm_reloading:

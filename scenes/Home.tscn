@@ -419,6 +419,21 @@ custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 30
 text = "Compra"
 
+[node name="Row_armi_esplosive" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_esplosive"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_esplosive"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
 [node name="CloseButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 35
@@ -5899,6 +5914,1957 @@ text = "Potenzia"
 
 [node name="Sep" type="HSeparator" parent="HUD/FirearmMenu/Scroll/Box/CecchinoBox/Weapon_cecchino_leggendario"]
 [node name="CloseButton" type="Button" parent="HUD/FirearmMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 35
+text = "Chiudi"
+
+[node name="ExplosiveMenu" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/ExplosiveMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.92)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/ExplosiveMenu"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 56
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Banco delle armi esplosive e speciali"
+
+[node name="MoneyMaterialsLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.6, 1.0, 0.6, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = ""
+
+[node name="CategoryRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Btn_lanciagranate" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 25
+text = "Lanciagranate"
+
+[node name="Btn_lanciarazzi" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 25
+text = "Lanciarazzi"
+
+[node name="Btn_armi_speciali" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 25
+text = "Armi speciali"
+
+[node name="LanciagranateBox" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box"]
+theme_override_constants/separation = 10
+
+[node name="Weapon_lanciagranate_improvvisato" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_improvvisato"]
+
+[node name="Weapon_lanciagranate_a_pompa" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_a_pompa"]
+
+[node name="Weapon_lanciagranate_semiautomatico" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_semiautomatico"]
+
+[node name="Weapon_lanciagranate_militare" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_militare"]
+
+[node name="Weapon_lanciagranate_pesante" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciagranateBox/Weapon_lanciagranate_pesante"]
+
+
+[node name="LanciarazziBox" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box"]
+theme_override_constants/separation = 10
+
+[node name="Weapon_lanciarazzi_tubo" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_tubo"]
+
+[node name="Weapon_lanciarazzi_improvvisato" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_improvvisato"]
+
+[node name="Weapon_lanciarazzi_militare" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_militare"]
+
+[node name="Weapon_lanciarazzi_pesante" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_pesante"]
+
+[node name="Weapon_lanciarazzi_avanzato" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/LanciarazziBox/Weapon_lanciarazzi_avanzato"]
+
+
+[node name="ArmiSpecialiBox" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box"]
+theme_override_constants/separation = 10
+
+[node name="Weapon_balestra_potenziata" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_balestra_potenziata"]
+
+[node name="Weapon_lanciagranate_puzzolente" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_puzzolente"]
+
+[node name="Weapon_lanciarazzi_incendiario" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_incendiario"]
+
+[node name="Weapon_lanciagranate_a_grappolo_speciale" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciagranate_a_grappolo_speciale"]
+
+[node name="Weapon_lanciarazzi_tossico" type="VBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox"]
+theme_override_constants/separation = 6
+
+[node name="MainRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/MainRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="ActionButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/MainRow"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
+[node name="AmmoRow" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/AmmoRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/AmmoRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Compra munizioni"
+
+[node name="Track_portata" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_portata"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_portata"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_velocita" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_velocita"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_velocita"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_danno" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_danno"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_danno"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_estrazione" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_estrazione"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_estrazione"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_mirino" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_mirino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_mirino"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Track_caricatore" type="HBoxContainer" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_caricatore"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico/Track_caricatore"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 23
+text = "Potenzia"
+
+[node name="Sep" type="HSeparator" parent="HUD/ExplosiveMenu/Scroll/Box/ArmiSpecialiBox/Weapon_lanciarazzi_tossico"]
+
+
+[node name="CloseButton" type="Button" parent="HUD/ExplosiveMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 35
 text = "Chiudi"

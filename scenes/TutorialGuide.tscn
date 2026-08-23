@@ -119,6 +119,17 @@ theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 2
 text = "Il banco delle armi da lancio ha più categorie. Le armi bianche da lancio colpiscono un solo nemico. Le granate esplosive fanno danno ad area e ognuna si comporta in modo diverso: la molotov esplode e lascia una zona infuocata che continua a fare danno a chiunque ci resti dentro per qualche secondo; la granata normale fa solo danno ad area; la granata appiccicosa si attacca al bersaglio senza esplodere subito, e detona solo quando premi di nuovo il tasto per armare il lancio (nel frattempo puoi continuare a sparare normalmente con l'arma da fuoco); la granata a grappolo, la più costosa, si divide in più esplosioni ravvicinate coprendo un'area molto più ampia. Le granate speciali non fanno danno diretto: la fumogena crea una nube che acceca i nemici al suo interno, facendogli perdere di vista il giocatore finché restano nella nube; la stordente stordisce per qualche secondo tutti i nemici colpiti dall'esplosione, bloccandoli sul posto; la puzzosa crea un'area che infligge danno costante nel tempo a chiunque vi resti dentro. Premi il tasto per armare il lancio, punta con il joystick di mira e rilascia per lanciare nella direzione puntata. Finché un'arma da lancio è selezionata l'arma da fuoco resta inutilizzabile: fa eccezione la granata appiccicosa, che una volta attaccata a un nemico resta in attesa finché non premi di nuovo il tasto di lancio per farla esplodere, e in quell'attesa puoi tornare a sparare normalmente. Premi il pulsante \"Arma: ...\" per cambiare arma da lancio equipaggiata, fino a \"Arma: -\" per non averne nessuna equipaggiata e liberare l'arma da fuoco. Ogni arma da fuoco e da lancio ha anche potenziamenti personali per portare più scorte con te: il Caricatore per le armi da fuoco e la Scorta per le armi da lancio (quest'ultima aumenta di una unità per livello)."
 
+[node name="ExplosiveBenchHeading" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 56
+theme_override_colors/font_color = Color(0.9, 0.6, 0.5, 1)
+text = "Banco delle armi esplosive e speciali"
+
+[node name="ExplosiveBenchBody" type="Label" parent="Scroll/Box"]
+theme_override_font_sizes/font_size = 42
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 2
+text = "Questo banco sblocca lanciagranate, lanciarazzi e armi speciali: usano lo stesso slot delle armi da fuoco normali, quindi puoi avere equipaggiata una sola arma da fuoco alla volta (o una pistola, o un lanciagranate, mai entrambi). Il lanciagranate spara un colpo che vola a parabola, rimbalza una volta a terra e poi esplode (o esplode subito se colpisce un nemico prima). Il lanciarazzi spara dritto come un proiettile normale, con un'esplosione più grande. Le armi speciali usano munizioni particolari: la balestra spara una freccia molto potente senza esplosione, mentre altre varianti di lanciagranate e lanciarazzi usano granate puzzolenti, a grappolo, incendiarie o tossiche invece del danno ad area normale."
+
 [node name="PauseHeading" type="Label" parent="Scroll/Box"]
 theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)

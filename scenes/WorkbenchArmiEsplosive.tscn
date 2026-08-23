@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="BoxMesh" id="AEDeskMesh"]
+size = Vector3(1.6, 0.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="AEDeskShape"]
+size = Vector3(1.6, 0.6, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="AEDeskMaterial"]
+albedo_color = Color(0.3, 0.24, 0.2, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="AETubeMaterial"]
+albedo_color = Color(0.25, 0.32, 0.18, 1)
+metallic = 0.4
+roughness = 0.5
+
+[node name="WorkbenchArmiEsplosive" type="StaticBody3D"]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("AEDeskShape")
+position = Vector3(0, 0.3, 0)
+
+[node name="Desk" type="MeshInstance3D" parent="."]
+mesh = SubResource("AEDeskMesh")
+surface_material_override/0 = SubResource("AEDeskMaterial")
+position = Vector3(0, 0.3, 0)
+
+[node name="Tube" type="MeshInstance3D" parent="."]
+mesh = SubResource("AEDeskMesh")
+surface_material_override/0 = SubResource("AETubeMaterial")
+position = Vector3(0, 0.68, 0)
+scale = Vector3(0.9, 0.15, 0.2)
+rotation_degrees = Vector3(0, 20, 12)

@@ -175,6 +175,14 @@ func _apply_firearm_stats() -> void:
 		Firearms.pellet_count(fid),
 		Firearms.final_pellet_spread_degrees(fid, fups),
 		Firearms.final_aim_line_length(fid, fups),
+		String(def.get("projectile_type", "bullet")),
+		String(def.get("grenade_type", "")),
+		float(def.get("explosion_radius", 3.0)),
+		float(def.get("burn_duration", 0.0)),
+		float(def.get("burn_dps", 0.0)),
+		int(def.get("cluster_count", 0)),
+		float(def.get("cluster_radius", 0.0)),
+		float(def.get("stun_duration", 0.0)),
 	)
 
 func get_firearm_reserve_ammo(fid: String) -> int:

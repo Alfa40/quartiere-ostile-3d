@@ -1,7 +1,7 @@
 class_name Firearms
 extends RefCounted
 
-const CATEGORY_ORDER := ["pistole", "mitragliette", "mitra", "fucile_a_pompa", "cecchino"]
+const CATEGORY_ORDER := ["pistole", "mitragliette", "mitra", "fucile_a_pompa", "cecchino", "lanciagranate", "lanciarazzi", "armi_speciali"]
 
 const CATEGORIES := {
 	"pistole": {"label": "Pistole", "unlocked": true},
@@ -9,6 +9,9 @@ const CATEGORIES := {
 	"mitra": {"label": "Fucili da assalto", "unlocked": true},
 	"fucile_a_pompa": {"label": "Fucile a pompa", "unlocked": true},
 	"cecchino": {"label": "Fucili da tiratore", "unlocked": true},
+	"lanciagranate": {"label": "Lanciagranate", "unlocked": true},
+	"lanciarazzi": {"label": "Lanciarazzi", "unlocked": true},
+	"armi_speciali": {"label": "Armi speciali", "unlocked": true},
 }
 
 const CATEGORY_WEAPONS := {
@@ -17,6 +20,9 @@ const CATEGORY_WEAPONS := {
 	"mitra": ["mitra_artigianale", "mitra_pattuglia", "mitra_pesante", "fucile_tricolpo", "mitra_assalto", "mitra_guerra"],
 	"fucile_a_pompa": ["pompa_arrugginito", "pompa_corto", "pompa_tattico", "pompa_militare", "pompa_demolizione"],
 	"cecchino": ["fucile_caccia", "carabina_precisione", "tiratore_scelto", "anti_materiale", "cecchino_leggendario"],
+	"lanciagranate": ["lanciagranate_improvvisato", "lanciagranate_a_pompa", "lanciagranate_semiautomatico", "lanciagranate_militare", "lanciagranate_pesante"],
+	"lanciarazzi": ["lanciarazzi_tubo", "lanciarazzi_improvvisato", "lanciarazzi_militare", "lanciarazzi_pesante", "lanciarazzi_avanzato"],
+	"armi_speciali": ["balestra_potenziata", "lanciagranate_puzzolente", "lanciarazzi_incendiario", "lanciagranate_a_grappolo_speciale", "lanciarazzi_tossico"],
 }
 
 # fire_mode "auto": spara in automatico quando un nemico è nel cono di mira.
@@ -191,6 +197,125 @@ const WEAPONS := {
 		"damage": 260.0, "fire_cooldown": 1.6, "magazine_size": 5, "range": 42.0, "reload_time": 2.5, "draw_time": 0.12,
 		"ammo_pack_amount": 5, "ammo_pack_price_money": 160,
 	},
+
+	# Lanciagranate: il proiettile ha una traiettoria a parabola (vedi
+	# scripts/lobbed_grenade.gd), rimbalza una volta a terra e poi esplode
+	# (danno ad area "frag"), oppure esplode subito se colpisce un nemico.
+	"lanciagranate_improvvisato": {
+		"label": "Lanciagranate improvvisato", "category": "lanciagranate", "tier": 1, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 1800, "price_material": "metallo", "price_amount": 70,
+		"damage": 60.0, "fire_cooldown": 1.8, "magazine_size": 1, "range": 10.0, "reload_time": 2.5, "draw_time": 0.3,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 90,
+		"projectile_type": "grenade_lobbed", "grenade_type": "frag", "explosion_radius": 3.5,
+	},
+	"lanciagranate_a_pompa": {
+		"label": "Lanciagranate a pompa", "category": "lanciagranate", "tier": 2, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 2400, "price_material": "metallo", "price_amount": 90,
+		"damage": 75.0, "fire_cooldown": 1.6, "magazine_size": 1, "range": 11.0, "reload_time": 2.2, "draw_time": 0.26,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 105,
+		"projectile_type": "grenade_lobbed", "grenade_type": "frag", "explosion_radius": 3.8,
+	},
+	"lanciagranate_semiautomatico": {
+		"label": "Lanciagranate semiautomatico", "category": "lanciagranate", "tier": 3, "fire_mode": "single", "fire_style": "semiautomatica",
+		"price_money": 3200, "price_material": "metallo", "price_amount": 115,
+		"damage": 90.0, "fire_cooldown": 1.4, "magazine_size": 3, "range": 12.0, "reload_time": 2.8, "draw_time": 0.24,
+		"ammo_pack_amount": 6, "ammo_pack_price_money": 125,
+		"projectile_type": "grenade_lobbed", "grenade_type": "frag", "explosion_radius": 4.0,
+	},
+	"lanciagranate_militare": {
+		"label": "Lanciagranate militare", "category": "lanciagranate", "tier": 4, "fire_mode": "single", "fire_style": "semiautomatica",
+		"price_money": 4200, "price_material": "metallo", "price_amount": 145,
+		"damage": 110.0, "fire_cooldown": 1.2, "magazine_size": 4, "range": 13.0, "reload_time": 3.0, "draw_time": 0.2,
+		"ammo_pack_amount": 6, "ammo_pack_price_money": 150,
+		"projectile_type": "grenade_lobbed", "grenade_type": "frag", "explosion_radius": 4.3,
+	},
+	"lanciagranate_pesante": {
+		"label": "Lanciagranate pesante", "category": "lanciagranate", "tier": 5, "fire_mode": "single", "fire_style": "semiautomatica",
+		"price_money": 5400, "price_material": "metallo", "price_amount": 180,
+		"damage": 140.0, "fire_cooldown": 1.0, "magazine_size": 5, "range": 14.0, "reload_time": 3.2, "draw_time": 0.16,
+		"ammo_pack_amount": 8, "ammo_pack_price_money": 175,
+		"projectile_type": "grenade_lobbed", "grenade_type": "frag", "explosion_radius": 4.6,
+	},
+
+	# Lanciarazzi: il proiettile vola dritto come un proiettile normale
+	# (niente parabola) ma esplode con danno ad area maggiore dei lanciagranate.
+	"lanciarazzi_tubo": {
+		"label": "Lanciarazzi di fortuna", "category": "lanciarazzi", "tier": 1, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 2200, "price_material": "metallo", "price_amount": 85,
+		"damage": 100.0, "fire_cooldown": 2.2, "magazine_size": 1, "range": 18.0, "reload_time": 3.0, "draw_time": 0.35,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 120,
+		"projectile_type": "grenade_straight", "grenade_type": "frag", "explosion_radius": 4.5,
+	},
+	"lanciarazzi_improvvisato": {
+		"label": "Lanciarazzi improvvisato", "category": "lanciarazzi", "tier": 2, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 2900, "price_material": "metallo", "price_amount": 105,
+		"damage": 125.0, "fire_cooldown": 2.0, "magazine_size": 1, "range": 20.0, "reload_time": 2.8, "draw_time": 0.3,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 135,
+		"projectile_type": "grenade_straight", "grenade_type": "frag", "explosion_radius": 4.8,
+	},
+	"lanciarazzi_militare": {
+		"label": "Lanciarazzi militare", "category": "lanciarazzi", "tier": 3, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 3800, "price_material": "metallo", "price_amount": 130,
+		"damage": 155.0, "fire_cooldown": 1.8, "magazine_size": 2, "range": 22.0, "reload_time": 3.2, "draw_time": 0.26,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 155,
+		"projectile_type": "grenade_straight", "grenade_type": "frag", "explosion_radius": 5.2,
+	},
+	"lanciarazzi_pesante": {
+		"label": "Lanciarazzi pesante", "category": "lanciarazzi", "tier": 4, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 4900, "price_material": "metallo", "price_amount": 160,
+		"damage": 190.0, "fire_cooldown": 1.6, "magazine_size": 2, "range": 24.0, "reload_time": 3.5, "draw_time": 0.22,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 180,
+		"projectile_type": "grenade_straight", "grenade_type": "frag", "explosion_radius": 5.6,
+	},
+	"lanciarazzi_avanzato": {
+		"label": "Lanciarazzi avanzato", "category": "lanciarazzi", "tier": 5, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 6200, "price_material": "metallo", "price_amount": 200,
+		"damage": 230.0, "fire_cooldown": 1.4, "magazine_size": 3, "range": 26.0, "reload_time": 3.8, "draw_time": 0.18,
+		"ammo_pack_amount": 5, "ammo_pack_price_money": 210,
+		"projectile_type": "grenade_straight", "grenade_type": "frag", "explosion_radius": 6.0,
+	},
+
+	# Armi speciali: ognuna con munizioni particolari, riusando gli stessi
+	# tipi di granata delle armi da lancio (vedi scripts/throwables.gd).
+	"balestra_potenziata": {
+		"label": "Balestra potenziata", "category": "armi_speciali", "tier": 1, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 1500, "price_material": "metallo", "price_amount": 60,
+		"damage": 180.0, "fire_cooldown": 1.5, "magazine_size": 1, "range": 30.0, "reload_time": 2.0, "draw_time": 0.2,
+		"ammo_pack_amount": 6, "ammo_pack_price_money": 95,
+		"projectile_type": "bullet",
+	},
+	"lanciagranate_puzzolente": {
+		"label": "Lanciagranate puzzolente", "category": "armi_speciali", "tier": 2, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 2600, "price_material": "metallo", "price_amount": 95,
+		"damage": 0.0, "fire_cooldown": 1.6, "magazine_size": 2, "range": 12.0, "reload_time": 2.6, "draw_time": 0.26,
+		"ammo_pack_amount": 4, "ammo_pack_price_money": 115,
+		"projectile_type": "grenade_lobbed", "grenade_type": "puzzosa", "explosion_radius": 3.8,
+		"burn_duration": 10.0, "burn_dps": 7.0,
+	},
+	"lanciarazzi_incendiario": {
+		"label": "Lanciarazzi incendiario", "category": "armi_speciali", "tier": 3, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 3600, "price_material": "metallo", "price_amount": 125,
+		"damage": 40.0, "fire_cooldown": 2.0, "magazine_size": 1, "range": 20.0, "reload_time": 3.0, "draw_time": 0.3,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 145,
+		"projectile_type": "grenade_straight", "grenade_type": "molotov", "explosion_radius": 4.5,
+		"burn_duration": 6.0, "burn_dps": 10.0,
+	},
+	"lanciagranate_a_grappolo_speciale": {
+		"label": "Lanciagranate a grappolo", "category": "armi_speciali", "tier": 4, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 4800, "price_material": "metallo", "price_amount": 165,
+		"damage": 45.0, "fire_cooldown": 1.8, "magazine_size": 2, "range": 12.0, "reload_time": 2.8, "draw_time": 0.24,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 175,
+		"projectile_type": "grenade_lobbed", "grenade_type": "cluster", "explosion_radius": 3.0,
+		"cluster_count": 4, "cluster_radius": 3.5,
+	},
+	"lanciarazzi_tossico": {
+		"label": "Lanciarazzi tossico", "category": "armi_speciali", "tier": 5, "fire_mode": "single", "fire_style": "manuale",
+		"price_money": 6000, "price_material": "metallo", "price_amount": 195,
+		"damage": 0.0, "fire_cooldown": 2.0, "magazine_size": 1, "range": 20.0, "reload_time": 3.2, "draw_time": 0.2,
+		"ammo_pack_amount": 3, "ammo_pack_price_money": 200,
+		"projectile_type": "grenade_straight", "grenade_type": "puzzosa", "explosion_radius": 5.0,
+		"burn_duration": 12.0, "burn_dps": 9.0,
+	},
 }
 
 const UPGRADE_TRACK_ORDER := ["portata", "velocita", "danno", "estrazione", "mirino", "caricatore"]
@@ -221,6 +346,9 @@ const CATEGORY_BASE_BULLET_SPEED := {
 	"mitra": 34.0,
 	"fucile_a_pompa": 26.0,
 	"cecchino": 55.0,
+	"lanciagranate": 0.0,  # non usata: traiettoria a parabola calcolata dalla gittata
+	"lanciarazzi": 32.0,
+	"armi_speciali": 36.0,
 }
 
 const CATEGORY_BASE_SPREAD := {
@@ -229,6 +357,9 @@ const CATEGORY_BASE_SPREAD := {
 	"mitra": 3.0,
 	"fucile_a_pompa": 0.0,
 	"cecchino": 0.7,
+	"lanciagranate": 0.0,
+	"lanciarazzi": 1.0,
+	"armi_speciali": 0.8,
 }
 
 static func bullet_speed(weapon_id: String) -> float:

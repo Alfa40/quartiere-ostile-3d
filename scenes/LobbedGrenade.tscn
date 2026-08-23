@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/lobbed_grenade.gd" id="1_lobbed"]
+
+[sub_resource type="CapsuleShape3D" id="LobbedGrenadeShape"]
+radius = 0.3
+height = 5.0
+
+[sub_resource type="SphereMesh" id="LobbedGrenadeMesh"]
+radius = 0.26
+height = 0.52
+
+[sub_resource type="StandardMaterial3D" id="LobbedGrenadeMaterial"]
+albedo_color = Color(0.22, 0.32, 0.16, 1)
+metallic = 0.35
+roughness = 0.55
+emission_enabled = true
+emission = Color(0.35, 0.5, 0.2, 1)
+emission_energy_multiplier = 0.6
+
+[node name="LobbedGrenade" type="Area3D"]
+script = ExtResource("1_lobbed")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("LobbedGrenadeShape")
+position = Vector3(0, -1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("LobbedGrenadeMesh")
+surface_material_override/0 = SubResource("LobbedGrenadeMaterial")
