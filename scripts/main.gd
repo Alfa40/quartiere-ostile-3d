@@ -69,6 +69,13 @@ const SPAWN_RETRY_DELAY := 0.2
 @onready var hud = $HUD
 @onready var player: Node3D = $Player
 @onready var touch_controls = $HUD/TouchControls
+@onready var wall_south_mesh: MeshInstance3D = $WallSouth/MeshInstance3D
+
+const OCCLUDER_FADE_TRANSPARENCY := 0.85
+const OCCLUDER_FADE_SPEED := 4.0
+const WALL_SOUTH_HALF_EXTENTS := Vector3(42.0, 1.5, 0.5)
+var _house_half_extents := Vector3(2.0, 3.5, 3.0)
+var _house_exterior_meshes: Array = []
 
 var zone := 1
 var money := 0.0
@@ -191,6 +198,12 @@ func _apply_house_exterior() -> void:
 		roof.position = Vector3(0, top_y + roof_height / 2.0, 0)
 		accents.add_child(roof)
 
+	_house_half_extents = Vector3(width / 2.0 + 1.5, 3.5, depth / 2.0 + 1.5)
+	_house_exterior_meshes = [tent, door]
+	for child in accents.get_children():
+		if child is MeshInstance3D:
+			_house_exterior_meshes.append(child)
+
 	if int(tier.towers) > 0:
 		var tower_mesh := CylinderMesh.new()
 		tower_mesh.top_radius = 0.35
@@ -219,6 +232,53 @@ func _apply_house_exterior() -> void:
 	var door_world_z: float = house.position.z + depth / 2.0 + 0.02
 	player.global_position = Vector3(0, 0, door_world_z + 2.5)
 	player.face_direction(Vector3(0, 0, 1))
+
+func _update_occlusion_fade(delta: float) -> void:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return
+	var p0 := cam.global_position
+	var p1 := player.global_position
+
+	var wall_blocking := _segment_hits_aabb(p0, p1, $WallSouth.global_position, WALL_SOUTH_HALF_EXTENTS)
+	_fade_toward(wall_south_mesh, wall_blocking, delta)
+
+	var house_blocking := _segment_hits_aabb(p0, p1, $HouseExterior.global_position, _house_half_extents)
+	for m in _house_exterior_meshes:
+		_fade_toward(m, house_blocking, delta)
+
+func _fade_toward(mesh_inst: MeshInstance3D, blocking: bool, delta: float) -> void:
+	if mesh_inst == null:
+		return
+	var target: float = OCCLUDER_FADE_TRANSPARENCY if blocking else 0.0
+	mesh_inst.transparency = move_toward(mesh_inst.transparency, target, OCCLUDER_FADE_SPEED * delta)
+
+# Test segmento-vs-AABB (metodo delle slab) usato per far svanire un
+# ostacolo (muro sud, esterno della casa) quando si trova esattamente sulla
+# linea tra la telecamera e il player, così da non coprirne la visuale.
+func _segment_hits_aabb(p0: Vector3, p1: Vector3, box_center: Vector3, half_extents: Vector3) -> bool:
+	var d := p1 - p0
+	var tmin := 0.0
+	var tmax := 1.0
+	for axis in range(3):
+		var o: float = p0[axis] - box_center[axis]
+		var dd: float = d[axis]
+		var he: float = half_extents[axis]
+		if absf(dd) < 0.0001:
+			if absf(o) > he:
+				return false
+		else:
+			var t1: float = (-he - o) / dd
+			var t2: float = (he - o) / dd
+			if t1 > t2:
+				var tmp := t1
+				t1 = t2
+				t2 = tmp
+			tmin = maxf(tmin, t1)
+			tmax = minf(tmax, t2)
+			if tmin > tmax:
+				return false
+	return true
 
 func _build_spawn_points() -> void:
 	spawn_points.clear()
@@ -434,6 +494,8 @@ func _process(delta: float) -> void:
 	if Input.is_physical_key_pressed(KEY_R):
 		get_tree().paused = false
 		get_tree().reload_current_scene()
+
+	_update_occlusion_fade(delta)
 
 	if zone_transitioning or player.dead:
 		if zone_transitioning and not player.dead:

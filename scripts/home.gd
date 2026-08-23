@@ -26,6 +26,7 @@ var current_floor := 0
 var reorganize_mode := false
 var moving_bench_from_index := -1
 var stairs_cooldown_timer := 0.0
+var _floor_mesh_instances := {}
 
 const CATEGORY_BOXES := {
 	"coltelli": "KnivesBox",
@@ -468,6 +469,8 @@ func _apply_house_tier_geometry() -> void:
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
 	var wall_color: Color = tier.wall_color
 
+	_floor_mesh_instances.clear()
+	_floor_mesh_instances[0] = []
 	_build_floor0_geometry(floors[0], wall_color)
 
 	var upper := get_node_or_null("UpperFloors")
@@ -543,6 +546,11 @@ func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 	$WallSouthRight.position = Vector3(seg_x, 1.25, depth / 2.0)
 	$WallSouthRight/Mesh.set_surface_override_material(0, _tinted_wall_material(wall_color))
 
+	_floor_mesh_instances[0] = [
+		$Floor/Mesh, $WallNorth/Mesh, $WallEast/Mesh, $WallWest/Mesh,
+		$WallSouthLeft/Mesh, $WallSouthRight/Mesh,
+	]
+
 	$DoorTrigger.position = Vector3(0, 1, depth / 2.0 + 0.6)
 	$Workbench.position = Vector3(cvals[1] + 0.3, 0, rvals[0] - 0.2)
 
@@ -570,6 +578,9 @@ func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wal
 	floor_shape_inst.position = Vector3(0, -0.1, 0)
 	floor_body.add_child(floor_shape_inst)
 
+	var floor_meshes: Array = [floor_mesh_inst]
+	_floor_mesh_instances[floor_idx] = floor_meshes
+
 	var wall_specs := [
 		{"pos": Vector3(0, y + 1.25, -depth / 2.0), "size": Vector3(width, 2.5, 0.2)},
 		{"pos": Vector3(0, y + 1.25, depth / 2.0), "size": Vector3(width, 2.5, 0.2)},
@@ -588,6 +599,7 @@ func _build_upper_floor(container: Node3D, floor_idx: int, dims: Dictionary, wal
 		wm.mesh = bm
 		wm.set_surface_override_material(0, _tinted_wall_material(wall_color))
 		wall.add_child(wm)
+		floor_meshes.append(wm)
 		var wc := CollisionShape3D.new()
 		var bs := BoxShape3D.new()
 		bs.size = spec.size
@@ -692,10 +704,22 @@ func _on_stairs_entered(body: Node3D, target_floor: int, target_x: float, target
 	_set_current_floor(target_floor)
 	stairs_cooldown_timer = STAIRS_COOLDOWN
 
+const FLOOR_FADE_TRANSPARENCY := 0.92
+
 func _set_current_floor(floor_idx: int) -> void:
 	current_floor = floor_idx
 	col_values = HouseTiers.col_values(CheckpointData.house_tier, current_floor)
 	row_values = HouseTiers.row_values(CheckpointData.house_tier, current_floor)
+	_update_floor_visibility()
+
+func _update_floor_visibility() -> void:
+	var current_y := HouseTiers.floor_y(CheckpointData.house_tier, current_floor)
+	for f in _floor_mesh_instances.keys():
+		var floor_y: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
+		var above: bool = floor_y > current_y + 0.1
+		var alpha: float = FLOOR_FADE_TRANSPARENCY if above else 0.0
+		for mesh_inst in _floor_mesh_instances[f]:
+			mesh_inst.transparency = alpha
 
 func _tinted_wall_material(color: Color) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
