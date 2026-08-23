@@ -127,6 +127,11 @@ var _placed_bench_nodes := {}
 var _expanded_weapons := {}
 
 func _ready() -> void:
+	# Entrare in casa salva subito la partita (separato dal checkpoint ogni
+	# 50 zone): così si può chiudere il gioco e riprendere da casa anche a
+	# giorni di distanza, ricominciando dalla zona non ancora completata.
+	if not DevMode.enabled:
+		CheckpointData.save_continue()
 	_apply_house_tier_geometry()
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))

@@ -16,6 +16,8 @@ func _ready() -> void:
 	for key in keyboard.get_children():
 		key.pressed.connect(_on_key_pressed.bind(key.text))
 	_refresh_best_label()
+	if CheckpointData.resumed_from_continue:
+		$Box/StartButton.text = "Continua partita (Zona %d)" % CheckpointData.zone
 
 func _refresh_best_label() -> void:
 	if SaveData.best_zone <= 0:
@@ -25,7 +27,10 @@ func _refresh_best_label() -> void:
 
 func _on_start_pressed() -> void:
 	DevMode.enabled = false
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	if CheckpointData.resumed_from_continue:
+		get_tree().change_scene_to_file("res://scenes/Home.tscn")
+	else:
+		get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 func _on_tutorial_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Tutorial.tscn")

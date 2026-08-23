@@ -4,6 +4,16 @@ const Throwables := preload("res://scripts/throwables.gd")
 
 const CHECKPOINT_INTERVAL := 50
 const SAVE_PATH := "user://checkpoint.json"
+# Salvataggio "riprendi partita", scritto ogni volta che il player entra in
+# casa: separato dal checkpoint ogni 50 zone (che resta il fallback in caso
+# di morte, invariato). Permette di chiudere il gioco e riprendere da casa
+# anche a giorni di distanza, ricominciando dalla zona non ancora completata.
+const CONTINUE_SAVE_PATH := "user://continue_save.json"
+
+# true se all'avvio è stato trovato e caricato un salvataggio "riprendi
+# partita" più recente del checkpoint: in quel caso il menu principale deve
+# far ripartire il player da casa invece che nel parco.
+var resumed_from_continue := false
 
 const DEFAULT_UPGRADES := {
 	"scarpe": 0,
@@ -40,17 +50,40 @@ var house_tier := 0
 
 func _ready() -> void:
 	load_checkpoint()
+	if has_continue_save():
+		load_continue()
+		resumed_from_continue = true
 
 func load_checkpoint() -> void:
-	if not FileAccess.file_exists(SAVE_PATH):
-		return
-	var f := FileAccess.open(SAVE_PATH, FileAccess.READ)
-	if f == null:
-		return
-	var data = JSON.parse_string(f.get_as_text())
-	f.close()
+	var data = _read_json(SAVE_PATH)
 	if typeof(data) != TYPE_DICTIONARY:
 		return
+	_apply_state(data)
+
+func has_continue_save() -> bool:
+	return FileAccess.file_exists(CONTINUE_SAVE_PATH)
+
+func load_continue() -> void:
+	var data = _read_json(CONTINUE_SAVE_PATH)
+	if typeof(data) != TYPE_DICTIONARY:
+		return
+	_apply_state(data)
+
+func clear_continue_save() -> void:
+	if FileAccess.file_exists(CONTINUE_SAVE_PATH):
+		DirAccess.remove_absolute(CONTINUE_SAVE_PATH)
+
+func _read_json(path: String):
+	if not FileAccess.file_exists(path):
+		return null
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return null
+	var data = JSON.parse_string(f.get_as_text())
+	f.close()
+	return data
+
+func _apply_state(data: Dictionary) -> void:
 	zone = int(data.get("zone", 1))
 	money = int(data.get("money", 0))
 	var mats = data.get("materials", {})
@@ -100,12 +133,8 @@ func set_live_state(current_zone: int, current_money: int, current_materials: Di
 	materials = current_materials.duplicate()
 	upgrades = current_upgrades.duplicate()
 
-func save_checkpoint(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
-	set_live_state(current_zone, current_money, current_materials, current_upgrades)
-	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	if f == null:
-		return
-	f.store_string(JSON.stringify({
+func _state_dict() -> Dictionary:
+	return {
 		"zone": zone,
 		"money": money,
 		"materials": materials,
@@ -124,8 +153,26 @@ func save_checkpoint(current_zone: int, current_money: int, current_materials: D
 		"equipped_throwable": equipped_throwable,
 		"equipped_throwables": equipped_throwables,
 		"house_tier": house_tier,
-	}))
+	}
+
+func _write_json(path: String, payload: Dictionary) -> void:
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		return
+	f.store_string(JSON.stringify(payload))
 	f.close()
+
+# Checkpoint ogni 50 zone: resta l'unico fallback usato in caso di morte
+# (vedi _on_player_died in main.gd), invariato.
+func save_checkpoint(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
+	set_live_state(current_zone, current_money, current_materials, current_upgrades)
+	_write_json(SAVE_PATH, _state_dict())
+
+# Salvataggio "riprendi partita": scritto da home.gd ogni volta che il
+# player entra in casa (zone/money/materials/upgrades sono già stati
+# sincronizzati da main.gd tramite set_live_state prima del cambio scena).
+func save_continue() -> void:
+	_write_json(CONTINUE_SAVE_PATH, _state_dict())
 
 func is_checkpoint_zone(zone_num: int) -> bool:
 	return zone_num % CHECKPOINT_INTERVAL == 0

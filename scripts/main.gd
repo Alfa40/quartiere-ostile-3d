@@ -11,7 +11,16 @@ const HouseTiers := preload("res://scripts/house_tiers.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
-const STEAL_BASE_FRACTION := 0.12
+# Il furto è un importo fisso (scalato per zona come la ricompensa da
+# uccisione), non più una percentuale del portafoglio corrente: così il
+# rapporto tra quanto un nemico rilascia morendo e quanto ruba colpendo
+# resta sempre 5:1, a qualunque cifra sia arrivato il player, invece di
+# diventare sempre più punitivo in termini assoluti quanto più soldi si
+# accumulano.
+const KILL_REWARD_MIN := 20.0
+const KILL_REWARD_MAX := 36.0
+const STEAL_BASE_MONEY_MIN := KILL_REWARD_MIN / 5.0
+const STEAL_BASE_MONEY_MAX := KILL_REWARD_MAX / 5.0
 const BASE_PLAYER_MAX_HP := 100.0
 
 const OBJECT_SCENES := {
@@ -582,8 +591,9 @@ func on_player_damaged(_amount: float) -> void:
 	if randf() > STEAL_CHANCE:
 		return
 	var reduction: float = clamp(PlayerUpgrades.effect("sicurezza", upgrades.get("sicurezza", 0)), 0.0, 0.9)
-	var steal_fraction := STEAL_BASE_FRACTION * (1.0 - reduction)
-	var stolen := roundi(money * steal_fraction)
+	var money_mult := 1.0 + MONEY_PER_ZONE * (zone - 1)
+	var stolen := roundi(randf_range(STEAL_BASE_MONEY_MIN, STEAL_BASE_MONEY_MAX) * money_mult * (1.0 - reduction))
+	stolen = mini(stolen, int(money))
 	if stolen <= 0:
 		return
 	money -= stolen
@@ -682,7 +692,7 @@ func _on_enemy_died(enemy: Node3D) -> void:
 	enemies_defeated += 1
 	var money_mult := 1.0 + MONEY_PER_ZONE * (zone - 1)
 	var saccheggio_mult: float = 1.0 + PlayerUpgrades.effect("saccheggio", upgrades.get("saccheggio", 0))
-	var reward := roundi(randf_range(10.0, 18.0) * money_mult * saccheggio_mult)
+	var reward := roundi(randf_range(KILL_REWARD_MIN, KILL_REWARD_MAX) * money_mult * saccheggio_mult)
 	money += reward
 	hud.update_money(money)
 
@@ -787,6 +797,11 @@ func _on_player_died() -> void:
 	if not DevMode.enabled:
 		SaveData.report_run(zone, int(money))
 		CheckpointData.load_checkpoint()
+		# Il salvataggio "riprendi partita" (più recente del checkpoint)
+		# andrebbe altrimenti a resuscitare i progressi appena persi con la
+		# morte a un successivo riavvio del gioco: lo invalido insieme al
+		# ripristino del checkpoint.
+		CheckpointData.clear_continue_save()
 	hud.show_game_over()
 
 func get_stats_text() -> String:
