@@ -252,7 +252,10 @@ func _update_occlusion_fade(delta: float) -> void:
 	var wall_blocking := _segment_hits_aabb(p0, p1, $WallSouth.global_position, WALL_SOUTH_HALF_EXTENTS)
 	_fade_toward(wall_south_mesh, wall_blocking, delta)
 
-	var house_blocking := _segment_hits_aabb(p0, p1, $HouseExterior.global_position, _house_half_extents)
+	# A zona già ripulita il player viene guidato verso casa (pulsante
+	# "Torna a casa", raggio d'interazione sulla porta): la casa deve
+	# restare sempre ben visibile in quel momento, non sfumare.
+	var house_blocking := not zone_transitioning and _segment_hits_aabb(p0, p1, $HouseExterior.global_position, _house_half_extents)
 	for m in _house_exterior_meshes:
 		_fade_toward(m, house_blocking, delta)
 
@@ -661,15 +664,25 @@ func _regenerate_objects() -> void:
 		add_child(obj)
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 
+const OBJECT_SPAWN_POINT_CLEARANCE := 3.5
+
 func _random_object_position() -> Vector3:
 	var pos := Vector3.ZERO
 	for attempt in range(10):
 		var x := randf_range(-ARENA_HALF, ARENA_HALF)
 		var z := randf_range(-ARENA_HALF, ARENA_HALF)
 		pos = Vector3(x, 0.0, z)
-		if pos.length() > OBJECT_CLEAR_RADIUS and pos.distance_to(HOUSE_DOOR_POS) > HOUSE_CLEAR_RADIUS:
+		if pos.length() > OBJECT_CLEAR_RADIUS and pos.distance_to(HOUSE_DOOR_POS) > HOUSE_CLEAR_RADIUS and not _near_spawn_point(pos):
 			return pos
 	return pos
+
+# Evita che un oggetto compaia esattamente su un punto di spawn dei nemici:
+# altrimenti il nemico che nasce lì resta incastrato nell'oggetto.
+func _near_spawn_point(pos: Vector3) -> bool:
+	for sp in spawn_points:
+		if pos.distance_to(sp.pos) < OBJECT_SPAWN_POINT_CLEARANCE:
+			return true
+	return false
 
 func _on_player_died() -> void:
 	hud.show_message("Sei stato steso.")
