@@ -45,13 +45,26 @@ const MAX_ENEMIES_PER_ZONE := 16
 const MAX_CONCURRENT := 6
 const SPAWN_INTERVAL := 0.9
 
-const HP_PER_ZONE := 0.033
-const DAMAGE_PER_ZONE := 0.023
-const SPEED_PER_ZONE := 0.018
-const COOLDOWN_FACTOR_PER_ZONE := 0.011
-const MIN_COOLDOWN := 0.35
+# Forza/potenza/salute dei nemici crescono con la stessa curva a rendimenti
+# decrescenti dei potenziamenti delle armi (vedi upgrade_effect() in
+# melee_weapons.gd/firearms.gd/throwables.gd): ci si avvicina in modo molto
+# graduale a un tetto massimo senza mai raggiungerlo del tutto, invece di
+# salire linearmente all'infinito. I valori di "MAX_BONUS" sono calibrati
+# per coincidere con il vecchio moltiplicatore lineare a zona 50 (stesso
+# livello di sfida al traguardo economico principale del gioco), ma qui la
+# salita è molto più dolce zona dopo zona e non esplode nelle run più lunghe.
+const HP_MAX_BONUS := 1.617
+const DAMAGE_MAX_BONUS := 1.127
+const SPEED_MAX_BONUS := 0.882
+const COOLDOWN_MAX_REDUCTION := 0.65
+const ZONE_SATURATION_ZONES := 17.0
 const MONEY_PER_ZONE := 0.025
 const BASE_ENEMY_COOLDOWN := 1.0
+
+# Quanto ci si è avvicinati al tetto massimo di difficoltà: 0 a zona 1, si
+# avvicina a 1 molto gradualmente (mai raggiunto del tutto).
+func _zone_difficulty_saturation(current_zone: int) -> float:
+	return 1.0 - exp(-float(max(current_zone - 1, 0)) / ZONE_SATURATION_ZONES)
 
 const ZONE_NAMES := [
 	"Ai margini del quartiere", "Vicoli stretti", "Cortili abbandonati",
@@ -652,10 +665,11 @@ func _spawn_enemy() -> void:
 	enemy.position = sp.pos
 	spawn_timer = SPAWN_INTERVAL
 
-	var hp_mult := 1.0 + HP_PER_ZONE * (zone - 1)
-	var dmg_mult := 1.0 + DAMAGE_PER_ZONE * (zone - 1)
-	var speed_mult := 1.0 + SPEED_PER_ZONE * (zone - 1)
-	var cooldown: float = max(BASE_ENEMY_COOLDOWN * (1.0 - COOLDOWN_FACTOR_PER_ZONE * (zone - 1)), MIN_COOLDOWN)
+	var sat := _zone_difficulty_saturation(zone)
+	var hp_mult := 1.0 + HP_MAX_BONUS * sat
+	var dmg_mult := 1.0 + DAMAGE_MAX_BONUS * sat
+	var speed_mult := 1.0 + SPEED_MAX_BONUS * sat
+	var cooldown: float = BASE_ENEMY_COOLDOWN * (1.0 - COOLDOWN_MAX_REDUCTION * sat)
 	var archetype_id := EnemyArchetypes.pick(zone)
 	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown, archetype_id)
 	enemy.died.connect(_on_enemy_died.bind(enemy))
