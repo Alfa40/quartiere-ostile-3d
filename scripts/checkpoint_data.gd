@@ -166,11 +166,7 @@ func start_new_game(slot: int) -> void:
 	if FileAccess.file_exists(_slot_continue_path(slot)):
 		DirAccess.remove_absolute(_slot_continue_path(slot))
 
-# reset_stats=false quando questo reset rappresenta il checkpoint implicito
-# della zona 1 (vedi load_checkpoint()) e non l'inizio di una partita
-# davvero nuova: le statistiche cumulative dell'intera run non devono
-# azzerarsi solo perché si torna al primo checkpoint.
-func _reset_to_defaults(reset_stats: bool = true) -> void:
+func _reset_to_defaults() -> void:
 	zone = 1
 	money = 0
 	materials = {"legno": 0, "metallo": 0, "cablaggi": 0}
@@ -192,11 +188,10 @@ func _reset_to_defaults(reset_stats: bool = true) -> void:
 	house_bench_orientation = "h"
 	house_bench_col_idx = 0
 	house_bench_row_idx = 0
-	if reset_stats:
-		stats_zone_reached = 1
-		stats_money_earned = 0
-		stats_enemies_defeated = 0
-		stats_playtime_sec = 0.0
+	stats_zone_reached = 1
+	stats_money_earned = 0
+	stats_enemies_defeated = 0
+	stats_playtime_sec = 0.0
 
 # --- Checkpoint / salvataggio "riprendi partita" per lo slot corrente ---
 
@@ -209,7 +204,7 @@ func load_checkpoint() -> void:
 		# partita" più recente accumulato nel frattempo — altrimenti
 		# "ricomincia dall'ultimo checkpoint" prima della zona 50 tornerebbe
 		# all'ultima visita a casa invece che alla zona 1.
-		_reset_to_defaults(false)
+		_reset_to_defaults()
 		return
 	_apply_state(data)
 
@@ -286,10 +281,10 @@ func _apply_state(data: Dictionary) -> void:
 	# max invece di sovrascrivere: un checkpoint più vecchio (o un continue
 	# save invalidato dalla morte) non deve mai far tornare indietro le
 	# statistiche cumulative della partita.
-	stats_zone_reached = max(stats_zone_reached, int(data.get("stats_zone_reached", 1)))
-	stats_money_earned = max(stats_money_earned, int(data.get("stats_money_earned", 0)))
-	stats_enemies_defeated = max(stats_enemies_defeated, int(data.get("stats_enemies_defeated", 0)))
-	stats_playtime_sec = max(stats_playtime_sec, float(data.get("stats_playtime_sec", 0.0)))
+	stats_zone_reached = int(data.get("stats_zone_reached", 1))
+	stats_money_earned = int(data.get("stats_money_earned", 0))
+	stats_enemies_defeated = int(data.get("stats_enemies_defeated", 0))
+	stats_playtime_sec = float(data.get("stats_playtime_sec", 0.0))
 
 func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
 	zone = current_zone

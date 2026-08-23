@@ -1120,6 +1120,13 @@ position = Vector3(0, 0.5, 0)
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("4_hud")
 
+[node name="DamageFlash" type="ColorRect" parent="HUD"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 0.1, 0.08, 0)
+visible = false
+
 [node name="HealthBar" type="ProgressBar" parent="HUD"]
 offset_left = 24.0
 offset_top = 20.0

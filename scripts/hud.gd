@@ -2,6 +2,7 @@ extends CanvasLayer
 
 const UIScale := preload("res://scripts/ui_scale.gd")
 
+@onready var damage_flash: ColorRect = $DamageFlash
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var hp_text: Label = $HealthBar/HPText
 @onready var zone_label: Label = $ZoneLabel
@@ -57,6 +58,14 @@ const AMMO_LABEL_FONT_BONUS := 10
 const AMMO_COLOR_NORMAL := Color(1.0, 0.82, 0.1, 1)
 const AMMO_COLOR_LOW := Color(1.0, 0.15, 0.1, 1)
 const AMMO_LOW_MAG_RATIO := 0.25
+
+# Bagliore rosso molto discreto su tutto lo schermo quando il player subisce
+# danni: affianca la vibrazione tattile (che su iOS Safari non ha effetto
+# per un limite della piattaforma) con un riscontro visivo che funziona
+# sempre, indipendentemente dal dispositivo.
+const DAMAGE_FLASH_COLOR := Color(1.0, 0.1, 0.08, 0.16)
+const DAMAGE_FLASH_FADE_TIME := 0.35
+var _damage_flash_tween: Tween = null
 
 const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
 const ZONE_COMPLETE_BOX_PORTRAIT := Rect2(-310.0, 140.0, 620.0, 190.0)
@@ -123,6 +132,15 @@ func flash_throw_type_toast(label: String) -> void:
 	_throw_toast_tween.tween_interval(1.3)
 	_throw_toast_tween.tween_property(throw_toast_label, "modulate:a", 0.0, 0.5)
 	_throw_toast_tween.tween_callback(func(): throw_toast_label.visible = false)
+
+func flash_damage() -> void:
+	if _damage_flash_tween != null and _damage_flash_tween.is_valid():
+		_damage_flash_tween.kill()
+	damage_flash.color = DAMAGE_FLASH_COLOR
+	damage_flash.visible = true
+	_damage_flash_tween = create_tween()
+	_damage_flash_tween.tween_property(damage_flash, "color:a", 0.0, DAMAGE_FLASH_FADE_TIME)
+	_damage_flash_tween.tween_callback(func(): damage_flash.visible = false)
 
 func _process(delta: float) -> void:
 	if zone_complete_active:
