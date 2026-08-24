@@ -414,10 +414,14 @@ func _on_resume_pressed() -> void:
 	set_paused(false)
 
 func _on_controls_editor_requested() -> void:
+	# Il pannello pausa (col suo sfondo scuro) resterebbe altrimenti visibile
+	# sotto le Impostazioni, coprendo la vista sui comandi da spostare.
+	pause_panel.visible = false
 	touch_controls.begin_edit_mode({"throw_type_button": throw_type_button, "throw_arm_button": throw_arm_button})
 
 func _on_controls_editor_finished() -> void:
 	touch_controls.end_edit_mode()
+	pause_panel.visible = true
 
 func _on_restart_pressed() -> void:
 	if not DevMode.enabled:
