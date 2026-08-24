@@ -107,6 +107,9 @@ const BENCH_UNLOCK_DESC := {
 @onready var throwable_scroll: ScrollContainer = $HUD/ThrowableMenu/Scroll
 @onready var explosive_scroll: ScrollContainer = $HUD/ExplosiveMenu/Scroll
 @onready var placement_ui: Control = $HUD/PlacementUI
+@onready var floor_row: Control = $HUD/PlacementUI/FloorRow
+@onready var floor_up_button: Button = $HUD/PlacementUI/FloorRow/FloorUpButton
+@onready var floor_down_button: Button = $HUD/PlacementUI/FloorRow/FloorDownButton
 @onready var placement_highlight: MeshInstance3D = $PlacementHighlight
 @onready var bench_ghost_holder: Node3D = $BenchGhostHolder
 @onready var placed_benches_root: Node3D = $PlacedBenches
@@ -174,6 +177,8 @@ func _ready() -> void:
 	$HUD/PlacementUI/ButtonRow/ConfirmButton.pressed.connect(_on_confirm_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/CancelButton.pressed.connect(_on_cancel_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/RotateButton.pressed.connect(_on_rotate_placement_pressed)
+	floor_up_button.pressed.connect(_on_floor_up_pressed)
+	floor_down_button.pressed.connect(_on_floor_down_pressed)
 
 	for id in PlayerUpgrades.ORDER:
 		var btn: Button = get_node("HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_%s/BuyButton" % id)
@@ -880,6 +885,8 @@ func _start_bench_placement(type_id: String) -> void:
 	_apply_ghost_transform()
 	placement_highlight.visible = true
 	placement_ui.visible = true
+	floor_row.visible = HouseTiers.floor_count(CheckpointData.house_tier) > 1
+	_update_floor_buttons()
 	_update_placement_validity()
 
 func _cell_key(col_idx: int, row_idx: int) -> String:
@@ -976,6 +983,38 @@ func _on_rotate_placement_pressed() -> void:
 	placing_col_idx = anchor.col_idx
 	_apply_ghost_transform()
 	_update_placement_validity()
+
+func _on_floor_up_pressed() -> void:
+	if current_floor + 1 >= HouseTiers.floor_count(CheckpointData.house_tier):
+		return
+	_move_placement_to_floor(current_floor + 1)
+
+func _on_floor_down_pressed() -> void:
+	if current_floor <= 0:
+		return
+	_move_placement_to_floor(current_floor - 1)
+
+# Il player segue l'oggetto che sta spostando: durante la modalità
+# spostamento i comandi di movimento sono disabilitati (non si potrebbe
+# comunque raggiungere le scale), quindi lo teletrasportiamo al centro del
+# nuovo piano così può continuare a vedere/trascinare/ruotare il fantasma
+# esattamente come prima, solo sul piano scelto.
+func _move_placement_to_floor(floor_idx: int) -> void:
+	_set_current_floor(floor_idx)
+	if placing_orientation == "h":
+		placing_col_idx = clampi(placing_col_idx, 0, maxi(col_values.size() - 2, 0))
+		placing_row_idx = clampi(placing_row_idx, 0, maxi(row_values.size() - 1, 0))
+	else:
+		placing_col_idx = clampi(placing_col_idx, 0, maxi(col_values.size() - 1, 0))
+		placing_row_idx = clampi(placing_row_idx, 0, maxi(row_values.size() - 2, 0))
+	player.global_position = Vector3(0, HouseTiers.floor_y(CheckpointData.house_tier, floor_idx), 0)
+	_apply_ghost_transform()
+	_update_placement_validity()
+	_update_floor_buttons()
+
+func _update_floor_buttons() -> void:
+	floor_down_button.disabled = current_floor <= 0
+	floor_up_button.disabled = current_floor + 1 >= HouseTiers.floor_count(CheckpointData.house_tier)
 
 func _update_placement_validity() -> void:
 	var cells := _footprint_cells(placing_orientation, placing_col_idx, placing_row_idx)
