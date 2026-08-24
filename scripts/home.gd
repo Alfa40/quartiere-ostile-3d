@@ -111,6 +111,10 @@ const BENCH_UNLOCK_DESC := {
 @onready var bench_ghost_holder: Node3D = $BenchGhostHolder
 @onready var placed_benches_root: Node3D = $PlacedBenches
 @onready var touch_controls = $HUD/TouchControls
+@onready var pause_button: Button = $HUD/PauseButton
+@onready var pause_panel: Control = $HUD/PausePanel
+@onready var pause_stats_label: Label = $HUD/PausePanel/Scroll/Box/StatsLabel
+@onready var pause_inventory_label: Label = $HUD/PausePanel/Scroll/Box/InventoryLabel
 
 var placing_bench_type := ""
 var placing_ghost: Node3D = null
@@ -148,9 +152,16 @@ func _ready() -> void:
 	explosive_menu.visible = false
 	placement_ui.visible = false
 	placement_highlight.visible = false
+	pause_panel.visible = false
+	# La pausa deve restare utilizzabile anche a gioco fermo (get_tree().paused),
+	# stesso schema di hud.gd in Main.tscn.
+	$HUD.process_mode = Node.PROCESS_MODE_ALWAYS
 
 	interact_button.pressed.connect(_on_interact_pressed)
 	move_button.pressed.connect(_on_move_pressed)
+	pause_button.pressed.connect(toggle_pause)
+	$HUD/PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
+	$HUD/PausePanel/Scroll/Box/MainMenuButton.pressed.connect(_on_pause_main_menu_pressed)
 	$HUD/WorkbenchMenu/Scroll/Box/CloseButton.pressed.connect(_close_house_menu)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/UpgradesTabButton.pressed.connect(_show_upgrades_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/BenchesTabButton.pressed.connect(_show_benches_tab)
@@ -316,6 +327,45 @@ func _process(delta: float) -> void:
 func _on_move_pressed() -> void:
 	if _current_interact != "":
 		_start_bench_move(_current_interact)
+
+func toggle_pause() -> void:
+	set_paused(not get_tree().paused)
+
+func set_paused(value: bool) -> void:
+	get_tree().paused = value
+	pause_panel.visible = value
+	pause_button.visible = not value
+	if value:
+		pause_stats_label.text = _pause_stats_text()
+		pause_inventory_label.text = _pause_inventory_text()
+
+# Stesso formato di main.gd:get_stats_text()/get_inventory_text(), letto
+# direttamente da CheckpointData (dentro casa non esistono le var runtime
+# "zone"/"money"/"materials" di main.gd).
+func _pause_stats_text() -> String:
+	var elapsed_sec := int(CheckpointData.stats_playtime_sec)
+	var minutes := elapsed_sec / 60
+	var seconds := elapsed_sec % 60
+	return "Zona raggiunta: %d\nSoldi guadagnati: %d€\nNemici sconfitti: %d\nTempo: %02d:%02d" % [
+		CheckpointData.stats_zone_reached, CheckpointData.stats_money_earned, CheckpointData.stats_enemies_defeated, minutes, seconds,
+	]
+
+func _pause_inventory_text() -> String:
+	if DevMode.enabled:
+		return "Soldi: ∞\n\nMateriali:\nLegno: ∞   Metallo: ∞   Cablaggi: ∞"
+	return "Soldi: %d€\n\nMateriali:\nLegno: %d   Metallo: %d   Cablaggi: %d" % [
+		int(CheckpointData.money), CheckpointData.materials.get("legno", 0),
+		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
+	]
+
+func _on_resume_pressed() -> void:
+	set_paused(false)
+
+func _on_pause_main_menu_pressed() -> void:
+	if not DevMode.enabled:
+		SaveData.report_run(CheckpointData.zone, int(CheckpointData.money))
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
 func _on_interact_pressed() -> void:
 	if _current_interact == "casa":
