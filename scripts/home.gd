@@ -90,8 +90,7 @@ const BENCH_UNLOCK_DESC := {
 }
 
 @onready var player: Node3D = $Player
-@onready var interact_button: Button = $HUD/InteractButton
-@onready var move_button: Button = $HUD/MoveButton
+@onready var interact_indicator: MeshInstance3D = $InteractIndicator
 @onready var workbench_menu: Control = $HUD/WorkbenchMenu
 @onready var money_materials_label: Label = $HUD/WorkbenchMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var upgrades_tab: Control = $HUD/WorkbenchMenu/Scroll/Box/UpgradesTab
@@ -141,6 +140,13 @@ var current_throwable_category := "armi_bianche_lancio"
 var current_explosive_category := "lanciagranate"
 var _current_interact := ""
 var _placed_bench_nodes := {}
+# Tocco/click prolungato sul banco 3D (invece dei vecchi tasti "Usa"/
+# "Sposta"): un tocco breve apre il menu, uno tenuto premuto oltre
+# HOLD_THRESHOLD_MS avvia lo spostamento. Vedi _try_claim_bench_touch().
+const HOLD_THRESHOLD_MS := 500
+var _bench_press_target := ""
+var _bench_press_start_time := 0
+var _indicator_bob := 0.0
 # Stato "a tendina" dei menu delle armi: quali armi hanno statistiche e
 # potenziamenti espansi, tenuti chiusi di default per non lasciare blocchi di
 # testo troppo lunghi. Chiave = id arma, per tutti e 4 i banchi insieme.
@@ -157,8 +163,7 @@ func _ready() -> void:
 	GameSettings.changed.connect(_apply_screen_adjustment)
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))
-	interact_button.visible = false
-	move_button.visible = false
+	interact_indicator.visible = false
 	workbench_menu.visible = false
 	weapon_menu.visible = false
 	firearm_menu.visible = false
@@ -172,8 +177,8 @@ func _ready() -> void:
 	# stesso schema di hud.gd in Main.tscn.
 	$HUD.process_mode = Node.PROCESS_MODE_ALWAYS
 
-	interact_button.pressed.connect(_on_interact_pressed)
-	move_button.pressed.connect(_on_move_pressed)
+	touch_controls.external_press_test = _try_claim_bench_touch
+	touch_controls.external_release = _on_bench_touch_released
 	pause_button.pressed.connect(toggle_pause)
 	$HUD/PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
 	$HUD/PausePanel/Scroll/Box/SettingsButton.pressed.connect(func(): $HUD/SettingsPanel.open())
@@ -328,8 +333,8 @@ func _process(delta: float) -> void:
 	if stairs_cooldown_timer > 0.0:
 		stairs_cooldown_timer = maxf(0.0, stairs_cooldown_timer - delta)
 	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible:
-		interact_button.visible = false
-		move_button.visible = false
+		_current_interact = ""
+		interact_indicator.visible = false
 		return
 
 	var best_id := ""
@@ -345,18 +350,67 @@ func _process(delta: float) -> void:
 			best_dist = d
 			best_id = type_id
 	_current_interact = best_id
-	interact_button.visible = best_id != ""
-	move_button.visible = best_id != ""
-	if best_id == "casa":
-		interact_button.text = "Usa il banco della casa"
-	elif best_id != "":
-		interact_button.text = "Usa %s" % BENCH_LABELS.get(best_id, best_id)
-	if best_id != "":
-		move_button.text = "Sposta %s" % BENCH_LABELS.get(best_id, best_id)
+	_update_interact_indicator(delta)
 
-func _on_move_pressed() -> void:
-	if _current_interact != "":
-		_start_bench_move(_current_interact)
+# Un piccolo anello luminoso sopra il banco in raggio, al posto dei vecchi
+# tasti "Usa"/"Sposta": segnala dove si può toccare (tocco breve = apri,
+# tenuto premuto = sposta). Stesso genere di animazione di waypoint.gd.
+func _update_interact_indicator(delta: float) -> void:
+	if _current_interact == "":
+		interact_indicator.visible = false
+		return
+	var node := _interact_target_node(_current_interact)
+	if node == null:
+		interact_indicator.visible = false
+		return
+	_indicator_bob += delta
+	interact_indicator.visible = true
+	interact_indicator.rotation.y = _indicator_bob * 1.2
+	interact_indicator.global_position = node.global_position + Vector3(0, 1.6 + sin(_indicator_bob * 2.5) * 0.08, 0)
+
+func _interact_target_node(type_id: String) -> Node3D:
+	if type_id == "casa":
+		return $Workbench
+	return _placed_bench_nodes.get(type_id)
+
+# Aggancio per touch_controls.gd (vedi external_press_test): un tocco/click
+# iniziale che cade davvero sul banco 3D attualmente in raggio "prenota"
+# quel tocco, così joystick/mira/attacco non lo intercettano.
+func _try_claim_bench_touch(pos: Vector2) -> bool:
+	if placing_bench_type != "" or _current_interact == "":
+		return false
+	if workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible:
+		return false
+	var node := _interact_target_node(_current_interact)
+	if node == null:
+		return false
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return false
+	var from := cam.project_ray_origin(pos)
+	var to := from + cam.project_ray_normal(pos) * 100.0
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	var result := get_world_3d().direct_space_state.intersect_ray(query)
+	if result.is_empty() or result.collider != node:
+		return false
+	_bench_press_target = _current_interact
+	_bench_press_start_time = Time.get_ticks_msec()
+	return true
+
+# Un tocco breve apre il menu del banco (come il vecchio tasto "Usa"), uno
+# tenuto premuto più a lungo di HOLD_THRESHOLD_MS avvia lo spostamento
+# (come il vecchio tasto "Sposta"): la scelta si fa tutta al rilascio.
+func _on_bench_touch_released(_pos: Vector2) -> void:
+	if _bench_press_target == "":
+		return
+	var target := _bench_press_target
+	_bench_press_target = ""
+	var held_ms := Time.get_ticks_msec() - _bench_press_start_time
+	if held_ms < HOLD_THRESHOLD_MS:
+		_current_interact = target
+		_on_interact_pressed()
+	else:
+		_start_bench_move(target)
 
 func toggle_pause() -> void:
 	set_paused(not get_tree().paused)
@@ -439,7 +493,6 @@ func _start_bench_move(type_id: String) -> void:
 
 func _open_house_menu() -> void:
 	workbench_menu.visible = true
-	interact_button.visible = false
 	_refresh_workbench_menu()
 
 func _close_house_menu() -> void:
@@ -933,8 +986,6 @@ func _on_buy_bench_pressed(type_id: String) -> void:
 func _start_bench_placement(type_id: String) -> void:
 	placing_bench_type = type_id
 	workbench_menu.visible = false
-	interact_button.visible = false
-	move_button.visible = false
 	touch_controls.input_enabled = false
 	touch_controls.move_vector = Vector2.ZERO
 	touch_controls.attack_held = false
@@ -1208,7 +1259,6 @@ func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: in
 
 func _open_weapon_menu() -> void:
 	weapon_menu.visible = true
-	interact_button.visible = false
 	_refresh_weapon_menu()
 
 func _close_weapon_menu() -> void:
@@ -1409,7 +1459,6 @@ func _on_upgrade_weapon_pressed(wid: String, tid: String) -> void:
 
 func _open_firearm_menu() -> void:
 	firearm_menu.visible = true
-	interact_button.visible = false
 	_refresh_firearm_menu()
 
 func _close_firearm_menu() -> void:
@@ -1515,7 +1564,6 @@ func _refresh_firearm_menu() -> void:
 
 func _open_explosive_menu() -> void:
 	explosive_menu.visible = true
-	interact_button.visible = false
 	_refresh_explosive_menu()
 
 func _close_explosive_menu() -> void:
@@ -1527,7 +1575,6 @@ const DEFAULT_BODY_COLOR := Color(0.2, 0.45, 0.95, 1)
 
 func _open_wardrobe_menu() -> void:
 	wardrobe_menu.visible = true
-	interact_button.visible = false
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
 	body_color_picker.color = Color(CheckpointData.player_body_color) if CheckpointData.player_body_color != "" else DEFAULT_BODY_COLOR
 	wall_color_picker.color = Color(CheckpointData.house_wall_color) if CheckpointData.house_wall_color != "" else Color(tier.wall_color)
@@ -1747,7 +1794,6 @@ func _on_upgrade_firearm_pressed(wid: String, tid: String) -> void:
 
 func _open_throwable_menu() -> void:
 	throwable_menu.visible = true
-	interact_button.visible = false
 	_refresh_throwable_menu()
 
 func _close_throwable_menu() -> void:

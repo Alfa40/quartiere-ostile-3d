@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/home.gd" id="1_home"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -73,6 +73,17 @@ size = Vector3(0.25, 0.2, 0.25)
 albedo_color = Color(0.55, 0.55, 0.58, 1)
 metallic = 0.6
 roughness = 0.4
+
+[sub_resource type="TorusMesh" id="InteractIndicatorMesh"]
+inner_radius = 0.22
+outer_radius = 0.34
+
+[sub_resource type="StandardMaterial3D" id="InteractIndicatorMaterial"]
+albedo_color = Color(1.0, 0.85, 0.3, 0.9)
+emission_enabled = true
+emission = Color(1.0, 0.85, 0.3, 1)
+emission_energy_multiplier = 2.0
+transparency = 1
 
 [sub_resource type="PlaneMesh" id="PlacementHighlightMesh"]
 size = Vector2(4, 2)
@@ -192,6 +203,11 @@ visible = false
 mesh = SubResource("PlacementHighlightMesh")
 surface_material_override/0 = SubResource("PlacementValidMaterial")
 
+[node name="InteractIndicator" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("InteractIndicatorMesh")
+surface_material_override/0 = SubResource("InteractIndicatorMaterial")
+
 [node name="BenchGhostHolder" type="Node3D" parent="."]
 
 [node name="PlacedBenches" type="Node3D" parent="."]
@@ -217,30 +233,6 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 horizontal_alignment = 1
 text = "Cammina verso la porta (in fondo) per tornare al quartiere"
-
-[node name="InteractButton" type="Button" parent="HUD"]
-anchor_left = 0.5
-anchor_top = 0.6
-anchor_right = 0.5
-anchor_bottom = 0.6
-offset_left = -140.0
-offset_top = -40.0
-offset_right = 140.0
-offset_bottom = 40.0
-theme_override_font_sizes/font_size = 35
-text = "Usa il banco"
-
-[node name="MoveButton" type="Button" parent="HUD"]
-anchor_left = 0.5
-anchor_top = 0.6
-anchor_right = 0.5
-anchor_bottom = 0.6
-offset_left = -140.0
-offset_top = 56.0
-offset_right = 140.0
-offset_bottom = 126.0
-theme_override_font_sizes/font_size = 28
-text = "Sposta"
 
 [node name="ReorganizePanel" type="Control" parent="HUD"]
 anchor_left = 0.5

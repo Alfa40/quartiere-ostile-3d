@@ -45,6 +45,18 @@ var draggable_buttons := {}
 var _edit_drag_key := ""
 var _edit_touch_index := -2
 
+# Aggancio generico per una scena ospite (es. home.gd, per toccare un
+# banco 3D): se impostato, ha sempre la priorità sul joystick/mira/attacco.
+# external_press_test(pos) -> bool: chiamata su ogni tocco/click iniziale,
+# prima di ogni altro instradamento; se ritorna true "prenota" quell'indice
+# di tocco, che da quel momento non controlla più joystick/mira/attacco
+# finché non viene rilasciato. external_release(pos): chiamata al rilascio
+# di un tocco prenotato. Entrambe Callable() (non valide) di default,
+# quindi innocue per ogni scena che non le imposta.
+var external_press_test: Callable
+var external_release: Callable
+var _external_touch_indices := {}
+
 func begin_edit_mode(buttons: Dictionary) -> void:
 	draggable_buttons = buttons
 	edit_mode = true
@@ -180,6 +192,9 @@ func _handle_edit_pointer_drag(index: int, pos: Vector2) -> void:
 
 func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 	if pressed:
+		if external_press_test.is_valid() and bool(external_press_test.call(pos)):
+			_external_touch_indices[index] = true
+			return
 		if _in_joystick_zone(pos) and _joy_touch_index == -2:
 			_joy_touch_index = index
 			_joy_origin = pos
@@ -195,7 +210,11 @@ func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 			aim_vector = Vector2.ZERO
 			queue_redraw()
 	else:
-		if index == _joy_touch_index:
+		if _external_touch_indices.has(index):
+			_external_touch_indices.erase(index)
+			if external_release.is_valid():
+				external_release.call(pos)
+		elif index == _joy_touch_index:
 			_joy_touch_index = -2
 			move_vector = Vector2.ZERO
 			queue_redraw()
@@ -211,6 +230,8 @@ func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 			queue_redraw()
 
 func _handle_pointer_drag(index: int, pos: Vector2) -> void:
+	if _external_touch_indices.has(index):
+		return
 	if index == _joy_touch_index:
 		if not _in_joystick_zone(pos):
 			# A drag that jumps outside the joystick's own half of the screen can
