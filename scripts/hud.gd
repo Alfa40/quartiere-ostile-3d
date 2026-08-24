@@ -93,6 +93,7 @@ func _ready() -> void:
 	pause_panel.visible = false
 	gameover_panel.visible = false
 	$PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
+	$PausePanel/Scroll/Box/SettingsButton.pressed.connect(func(): $SettingsPanel.open())
 	$PausePanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)
 	$PausePanel/Scroll/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	$GameOverPanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)

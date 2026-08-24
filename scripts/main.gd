@@ -175,11 +175,22 @@ func _ready() -> void:
 	_apply_firearm_stats()
 	_apply_throwable_stats()
 	_apply_house_exterior()
+	_apply_screen_adjustment()
+	GameSettings.changed.connect(_apply_screen_adjustment)
 	hud.update_money(money)
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 	_build_spawn_points()
 	_start_zone()
+
+# Luminosità/contrasto regolabili dalle Impostazioni, applicati tramite le
+# proprietà native di Environment (niente shader custom): si aggiornano in
+# tempo reale mentre il pannello Impostazioni resta aperto durante il gioco.
+func _apply_screen_adjustment() -> void:
+	var env: Environment = $Environment.environment
+	env.adjustment_enabled = true
+	env.adjustment_brightness = GameSettings.brightness
+	env.adjustment_contrast = GameSettings.contrast
 
 func _apply_house_exterior() -> void:
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)

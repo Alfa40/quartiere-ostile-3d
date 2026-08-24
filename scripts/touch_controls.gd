@@ -6,8 +6,8 @@ const BTN_RADIUS := 120.0
 const MAX_DRAG := 140.0
 # Il joystick di mira usa una corsa più lunga di quello di movimento: a
 # parità di spostamento del dito, serve più corsa per raggiungere la stessa
-# intensità di mira, quindi la mira risulta meno sensibile/nervosa.
-const AIM_MAX_DRAG := 220.0
+# intensità di mira, quindi la mira risulta meno sensibile/nervosa. Regolabile
+# dal player nelle Impostazioni: GameSettings.aim_max_drag (autoload).
 # Area di tocco della mira più piccola della metà schermo: lascia spazio ai
 # tasti di attacco e delle armi da lancio vicini senza che vengano rubati
 # dal joystick di mira (lo stesso tipo di bug che c'era col movimento).
@@ -121,9 +121,10 @@ func _handle_pointer_drag(index: int, pos: Vector2) -> void:
 		if _in_joystick_zone(pos):
 			return
 		var delta := pos - _aim_origin
-		if delta.length() > AIM_MAX_DRAG:
-			delta = delta.normalized() * AIM_MAX_DRAG
-		aim_vector = delta / AIM_MAX_DRAG
+		var aim_max_drag: float = GameSettings.aim_max_drag
+		if delta.length() > aim_max_drag:
+			delta = delta.normalized() * aim_max_drag
+		aim_vector = delta / aim_max_drag
 		queue_redraw()
 
 func _in_joystick_zone(pos: Vector2) -> bool:

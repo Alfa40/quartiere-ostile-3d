@@ -153,6 +153,8 @@ func _ready() -> void:
 	if not DevMode.enabled:
 		CheckpointData.save_continue()
 	_apply_house_tier_geometry()
+	_apply_screen_adjustment()
+	GameSettings.changed.connect(_apply_screen_adjustment)
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))
 	interact_button.visible = false
@@ -174,6 +176,7 @@ func _ready() -> void:
 	move_button.pressed.connect(_on_move_pressed)
 	pause_button.pressed.connect(toggle_pause)
 	$HUD/PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
+	$HUD/PausePanel/Scroll/Box/SettingsButton.pressed.connect(func(): $HUD/SettingsPanel.open())
 	$HUD/PausePanel/Scroll/Box/MainMenuButton.pressed.connect(_on_pause_main_menu_pressed)
 	$HUD/WorkbenchMenu/Scroll/Box/CloseButton.pressed.connect(_close_house_menu)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/UpgradesTabButton.pressed.connect(_show_upgrades_tab)
@@ -562,6 +565,15 @@ func _relocate_benches_for_shrunk_floors() -> void:
 func _interior_spawn_position() -> Vector3:
 	var depth: float = float(HouseTiers.floor_data(CheckpointData.house_tier, 0).rows) * 2.0
 	return Vector3(0, 0, depth / 2.0 - 1.2)
+
+# Luminosità/contrasto regolabili dalle Impostazioni, applicati tramite le
+# proprietà native di Environment (niente shader custom): si aggiornano in
+# tempo reale mentre il pannello Impostazioni resta aperto durante il gioco.
+func _apply_screen_adjustment() -> void:
+	var env: Environment = $WorldEnvironment.environment
+	env.adjustment_enabled = true
+	env.adjustment_brightness = GameSettings.brightness
+	env.adjustment_contrast = GameSettings.contrast
 
 func _apply_house_tier_geometry() -> void:
 	var floors := HouseTiers.own_floors(CheckpointData.house_tier)

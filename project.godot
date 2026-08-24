@@ -32,6 +32,7 @@ TutorialState="*res://scripts/tutorial_state.gd"
 TutorialProgress="*res://scripts/tutorial_progress.gd"
 DevMode="*res://scripts/dev_mode.gd"
 CheckpointData="*res://scripts/checkpoint_data.gd"
+GameSettings="*res://scripts/game_settings.gd"
 
 [rendering]
 

@@ -37,6 +37,7 @@ func _ready() -> void:
 		return
 
 	$Box/TutorialButton.pressed.connect(_on_tutorial_pressed)
+	$Box/SettingsButton.pressed.connect(_on_settings_pressed)
 	$CreatorButton.pressed.connect(_on_creator_pressed)
 	$PasswordPanel/Scroll/Box/BackspaceButton.pressed.connect(_on_backspace_pressed)
 	$PasswordPanel/Scroll/Box/ConfirmButton.pressed.connect(_on_confirm_pressed)
@@ -108,6 +109,9 @@ func _on_cancel_reset_pressed() -> void:
 
 func _on_tutorial_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Tutorial.tscn")
+
+func _on_settings_pressed() -> void:
+	$SettingsPanel.open()
 
 func _on_creator_pressed() -> void:
 	error_label.text = ""

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" path="res://scenes/SettingsPanel.tscn" id="2_settings"]
 
 [node name="MainMenu" type="Control"]
 anchor_right = 1.0
@@ -107,6 +108,13 @@ visible = false
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Come si gioca"
+
+[node name="SettingsButton" type="Button" parent="Box"]
+custom_minimum_size = Vector2(0, 136)
+theme_override_font_sizes/font_size = 52
+text = "Impostazioni"
+
+[node name="SettingsPanel" parent="." instance=ExtResource("2_settings")]
 
 [node name="CreatorButton" type="Button" parent="."]
 anchor_left = 0.5

@@ -1,8 +1,9 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://scripts/home.gd" id="1_home"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="3_touch"]
+[ext_resource type="PackedScene" path="res://scenes/SettingsPanel.tscn" id="4_settings"]
 
 [sub_resource type="ProceduralSkyMaterial" id="HomeSkyMat_1"]
 sky_top_color = Color(0.03, 0.03, 0.04, 1)
@@ -9631,10 +9632,17 @@ custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Riprendi"
 
+[node name="SettingsButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 136)
+theme_override_font_sizes/font_size = 52
+text = "Impostazioni"
+
 [node name="MainMenuButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Esci alla partita: torna al menu principale"
+
+[node name="SettingsPanel" parent="HUD" instance=ExtResource("4_settings")]
 
 [node name="WardrobeMenu" type="Control" parent="HUD"]
 anchor_left = 0.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3]
+[gd_scene load_steps=54 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/enemy_indicators.gd" id="7_indicators"]
 [ext_resource type="Script" path="res://scripts/throw_cooldown_overlay.gd" id="8_throwcooldown"]
 [ext_resource type="Shader" path="res://shaders/damage_vignette.gdshader" id="9_damage_vignette"]
+[ext_resource type="PackedScene" path="res://scenes/SettingsPanel.tscn" id="10_settings"]
 
 [sub_resource type="PrismMesh" id="TentMesh"]
 size = Vector3(4, 2.2, 6)
@@ -1289,6 +1290,8 @@ offset_bottom = 132.0
 theme_override_font_sizes/font_size = 52
 text = "II"
 
+[node name="SettingsPanel" parent="HUD" instance=ExtResource("10_settings")]
+
 [node name="ZoneCompletePanel" type="Control" parent="HUD"]
 mouse_filter = 2
 anchor_left = 0.5
@@ -1391,6 +1394,11 @@ text = ""
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Riprendi"
+
+[node name="SettingsButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 136)
+theme_override_font_sizes/font_size = 52
+text = "Impostazioni"
 
 [node name="RestartButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
