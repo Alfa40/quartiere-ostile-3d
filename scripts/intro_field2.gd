@@ -14,6 +14,11 @@ const HORDE_CENTER := Vector3(3, 0, -3)
 const HORDE_ARCHETYPES := ["balordo", "nervoso", "balordo", "nervoso"]
 const HELP_RANGE := 2.5
 
+# Stesso riscontro visivo del tasto "Lancia" del gioco vero (vedi hud.gd):
+# acceso quando l'arma da lancio è armata, spento quando è a riposo.
+const THROW_ARM_IDLE_MODULATE := Color(0.65, 0.65, 0.68, 1.0)
+const THROW_ARM_ACTIVE_MODULATE := Color(1.25, 1.05, 0.55, 1.0)
+
 @onready var hud = $HUD
 @onready var player = $Player
 @onready var touch_controls = $HUD/TouchControls
@@ -29,6 +34,7 @@ var _horde_alive := 0
 func _ready() -> void:
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	throw_arm_button.pressed.connect(_on_throw_arm_pressed)
+	throw_arm_button.modulate = THROW_ARM_IDLE_MODULATE
 	npc_house_door.body_entered.connect(_on_npc_house_entered)
 	_apply_firearm()
 
@@ -104,6 +110,8 @@ func _process(_delta: float) -> void:
 	if stage == "help" and player.global_position.distance_to(npc.global_position) <= HELP_RANGE:
 		stage = "help_pausing"
 		_delayed_start_horde()
+	if throw_arm_button.visible:
+		throw_arm_button.modulate = THROW_ARM_ACTIVE_MODULATE if player.throw_armed else THROW_ARM_IDLE_MODULATE
 
 func _delayed_start_horde() -> void:
 	await get_tree().create_timer(1.0).timeout
