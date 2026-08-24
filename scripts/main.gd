@@ -8,6 +8,7 @@ const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
 const Firearms := preload("res://scripts/firearms.gd")
 const Throwables := preload("res://scripts/throwables.gd")
 const HouseTiers := preload("res://scripts/house_tiers.gd")
+const Scenarios := preload("res://scripts/scenarios.gd")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
@@ -191,6 +192,45 @@ func _apply_screen_adjustment() -> void:
 	env.adjustment_enabled = true
 	env.adjustment_brightness = GameSettings.brightness
 	env.adjustment_contrast = GameSettings.contrast
+
+# Terreno/muri/cielo cambiano di netto allo scenario della zona attuale
+# (mai gradualmente: solo l'aspetto di alberi e nemici transita, vedi
+# _scenario_data_for_spawn()). La casa esterna non è mai toccata da
+# questo sistema, resta quella scelta dal player con l'Armadio.
+func _apply_scenario_visuals() -> void:
+	var data: Dictionary = Scenarios.scenario_data(Scenarios.scenario_index_for_zone(zone))
+
+	var floor_mat := $Floor/MeshInstance3D.get_surface_override_material(0) as StandardMaterial3D
+	floor_mat.albedo_color = data.floor_color
+
+	for occ in _wall_occluders:
+		var wall_mat := (occ.mesh as MeshInstance3D).get_surface_override_material(0) as StandardMaterial3D
+		var new_color: Color = data.wall_color
+		# Non tocca l'alpha: potrebbe essere a metà di una dissolvenza per
+		# occlusione (_update_occlusion_fade), non è compito nostro azzerarla.
+		new_color.a = wall_mat.albedo_color.a
+		wall_mat.albedo_color = new_color
+
+	var env: Environment = $Environment.environment
+	var sky_mat: ProceduralSkyMaterial = env.sky.sky_material
+	sky_mat.sky_top_color = data.sky_top_color
+	sky_mat.sky_horizon_color = data.sky_horizon_color
+	sky_mat.ground_bottom_color = data.ground_bottom_color
+	sky_mat.ground_horizon_color = data.ground_horizon_color
+	env.ambient_light_color = data.ambient_light_color
+	env.ambient_light_energy = data.ambient_light_energy
+
+# Estratta i dati dello scenario da usare per il prossimo albero/nemico che
+# nasce: durante la finestra di transizione (le ultime zone prima del
+# checkpoint), ogni nascita tira a sorte in modo indipendente se usare già
+# l'aspetto dello scenario successivo, con probabilità crescente zona per
+# zona — così il passaggio è graduale e "misto" invece che a scatti.
+func _scenario_data_for_spawn() -> Dictionary:
+	var current_idx := Scenarios.scenario_index_for_zone(zone)
+	var p := Scenarios.transition_progress(zone)
+	if p > 0.0 and randf() < p:
+		return Scenarios.scenario_data(Scenarios.next_scenario_index_for_zone(zone))
+	return Scenarios.scenario_data(current_idx)
 
 func _apply_house_exterior() -> void:
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
@@ -639,6 +679,7 @@ func on_player_damaged(_amount: float) -> void:
 func _start_zone() -> void:
 	CheckpointData.stats_zone_reached = max(CheckpointData.stats_zone_reached, zone)
 	zone_transitioning = false
+	_apply_scenario_visuals()
 	if zone > 1:
 		_regenerate_objects()
 	zone_enemies_total = min(BASE_ENEMIES + PER_ZONE * (zone - 1), MAX_ENEMIES_PER_ZONE)
@@ -731,6 +772,8 @@ func _spawn_enemy() -> void:
 	var cooldown: float = BASE_ENEMY_COOLDOWN * (1.0 - COOLDOWN_MAX_REDUCTION * sat)
 	var archetype_id := EnemyArchetypes.pick(zone)
 	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown, archetype_id)
+	var sdata := _scenario_data_for_spawn()
+	enemy.apply_color_override(sdata.enemy_colors.get(archetype_id, EnemyArchetypes.DATA[archetype_id].color))
 	enemy.died.connect(_on_enemy_died.bind(enemy))
 
 	zone_enemies_spawned += 1
@@ -803,6 +846,7 @@ func _regenerate_objects() -> void:
 		var scene: PackedScene = OBJECT_SCENES[type_id]
 		var obj = scene.instantiate()
 		obj.position = _random_object_position()
+		var tree_sdata: Dictionary = {}
 		if type_id == "albero":
 			var tier := randf()
 			if tier < 0.34:
@@ -817,9 +861,14 @@ func _regenerate_objects() -> void:
 				obj.scale = Vector3.ONE * 1.5
 				obj.max_hp = 480.0
 				obj.material_drops = {"legno": 6}
+			tree_sdata = _scenario_data_for_spawn()
 		elif type_id == "recinzione":
 			obj.rotation_degrees.y = 90.0 if randf() < 0.5 else 0.0
 		add_child(obj)
+		# apply_scenario_appearance tocca $Trunk/$Foliage (@onready): serve
+		# che l'albero sia già nella scena, quindi dopo add_child().
+		if type_id == "albero":
+			obj.apply_scenario_appearance(tree_sdata.tree_trunk_color, tree_sdata.tree_foliage_color, tree_sdata.tree_shape)
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 
 const OBJECT_SPAWN_POINT_CLEARANCE := 3.5

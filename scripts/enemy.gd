@@ -121,6 +121,12 @@ func configure(hp_mult: float, dmg_mult: float, speed_mult: float, cooldown_seco
 	attack_cooldown = max(cooldown_seconds * arch.cooldown_mult, MIN_ATTACK_COOLDOWN)
 	_apply_color(arch.color)
 
+# Usata da main.gd per applicare il colore dello scenario attuale (o, in
+# transizione, di quello successivo) al posto del colore fisso
+# dell'archetipo: va chiamata dopo configure(), che la sovrascriverebbe.
+func apply_color_override(color: Color) -> void:
+	_apply_color(color)
+
 func _apply_color(color: Color) -> void:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
