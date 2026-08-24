@@ -73,6 +73,13 @@ var house_bench_orientation := "h"
 var house_bench_col_idx := 0
 var house_bench_row_idx := 0
 
+# Colori scelti dal player all'Armadio, come stringa esadecimale
+# (Color.to_html(false)); vuoto = usa il colore di default del tier/corpo.
+var player_body_color := ""
+var house_wall_color := ""
+var house_roof_color := ""
+var house_door_color := ""
+
 # Statistiche cumulative dell'intera partita, dalla zona 1: a differenza di
 # zone/money/materiali (che un checkpoint riporta indietro all'ultimo
 # traguardo superato in caso di morte), queste non tornano mai indietro —
@@ -188,6 +195,10 @@ func _reset_to_defaults() -> void:
 	house_bench_orientation = "h"
 	house_bench_col_idx = 0
 	house_bench_row_idx = 0
+	player_body_color = ""
+	house_wall_color = ""
+	house_roof_color = ""
+	house_door_color = ""
 	stats_zone_reached = 1
 	stats_money_earned = 0
 	stats_enemies_defeated = 0
@@ -278,6 +289,10 @@ func _apply_state(data: Dictionary) -> void:
 	house_bench_orientation = String(data.get("house_bench_orientation", "h"))
 	house_bench_col_idx = int(data.get("house_bench_col_idx", 0))
 	house_bench_row_idx = int(data.get("house_bench_row_idx", 0))
+	player_body_color = String(data.get("player_body_color", ""))
+	house_wall_color = String(data.get("house_wall_color", ""))
+	house_roof_color = String(data.get("house_roof_color", ""))
+	house_door_color = String(data.get("house_door_color", ""))
 	# max invece di sovrascrivere: un checkpoint più vecchio (o un continue
 	# save invalidato dalla morte) non deve mai far tornare indietro le
 	# statistiche cumulative della partita.
@@ -315,6 +330,10 @@ func _state_dict() -> Dictionary:
 		"house_bench_orientation": house_bench_orientation,
 		"house_bench_col_idx": house_bench_col_idx,
 		"house_bench_row_idx": house_bench_row_idx,
+		"player_body_color": player_body_color,
+		"house_wall_color": house_wall_color,
+		"house_roof_color": house_roof_color,
+		"house_door_color": house_door_color,
 		"stats_zone_reached": stats_zone_reached,
 		"stats_money_earned": stats_money_earned,
 		"stats_enemies_defeated": stats_enemies_defeated,

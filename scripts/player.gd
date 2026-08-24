@@ -258,6 +258,26 @@ func _on_grenade_stuck(proj: Node3D) -> void:
 func _ready() -> void:
 	add_to_group("player")
 	hp_changed.emit(hp, max_hp)
+	if CheckpointData.player_body_color != "":
+		apply_body_color(Color(CheckpointData.player_body_color))
+
+# Un solo Material nuovo condiviso da tutti i mesh del corpo (tranne
+# testa/faccia): stesso pattern di enemy.gd:_apply_color/_tint_recursive,
+# così ritingere non tocca il materiale originale condiviso nella .tscn.
+func apply_body_color(color: Color) -> void:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = color
+	mat.metallic = 0.1
+	mat.roughness = 0.4
+	_tint_body_recursive(visual_root, mat)
+
+func _tint_body_recursive(node: Node, mat: Material) -> void:
+	if node.name == "Head" or node.name == "Face":
+		return
+	if node is MeshInstance3D:
+		node.set_surface_override_material(0, mat)
+	for c in node.get_children():
+		_tint_body_recursive(c, mat)
 
 func face_direction(dir: Vector3) -> void:
 	if dir.length() < 0.0001:

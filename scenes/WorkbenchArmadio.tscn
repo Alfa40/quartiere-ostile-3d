@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="BoxMesh" id="ArmadioCabinetMesh"]
+size = Vector3(1.2, 1.8, 0.6)
+
+[sub_resource type="BoxShape3D" id="ArmadioCabinetShape"]
+size = Vector3(1.2, 1.8, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="ArmadioCabinetMaterial"]
+albedo_color = Color(0.42, 0.28, 0.18, 1)
+roughness = 0.75
+
+[sub_resource type="BoxMesh" id="ArmadioSeamMesh"]
+size = Vector3(0.04, 1.6, 0.62)
+
+[sub_resource type="StandardMaterial3D" id="ArmadioSeamMaterial"]
+albedo_color = Color(0.2, 0.13, 0.08, 1)
+roughness = 0.6
+
+[node name="WorkbenchArmadio" type="StaticBody3D"]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("ArmadioCabinetShape")
+position = Vector3(0, 0.9, 0)
+
+[node name="Cabinet" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArmadioCabinetMesh")
+surface_material_override/0 = SubResource("ArmadioCabinetMaterial")
+position = Vector3(0, 0.9, 0)
+
+[node name="Seam" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArmadioSeamMesh")
+surface_material_override/0 = SubResource("ArmadioSeamMaterial")
+position = Vector3(0, 0.9, 0)
+
+[node name="HandleLeft" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArmadioSeamMesh")
+surface_material_override/0 = SubResource("ArmadioSeamMaterial")
+position = Vector3(-0.12, 0.9, 0.33)
+scale = Vector3(1.5, 0.06, 0.5)
+
+[node name="HandleRight" type="MeshInstance3D" parent="."]
+mesh = SubResource("ArmadioSeamMesh")
+surface_material_override/0 = SubResource("ArmadioSeamMaterial")
+position = Vector3(0.12, 0.9, 0.33)
+scale = Vector3(1.5, 0.06, 0.5)

@@ -60,6 +60,7 @@ const BENCH_SCENES := {
 	"armi_da_fuoco": preload("res://scenes/WorkbenchArmiDaFuoco.tscn"),
 	"armi_da_lancio": preload("res://scenes/WorkbenchArmiDaLancio.tscn"),
 	"armi_esplosive": preload("res://scenes/WorkbenchArmiEsplosive.tscn"),
+	"armadio": preload("res://scenes/WorkbenchArmadio.tscn"),
 	# Usato solo per l'anteprima "fantasma" durante lo spostamento: il banco
 	# della casa vero e proprio resta sempre il nodo $Workbench già presente
 	# in scena, mai duplicato.
@@ -70,12 +71,14 @@ const BENCH_COSTS := {
 	"armi_da_fuoco": {"money": 550, "material": "metallo", "amount": 40},
 	"armi_da_lancio": {"money": 900, "material": "metallo", "amount": 60},
 	"armi_esplosive": {"money": 1400, "material": "metallo", "amount": 90},
+	"armadio": {"money": 200, "material": "legno", "amount": 15},
 }
 const BENCH_LABELS := {
 	"armi_bianche": "Banco delle armi bianche",
 	"armi_da_fuoco": "Banco delle armi da fuoco",
 	"armi_da_lancio": "Banco delle armi da lancio",
 	"armi_esplosive": "Banco delle armi esplosive e speciali",
+	"armadio": "Armadio",
 	"casa": "Banco della casa",
 }
 const BENCH_UNLOCK_DESC := {
@@ -83,6 +86,7 @@ const BENCH_UNLOCK_DESC := {
 	"armi_da_fuoco": "Sblocca pistole, mitragliette, mitra, fucili a pompa e da tiratore",
 	"armi_da_lancio": "Sblocca armi bianche da lancio, granate esplosive e granate speciali",
 	"armi_esplosive": "Sblocca lanciagranate, lanciarazzi e armi speciali",
+	"armadio": "Personalizza il colore del tuo corpo e i colori della casa",
 }
 
 @onready var player: Node3D = $Player
@@ -101,6 +105,11 @@ const BENCH_UNLOCK_DESC := {
 @onready var throwable_money_label: Label = $HUD/ThrowableMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var explosive_menu: Control = $HUD/ExplosiveMenu
 @onready var explosive_money_label: Label = $HUD/ExplosiveMenu/Scroll/Box/MoneyMaterialsLabel
+@onready var wardrobe_menu: Control = $HUD/WardrobeMenu
+@onready var body_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/BodyColorPicker
+@onready var wall_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/WallRow/ColorPicker
+@onready var roof_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/RoofRow/ColorPicker
+@onready var door_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/DoorRow/ColorPicker
 @onready var workbench_scroll: ScrollContainer = $HUD/WorkbenchMenu/Scroll
 @onready var weapon_scroll: ScrollContainer = $HUD/WeaponMenu/Scroll
 @onready var firearm_scroll: ScrollContainer = $HUD/FirearmMenu/Scroll
@@ -153,6 +162,7 @@ func _ready() -> void:
 	firearm_menu.visible = false
 	throwable_menu.visible = false
 	explosive_menu.visible = false
+	wardrobe_menu.visible = false
 	placement_ui.visible = false
 	placement_highlight.visible = false
 	pause_panel.visible = false
@@ -174,6 +184,11 @@ func _ready() -> void:
 	$HUD/FirearmMenu/Scroll/Box/CloseButton.pressed.connect(_close_firearm_menu)
 	$HUD/ThrowableMenu/Scroll/Box/CloseButton.pressed.connect(_close_throwable_menu)
 	$HUD/ExplosiveMenu/Scroll/Box/CloseButton.pressed.connect(_close_explosive_menu)
+	$HUD/WardrobeMenu/Scroll/Box/CloseButton.pressed.connect(_close_wardrobe_menu)
+	body_color_picker.color_changed.connect(_on_body_color_changed)
+	wall_color_picker.color_changed.connect(_on_wall_color_changed)
+	roof_color_picker.color_changed.connect(_on_roof_color_changed)
+	door_color_picker.color_changed.connect(_on_door_color_changed)
 	$HUD/PlacementUI/ButtonRow/ConfirmButton.pressed.connect(_on_confirm_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/CancelButton.pressed.connect(_on_cancel_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/RotateButton.pressed.connect(_on_rotate_placement_pressed)
@@ -188,6 +203,7 @@ func _ready() -> void:
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_fuoco/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_da_fuoco"))
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_lancio/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_da_lancio"))
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_esplosive/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_esplosive"))
+	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armadio/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armadio"))
 
 	for tcat_id in THROWABLE_CATEGORY_BOXES.keys():
 		var tcat_btn: Button = get_node("HUD/ThrowableMenu/Scroll/Box/CategoryRow/Btn_%s" % tcat_id)
@@ -302,7 +318,7 @@ func _update_menu_layout() -> void:
 func _process(delta: float) -> void:
 	if stairs_cooldown_timer > 0.0:
 		stairs_cooldown_timer = maxf(0.0, stairs_cooldown_timer - delta)
-	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible:
+	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible:
 		interact_button.visible = false
 		move_button.visible = false
 		return
@@ -383,6 +399,8 @@ func _on_interact_pressed() -> void:
 		_open_throwable_menu()
 	elif _current_interact == "armi_esplosive":
 		_open_explosive_menu()
+	elif _current_interact == "armadio":
+		_open_wardrobe_menu()
 
 func _start_bench_move(type_id: String) -> void:
 	if type_id == "casa":
@@ -462,6 +480,7 @@ func _refresh_benches_tab() -> void:
 	_refresh_bench_row("armi_da_fuoco")
 	_refresh_bench_row("armi_da_lancio")
 	_refresh_bench_row("armi_esplosive")
+	_refresh_bench_row("armadio")
 
 func _refresh_bench_row(type_id: String) -> void:
 	var row := get_node("HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_%s" % type_id)
@@ -1449,6 +1468,35 @@ func _open_explosive_menu() -> void:
 
 func _close_explosive_menu() -> void:
 	explosive_menu.visible = false
+
+const DEFAULT_DOOR_COLOR := Color(0.08, 0.07, 0.06, 1)
+const DEFAULT_ROOF_COLOR := Color(0.4, 0.3, 0.25, 1)
+const DEFAULT_BODY_COLOR := Color(0.2, 0.45, 0.95, 1)
+
+func _open_wardrobe_menu() -> void:
+	wardrobe_menu.visible = true
+	interact_button.visible = false
+	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
+	body_color_picker.color = Color(CheckpointData.player_body_color) if CheckpointData.player_body_color != "" else DEFAULT_BODY_COLOR
+	wall_color_picker.color = Color(CheckpointData.house_wall_color) if CheckpointData.house_wall_color != "" else Color(tier.wall_color)
+	roof_color_picker.color = Color(CheckpointData.house_roof_color) if CheckpointData.house_roof_color != "" else Color(tier.get("roof_color", DEFAULT_ROOF_COLOR))
+	door_color_picker.color = Color(CheckpointData.house_door_color) if CheckpointData.house_door_color != "" else DEFAULT_DOOR_COLOR
+
+func _close_wardrobe_menu() -> void:
+	wardrobe_menu.visible = false
+
+func _on_body_color_changed(color: Color) -> void:
+	CheckpointData.player_body_color = color.to_html(false)
+	player.apply_body_color(color)
+
+func _on_wall_color_changed(color: Color) -> void:
+	CheckpointData.house_wall_color = color.to_html(false)
+
+func _on_roof_color_changed(color: Color) -> void:
+	CheckpointData.house_roof_color = color.to_html(false)
+
+func _on_door_color_changed(color: Color) -> void:
+	CheckpointData.house_door_color = color.to_html(false)
 
 func _show_explosive_category(cat_id: String) -> void:
 	current_explosive_category = cat_id

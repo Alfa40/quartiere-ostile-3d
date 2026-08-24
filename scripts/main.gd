@@ -192,7 +192,7 @@ func _apply_house_exterior() -> void:
 
 	var house := $HouseExterior
 	var wall_mat := StandardMaterial3D.new()
-	wall_mat.albedo_color = tier.wall_color
+	wall_mat.albedo_color = Color(CheckpointData.house_wall_color) if CheckpointData.house_wall_color != "" else tier.wall_color
 	wall_mat.roughness = 0.9
 
 	var tent := house.get_node("Tent") as MeshInstance3D
@@ -216,6 +216,8 @@ func _apply_house_exterior() -> void:
 	# sarebbe altrimenti condiviso tra le varie istanze di Main.tscn create
 	# a ogni cambio di scena, facendo persistere un'eventuale dissolvenza.
 	var door_own_mat: StandardMaterial3D = (door.get_surface_override_material(0) as StandardMaterial3D).duplicate()
+	if CheckpointData.house_door_color != "":
+		door_own_mat.albedo_color = Color(CheckpointData.house_door_color)
 	door.set_surface_override_material(0, door_own_mat)
 
 	var light := house.get_node("Light") as OmniLight3D
@@ -260,7 +262,7 @@ func _apply_house_exterior() -> void:
 		var roof_mesh := PrismMesh.new()
 		roof_mesh.size = Vector3(top_width * 1.08, roof_height, top_depth * 1.08)
 		var roof_mat := StandardMaterial3D.new()
-		roof_mat.albedo_color = tier.roof_color
+		roof_mat.albedo_color = Color(CheckpointData.house_roof_color) if CheckpointData.house_roof_color != "" else tier.roof_color
 		roof_mat.roughness = 0.85
 		var roof := MeshInstance3D.new()
 		roof.mesh = roof_mesh

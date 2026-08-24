@@ -490,6 +490,21 @@ custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 30
 text = "Compra"
 
+[node name="Row_armadio" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armadio"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armadio"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
 [node name="CasaTab" type="VBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
 visible = false
 theme_override_constants/separation = 22
@@ -9620,3 +9635,98 @@ text = "Riprendi"
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Esci alla partita: torna al menu principale"
+
+[node name="WardrobeMenu" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/WardrobeMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.92)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/WardrobeMenu"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/WardrobeMenu/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 26
+
+[node name="Title" type="Label" parent="HUD/WardrobeMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Armadio"
+
+[node name="BodySectionLabel" type="Label" parent="HUD/WardrobeMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.85, 0.87, 0.9, 1)
+text = "Colore del corpo"
+
+[node name="BodyColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 72)
+edit_alpha = false
+color = Color(0.2, 0.45, 0.95, 1)
+
+[node name="HSeparator" type="HSeparator" parent="HUD/WardrobeMenu/Scroll/Box"]
+
+[node name="HouseSectionLabel" type="Label" parent="HUD/WardrobeMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.85, 0.87, 0.9, 1)
+autowrap_mode = 2
+text = "Colore della casa (visibile da fuori, sul quartiere)"
+
+[node name="WallRow" type="HBoxContainer" parent="HUD/WardrobeMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="HUD/WardrobeMenu/Scroll/Box/WallRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+text = "Pareti"
+
+[node name="ColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box/WallRow"]
+custom_minimum_size = Vector2(160, 68)
+edit_alpha = false
+
+[node name="RoofRow" type="HBoxContainer" parent="HUD/WardrobeMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="HUD/WardrobeMenu/Scroll/Box/RoofRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+text = "Tetto"
+
+[node name="ColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box/RoofRow"]
+custom_minimum_size = Vector2(160, 68)
+edit_alpha = false
+
+[node name="DoorRow" type="HBoxContainer" parent="HUD/WardrobeMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="HUD/WardrobeMenu/Scroll/Box/DoorRow"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+text = "Porta"
+
+[node name="ColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box/DoorRow"]
+custom_minimum_size = Vector2(160, 68)
+edit_alpha = false
+
+[node name="CloseButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 35
+text = "Chiudi"
