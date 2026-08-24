@@ -18,6 +18,7 @@ const HELP_RANGE := 2.5
 # acceso quando l'arma da lancio è armata, spento quando è a riposo.
 const THROW_ARM_IDLE_MODULATE := Color(0.65, 0.65, 0.68, 1.0)
 const THROW_ARM_ACTIVE_MODULATE := Color(1.25, 1.05, 0.55, 1.0)
+const THROW_ARM_DIAMETER := 130.0
 
 @onready var hud = $HUD
 @onready var player = $Player
@@ -112,6 +113,21 @@ func _process(_delta: float) -> void:
 		_delayed_start_horde()
 	if throw_arm_button.visible:
 		throw_arm_button.modulate = THROW_ARM_ACTIVE_MODULATE if player.throw_armed else THROW_ARM_IDLE_MODULATE
+	_update_throw_arm_button_position()
+
+# Stessa logica di hud.gd: il tasto sta sopra il joystick di mira, centrato
+# sul suo asse x, invece che sovrapposto (come accadeva con una posizione
+# fissa che non teneva conto di dove il joystick di mira viene disegnato).
+func _update_throw_arm_button_position() -> void:
+	if not touch_controls.aim_enabled:
+		return
+	var aim_pos: Vector2 = touch_controls.aim_base_pos
+	var gap := 16.0
+	var joy_top: float = aim_pos.y - touch_controls.JOY_RADIUS
+	throw_arm_button.offset_left = aim_pos.x - THROW_ARM_DIAMETER * 0.5
+	throw_arm_button.offset_right = aim_pos.x + THROW_ARM_DIAMETER * 0.5
+	throw_arm_button.offset_bottom = joy_top - gap
+	throw_arm_button.offset_top = throw_arm_button.offset_bottom - THROW_ARM_DIAMETER
 
 func _delayed_start_horde() -> void:
 	await get_tree().create_timer(1.0).timeout
