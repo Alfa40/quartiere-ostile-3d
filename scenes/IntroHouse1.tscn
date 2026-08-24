@@ -157,7 +157,6 @@ shape = SubResource("DoorTriggerShape")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector3(0, 0, 2.5)
-rotation_degrees = Vector3(0, 180, 0)
 
 [node name="WorkbenchArmiDaFuoco" parent="." instance=ExtResource("3_bench")]
 position = Vector3(-2.2, 0, -2.2)
