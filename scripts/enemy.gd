@@ -55,6 +55,11 @@ var wander_timer := 0.0
 var stun_timer := 0.0
 var blind_timer := 0.0
 
+# -1 = usa il raggio di rilevamento normale (DETECT_RANGE/DETECT_RANGE_RANGED);
+# usato dal tutorial per far restare "addormentati" i nemici isolati finché
+# il player non gli arriva davvero vicino, invece di farli scattare da lontano.
+var detect_range_override := -1.0
+
 # Rilevamento "incastrato": senza un vero pathfinding, un nemico che punta
 # dritto verso il player può restare bloccato contro un ostacolo sottile
 # lungo il percorso diretto (es. il palo di un lampione) — se dopo
@@ -167,6 +172,8 @@ func _physics_process(delta: float) -> void:
 		var to_player_raw := player.global_position - global_position
 		to_player_raw.y = 0.0
 		var detect_range := DETECT_RANGE_RANGED if behavior == "ranged" else DETECT_RANGE
+		if detect_range_override > 0.0:
+			detect_range = detect_range_override
 		if to_player_raw.length() <= detect_range and blind_timer <= 0.0:
 			aware = true
 		else:

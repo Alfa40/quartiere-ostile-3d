@@ -14,6 +14,11 @@ const AlberoScene := preload("res://scenes/Albero.tscn")
 const HOUSE_MONEY_GRANT := 1150
 const HOUSE_MATERIAL_GRANT := 45
 
+# Molto più piccolo del raggio di rilevamento normale (20): i nemici isolati
+# del tutorial devono restare fermi finché il player non gli arriva davvero
+# vicino, non scattare da lontano come nel gioco vero.
+const ENEMY_DETECT_RANGE := 5.0
+
 @onready var hud = $HUD
 @onready var player = $Player
 @onready var door_trigger: Area3D = $DoorTrigger
@@ -58,6 +63,7 @@ func _start_step() -> void:
 			enemy.position = step.pos
 			add_child(enemy)
 			enemy.configure(1.0, 1.0, 1.0, 1.0, String(step.archetype))
+			enemy.detect_range_override = ENEMY_DETECT_RANGE
 			enemy.died.connect(_advance_step)
 		"walk_to_house":
 			_door_ready = true

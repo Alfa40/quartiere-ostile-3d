@@ -14,6 +14,11 @@ const HORDE_CENTER := Vector3(3, 0, -3)
 const HORDE_ARCHETYPES := ["balordo", "nervoso", "balordo", "nervoso"]
 const HELP_RANGE := 2.5
 
+# Molto più piccolo del raggio di rilevamento normale (20): i due aggressori
+# isolati dell'npc devono restare fermi finché il player non gli arriva
+# davvero vicino. L'orda che arriva dopo, invece, usa il raggio normale.
+const ATTACKER_DETECT_RANGE := 5.0
+
 # Stesso riscontro visivo del tasto "Lancia" del gioco vero (vedi hud.gd):
 # acceso quando l'arma da lancio è armata, spento quando è a riposo.
 const THROW_ARM_IDLE_MODULATE := Color(0.65, 0.65, 0.68, 1.0)
@@ -47,6 +52,7 @@ func _ready() -> void:
 		e.position = npc.position + Vector3(1.2 if i == 0 else -1.2, 0, 1.2)
 		add_child(e)
 		e.configure(1.0, 1.0, 1.0, 1.0, "balordo")
+		e.detect_range_override = ATTACKER_DETECT_RANGE
 		e.died.connect(_on_attacker_died)
 		_attackers_alive += 1
 
