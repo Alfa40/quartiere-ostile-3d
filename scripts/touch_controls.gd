@@ -35,6 +35,30 @@ var _joy_base_pos := Vector2.ZERO
 var _btn_pos := Vector2.ZERO
 var aim_base_pos := Vector2.ZERO
 
+# Modalità "personalizza posizione comandi": mentre attiva, il tocco/
+# trascinamento su tutto lo schermo sposta l'elemento più vicino al punto di
+# partenza invece di controllare movimento/mira/attacco. draggable_buttons
+# aggiunge altri Control trascinabili oltre ai tre disegnati qui (es. i tasti
+# "Lancia"/"Tipo lancio" di hud.gd), passati dalla scena ospite.
+var edit_mode := false
+var draggable_buttons := {}
+var _edit_drag_key := ""
+var _edit_touch_index := -2
+
+func begin_edit_mode(buttons: Dictionary) -> void:
+	draggable_buttons = buttons
+	edit_mode = true
+	_edit_drag_key = ""
+	_edit_touch_index = -2
+	queue_redraw()
+
+func end_edit_mode() -> void:
+	edit_mode = false
+	draggable_buttons = {}
+	_edit_drag_key = ""
+	_edit_touch_index = -2
+	_update_layout()
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -59,10 +83,26 @@ func _update_layout() -> void:
 	else:
 		aim_base_pos = Vector2.ZERO
 		_btn_pos = Vector2(vp.x - 170, vp.y - 220)
+	_apply_control_offset_overrides(vp)
 	queue_redraw()
 
+# Posizioni scelte liberamente dal player nelle Impostazioni (M5), salvate
+# come frazione 0..1 della viewport: sovrascrivono la posizione calcolata di
+# default sopra, solo per gli elementi che il player ha effettivamente
+# spostato (chiave assente = resta la posizione di default).
+func _apply_control_offset_overrides(vp: Vector2) -> void:
+	if GameSettings.control_offsets.has("move_joystick"):
+		_joy_base_pos = GameSettings.control_offsets["move_joystick"] * vp
+	if aim_enabled and GameSettings.control_offsets.has("aim_joystick"):
+		aim_base_pos = GameSettings.control_offsets["aim_joystick"] * vp
+	if GameSettings.control_offsets.has("attack_button"):
+		_btn_pos = GameSettings.control_offsets["attack_button"] * vp
+
 func _input(event: InputEvent) -> void:
-	if get_tree().paused or not input_enabled:
+	if (get_tree().paused and not edit_mode) or not input_enabled:
+		return
+	if edit_mode:
+		_handle_edit_mode_input(event)
 		return
 	if event is InputEventScreenTouch:
 		_handle_pointer_down_up(event.index, event.position, event.pressed)
@@ -72,6 +112,71 @@ func _input(event: InputEvent) -> void:
 		_handle_pointer_down_up(-1, event.position, event.pressed)
 	elif event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0:
 		_handle_pointer_drag(-1, event.position)
+
+func _handle_edit_mode_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		_handle_edit_pointer_down_up(event.index, event.position, event.pressed)
+	elif event is InputEventScreenDrag:
+		_handle_edit_pointer_drag(event.index, event.position)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		_handle_edit_pointer_down_up(-1, event.position, event.pressed)
+	elif event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0:
+		_handle_edit_pointer_drag(-1, event.position)
+
+# Posizione "centro" di ogni elemento trascinabile in questo momento: i tre
+# disegnati qui (joystick movimento/mira, tasto attacco) più gli eventuali
+# Button esterni passati a begin_edit_mode.
+func _edit_draggable_positions() -> Dictionary:
+	var positions := {"move_joystick": _joy_base_pos, "attack_button": _btn_pos}
+	if aim_enabled:
+		positions["aim_joystick"] = aim_base_pos
+	for key in draggable_buttons.keys():
+		var btn: Button = draggable_buttons[key]
+		if btn != null and is_instance_valid(btn) and btn.visible:
+			positions[key] = btn.position + btn.size * 0.5
+	return positions
+
+func _handle_edit_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
+	if pressed:
+		if _edit_touch_index != -2:
+			return
+		var positions := _edit_draggable_positions()
+		var best_key := ""
+		var best_dist := INF
+		for key in positions.keys():
+			var d: float = pos.distance_to(positions[key])
+			if d < best_dist:
+				best_dist = d
+				best_key = key
+		if best_key == "":
+			return
+		_edit_drag_key = best_key
+		_edit_touch_index = index
+		queue_redraw()
+	elif index == _edit_touch_index:
+		if _edit_drag_key != "":
+			var vp := get_viewport_rect().size
+			var final_pos: Vector2 = _edit_draggable_positions().get(_edit_drag_key, Vector2.ZERO)
+			GameSettings.set_control_offset(_edit_drag_key, Vector2(final_pos.x / vp.x, final_pos.y / vp.y))
+		_edit_drag_key = ""
+		_edit_touch_index = -2
+		queue_redraw()
+
+func _handle_edit_pointer_drag(index: int, pos: Vector2) -> void:
+	if index != _edit_touch_index or _edit_drag_key == "":
+		return
+	match _edit_drag_key:
+		"move_joystick":
+			_joy_base_pos = pos
+		"aim_joystick":
+			aim_base_pos = pos
+		"attack_button":
+			_btn_pos = pos
+		_:
+			if draggable_buttons.has(_edit_drag_key):
+				var btn: Button = draggable_buttons[_edit_drag_key]
+				btn.position = pos - btn.size * 0.5
+	queue_redraw()
 
 func _handle_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> void:
 	if pressed:
@@ -158,6 +263,13 @@ func _draw() -> void:
 		if _aim_touch_index != -2:
 			aim_knob_pos += aim_vector * MAX_DRAG
 		draw_circle(aim_knob_pos, JOY_KNOB_RADIUS, Color(0.4, 0.7, 1, 0.45))
+
+	if edit_mode:
+		var positions := _edit_draggable_positions()
+		for key in positions.keys():
+			var p: Vector2 = positions[key]
+			var highlight: Color = Color(1, 0.9, 0.2, 0.95) if key == _edit_drag_key else Color(1, 1, 1, 0.7)
+			draw_arc(p, 90.0, 0.0, TAU, 48, highlight, 5.0)
 
 func _draw_cooldown_pie(center: Vector2, radius: float, frac_remaining: float, color: Color) -> void:
 	# Spicchio scuro che copre la parte di ricarica ancora mancante, si

@@ -48,6 +48,11 @@ func set_control_offset(key: String, normalized_pos: Vector2) -> void:
 	_save()
 	changed.emit()
 
+func reset_control_offsets() -> void:
+	control_offsets = {}
+	_save()
+	changed.emit()
+
 func reset_defaults() -> void:
 	aim_max_drag = AIM_MAX_DRAG_DEFAULT
 	brightness = 1.0

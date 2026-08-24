@@ -2,7 +2,10 @@ extends Control
 
 signal closed
 signal controls_editor_requested
+signal controls_editor_finished
 
+@onready var dim: ColorRect = $Dim
+@onready var scroll: ScrollContainer = $Scroll
 @onready var aim_slider: HSlider = $Scroll/Box/AimSensitivitySlider
 @onready var aim_label: Label = $Scroll/Box/AimSensitivityLabel
 @onready var brightness_slider: HSlider = $Scroll/Box/BrightnessSlider
@@ -12,6 +15,9 @@ signal controls_editor_requested
 @onready var controls_editor_button: Button = $Scroll/Box/ControlsEditorButton
 @onready var reset_button: Button = $Scroll/Box/ResetButton
 @onready var close_button: Button = $Scroll/Box/CloseButton
+@onready var edit_bar: Control = $EditBar
+@onready var edit_finish_button: Button = $EditBar/Box/ButtonRow/FinishButton
+@onready var edit_reset_positions_button: Button = $EditBar/Box/ButtonRow/ResetPositionsButton
 
 func _ready() -> void:
 	visible = false
@@ -27,7 +33,10 @@ func _ready() -> void:
 	aim_slider.value_changed.connect(_on_aim_changed)
 	brightness_slider.value_changed.connect(_on_brightness_changed)
 	contrast_slider.value_changed.connect(_on_contrast_changed)
-	controls_editor_button.pressed.connect(func(): controls_editor_requested.emit())
+	controls_editor_button.pressed.connect(_on_controls_editor_pressed)
+	edit_finish_button.pressed.connect(_on_edit_finish_pressed)
+	edit_reset_positions_button.pressed.connect(_on_edit_reset_positions_pressed)
+	edit_bar.visible = false
 	reset_button.pressed.connect(_on_reset_pressed)
 	close_button.pressed.connect(_on_close_pressed)
 	_refresh()
@@ -35,8 +44,27 @@ func _ready() -> void:
 func set_controls_editor_button_visible(value: bool) -> void:
 	controls_editor_button.visible = value
 
+func _on_controls_editor_pressed() -> void:
+	dim.visible = false
+	scroll.visible = false
+	edit_bar.visible = true
+	controls_editor_requested.emit()
+
+func _on_edit_finish_pressed() -> void:
+	edit_bar.visible = false
+	dim.visible = true
+	scroll.visible = true
+	controls_editor_finished.emit()
+
+func _on_edit_reset_positions_pressed() -> void:
+	GameSettings.reset_control_offsets()
+	_on_edit_finish_pressed()
+
 func open() -> void:
 	visible = true
+	dim.visible = true
+	scroll.visible = true
+	edit_bar.visible = false
 	_refresh()
 
 func _refresh() -> void:

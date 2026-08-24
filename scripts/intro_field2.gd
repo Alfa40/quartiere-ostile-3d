@@ -127,6 +127,17 @@ func _process(_delta: float) -> void:
 func _update_throw_arm_button_position() -> void:
 	if not touch_controls.aim_enabled:
 		return
+	# Il tutorial non ha un modo proprio di entrare in modalità di modifica,
+	# ma se il player ha già spostato questo tasto dal gioco vero (stesso
+	# GameSettings condiviso) la posizione scelta si applica anche qui.
+	if GameSettings.control_offsets.has("throw_arm_button"):
+		var vp := get_viewport().get_visible_rect().size
+		var p: Vector2 = GameSettings.control_offsets["throw_arm_button"] * vp
+		throw_arm_button.offset_left = p.x - THROW_ARM_DIAMETER * 0.5
+		throw_arm_button.offset_right = p.x + THROW_ARM_DIAMETER * 0.5
+		throw_arm_button.offset_top = p.y - THROW_ARM_DIAMETER * 0.5
+		throw_arm_button.offset_bottom = p.y + THROW_ARM_DIAMETER * 0.5
+		return
 	var aim_pos: Vector2 = touch_controls.aim_base_pos
 	var gap := 16.0
 	var joy_top: float = aim_pos.y - touch_controls.JOY_RADIUS

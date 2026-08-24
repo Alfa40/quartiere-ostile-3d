@@ -94,6 +94,9 @@ func _ready() -> void:
 	gameover_panel.visible = false
 	$PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
 	$PausePanel/Scroll/Box/SettingsButton.pressed.connect(func(): $SettingsPanel.open())
+	$SettingsPanel.set_controls_editor_button_visible(true)
+	$SettingsPanel.controls_editor_requested.connect(_on_controls_editor_requested)
+	$SettingsPanel.controls_editor_finished.connect(_on_controls_editor_finished)
 	$PausePanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)
 	$PausePanel/Scroll/Box/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	$GameOverPanel/Scroll/Box/RestartButton.pressed.connect(_on_restart_pressed)
@@ -203,6 +206,11 @@ func _update_ammo_label() -> void:
 func _update_throw_button_positions() -> void:
 	if not touch_controls.aim_enabled:
 		return
+	# Mentre si personalizza la posizione dei comandi (M5), touch_controls
+	# gestisce direttamente il trascinamento di questi due tasti: non
+	# sovrascriverli ogni frame o il trascinamento non si vedrebbe mai.
+	if touch_controls.edit_mode:
+		return
 	var aim_pos: Vector2 = touch_controls.aim_base_pos
 	var gap := 16.0
 	var joy_top: float = aim_pos.y - touch_controls.JOY_RADIUS
@@ -232,6 +240,21 @@ func _update_throw_button_positions() -> void:
 	throw_toast_label.offset_right = aim_pos.x + 160.0
 	throw_toast_label.offset_bottom = mid_y - THROW_ARM_DIAMETER * 0.5 - gap
 	throw_toast_label.offset_top = throw_toast_label.offset_bottom - 50.0
+
+	# Posizioni scelte liberamente dal player (M5): sovrascrivono il calcolo
+	# di default sopra solo per il tasto effettivamente spostato.
+	_apply_control_offset_override(throw_type_button, "throw_type_button", THROW_TYPE_DIAMETER)
+	_apply_control_offset_override(throw_arm_button, "throw_arm_button", THROW_ARM_DIAMETER)
+
+func _apply_control_offset_override(btn: Button, key: String, diameter: float) -> void:
+	if not GameSettings.control_offsets.has(key):
+		return
+	var vp := get_viewport().get_visible_rect().size
+	var p: Vector2 = GameSettings.control_offsets[key] * vp
+	btn.offset_left = p.x - diameter * 0.5
+	btn.offset_right = p.x + diameter * 0.5
+	btn.offset_top = p.y - diameter * 0.5
+	btn.offset_bottom = p.y + diameter * 0.5
 
 func show_zone_complete_choice() -> void:
 	zone_complete_active = true
@@ -388,6 +411,12 @@ func show_game_over() -> void:
 
 func _on_resume_pressed() -> void:
 	set_paused(false)
+
+func _on_controls_editor_requested() -> void:
+	touch_controls.begin_edit_mode({"throw_type_button": throw_type_button, "throw_arm_button": throw_arm_button})
+
+func _on_controls_editor_finished() -> void:
+	touch_controls.end_edit_mode()
 
 func _on_restart_pressed() -> void:
 	if not DevMode.enabled:
