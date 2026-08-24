@@ -293,6 +293,7 @@ func _update_top_hud_layout() -> void:
 	UIScale.apply_orientation_scale(creator_password_panel, is_portrait)
 	UIScale.apply_orientation_scale(house_enter_button, is_portrait)
 	UIScale.apply_orientation_scale(zone_complete_panel, is_portrait)
+	UIScale.apply_orientation_scale($SettingsPanel, is_portrait)
 
 	var zc_box := ZONE_COMPLETE_BOX_PORTRAIT if is_portrait else ZONE_COMPLETE_BOX_LANDSCAPE
 	zone_complete_panel.offset_left = zc_box.position.x

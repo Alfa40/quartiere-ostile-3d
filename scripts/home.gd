@@ -306,7 +306,10 @@ func _update_menu_layout() -> void:
 	UIScale.apply_orientation_scale(firearm_menu, is_portrait)
 	UIScale.apply_orientation_scale(throwable_menu, is_portrait)
 	UIScale.apply_orientation_scale(explosive_menu, is_portrait)
+	UIScale.apply_orientation_scale(wardrobe_menu, is_portrait)
 	UIScale.apply_orientation_scale(placement_ui, is_portrait)
+	UIScale.apply_orientation_scale(pause_panel, is_portrait)
+	UIScale.apply_orientation_scale($HUD/SettingsPanel, is_portrait)
 
 	var left := MENU_SCROLL_LEFT_LANDSCAPE if is_landscape else MENU_SCROLL_LEFT_PORTRAIT
 	var right := MENU_SCROLL_RIGHT_LANDSCAPE if is_landscape else MENU_SCROLL_RIGHT_PORTRAIT
@@ -555,15 +558,39 @@ func _on_buy_house_tier_pressed() -> void:
 	player.global_position = _interior_spawn_position()
 	player.face_direction(Vector3(0, 0, -1))
 
+# Un tier più avanzato non ha sempre piani/griglie più grandi di quello
+# precedente (es. "casa" 4x5 -> "casa a due piani" 3x4 al piano terra): un
+# banco che era in una cella valida può finire fuori dai nuovi limiti,
+# causando un accesso fuori indice a col_values/row_values al prossimo
+# ricalcolo della geometria. Qui si riportano piano/cella a un valore
+# sicuro (0,0) per qualunque banco (compreso quello della casa, che non è
+# in placed_benches) che non rientri più nella nuova griglia.
 func _relocate_benches_for_shrunk_floors() -> void:
 	var new_floor_count := HouseTiers.floor_count(CheckpointData.house_tier)
 	for i in range(CheckpointData.placed_benches.size()):
 		var b: Dictionary = CheckpointData.placed_benches[i]
-		if int(b.get("floor", 0)) >= new_floor_count:
+		var floor_idx: int = int(b.get("floor", 0))
+		if floor_idx >= new_floor_count:
 			b["floor"] = new_floor_count - 1
 			b["col_idx"] = 0
 			b["row_idx"] = 0
 			CheckpointData.placed_benches[i] = b
+			continue
+		var orientation: String = String(b.get("orientation", "h"))
+		if not _fits_floor_grid(orientation, int(b.get("col_idx", 0)), int(b.get("row_idx", 0)), floor_idx):
+			b["col_idx"] = 0
+			b["row_idx"] = 0
+			CheckpointData.placed_benches[i] = b
+	if not _fits_floor_grid(CheckpointData.house_bench_orientation, CheckpointData.house_bench_col_idx, CheckpointData.house_bench_row_idx, 0):
+		CheckpointData.house_bench_col_idx = 0
+		CheckpointData.house_bench_row_idx = 0
+
+func _fits_floor_grid(orientation: String, col_idx: int, row_idx: int, floor_idx: int) -> bool:
+	var cols: int = HouseTiers.col_values(CheckpointData.house_tier, floor_idx).size()
+	var rows: int = HouseTiers.row_values(CheckpointData.house_tier, floor_idx).size()
+	var max_col: int = cols - (2 if orientation == "h" else 1)
+	var max_row: int = rows - (1 if orientation == "h" else 2)
+	return col_idx >= 0 and row_idx >= 0 and col_idx <= max_col and row_idx <= max_row
 
 func _interior_spawn_position() -> Vector3:
 	var depth: float = float(HouseTiers.floor_data(CheckpointData.house_tier, 0).rows) * 2.0
