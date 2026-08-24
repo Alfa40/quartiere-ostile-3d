@@ -39,7 +39,6 @@ const OBJECT_COUNT_MIN := 30
 const OBJECT_COUNT_MAX := 45
 
 const HOUSE_DOOR_POS := Vector3(0, 0, 17.5)
-const HOUSE_CLEAR_RADIUS := 10.0
 const HOUSE_INTERACT_RANGE := 2.5
 const HOUSE_EXIT_SPAWN_POS := Vector3(0, 0, 21)
 
@@ -872,6 +871,14 @@ func _regenerate_objects() -> void:
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 
 const OBJECT_SPAWN_POINT_CLEARANCE := 3.5
+# Margine minimo oltre l'ingombro reale della casa (_house_half_extents, già
+# calcolato per tier/torri comprese): basta a evitare che un oggetto finisca
+# incollato al muro (dove un nemico rischia di incastrarsi nell'angolo, es.
+# un lampione appoggiato al muro), senza allontanare gli oggetti dalla casa
+# più dello stretto necessario — la vera protezione contro l'incastro è la
+# via di fuga di enemy.gd basata sulle normali di collisione reali, non
+# questo margine, che resta solo un aiuto in più.
+const HOUSE_OBJECT_CLEAR_MARGIN := 1.0
 
 func _random_object_position() -> Vector3:
 	var pos := Vector3.ZERO
@@ -879,9 +886,18 @@ func _random_object_position() -> Vector3:
 		var x := randf_range(-ARENA_HALF, ARENA_HALF)
 		var z := randf_range(-ARENA_HALF, ARENA_HALF)
 		pos = Vector3(x, 0.0, z)
-		if pos.length() > OBJECT_CLEAR_RADIUS and pos.distance_to(HOUSE_DOOR_POS) > HOUSE_CLEAR_RADIUS and not _near_spawn_point(pos):
+		if pos.length() > OBJECT_CLEAR_RADIUS and not _near_house(pos) and not _near_spawn_point(pos):
 			return pos
 	return pos
+
+# A differenza del vecchio controllo (un raggio fisso dalla sola porta),
+# usa l'ingombro reale della casa nel tier attuale: corretto a qualunque
+# dimensione la casa cresca, torri comprese.
+func _near_house(pos: Vector3) -> bool:
+	var house_pos: Vector3 = $HouseExterior.global_position
+	var half_w: float = _house_half_extents.x + HOUSE_OBJECT_CLEAR_MARGIN
+	var half_d: float = _house_half_extents.z + HOUSE_OBJECT_CLEAR_MARGIN
+	return absf(pos.x - house_pos.x) < half_w and absf(pos.z - house_pos.z) < half_d
 
 # Evita che un oggetto compaia esattamente su un punto di spawn dei nemici:
 # altrimenti il nemico che nasce lì resta incastrato nell'oggetto.

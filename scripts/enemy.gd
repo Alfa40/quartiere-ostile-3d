@@ -73,6 +73,13 @@ var _stuck_check_timer := STUCK_CHECK_INTERVAL
 var _stuck_check_pos := Vector3.ZERO
 var _unstuck_timer := 0.0
 var _unstuck_dir := Vector3.ZERO
+# Quanti tentativi di sblocco consecutivi sono già falliti (si azzera appena
+# il nemico torna a muoversi normalmente): usato per allungare il tempo
+# concesso al tentativo successivo e per alternare la rotazione della
+# direzione di fuga, così un angolo stretto (es. tra il muro della casa e
+# il palo di un lampione) non fa ripetere in loop la stessa mossa già
+# fallita.
+var _stuck_attempts := 0
 
 # Spinta temporanea dalle armi bianche più pesanti (vedi
 # MeleeWeapons.KNOCKBACK_CATEGORIES): un vettore che si aggiunge alla
@@ -251,11 +258,40 @@ func _resolve_move_dir(desired_dir: Vector3, delta: float) -> Vector3:
 	var stuck: bool = desired_dir.length() > 0.01 and global_position.distance_to(_stuck_check_pos) < STUCK_MOVE_THRESHOLD
 	_stuck_check_pos = global_position
 	if not stuck:
+		_stuck_attempts = 0
 		return desired_dir
-	var side := Vector3(-desired_dir.z, 0, desired_dir.x)
-	_unstuck_dir = (side if randf() < 0.5 else -side).normalized()
-	_unstuck_timer = UNSTUCK_DURATION
+	_stuck_attempts += 1
+	_unstuck_dir = _compute_escape_dir(desired_dir)
+	# Più tentativi falliti di fila, più a lungo si insiste nella direzione
+	# scelta: dà il tempo di superare del tutto l'ostacolo invece di
+	# ritornare subito a sbattere nello stesso punto.
+	_unstuck_timer = UNSTUCK_DURATION * (1.0 + 0.5 * minf(float(_stuck_attempts - 1), 3.0))
 	return _unstuck_dir
+
+# Si allontana nella direzione delle normali di collisione reali dell'ultimo
+# move_and_slide() invece di indovinare alla cieca un lato perpendicolare al
+# bersaglio: molto più affidabile negli angoli stretti (es. tra il muro
+# della casa e il palo di un lampione), dove un'unica ipotesi casuale può
+# restare bloccata a sua volta. Se già un tentativo precedente non è
+# bastato, ruota leggermente la direzione (alternando verso) invece di
+# ripetere esattamente la stessa traiettoria appena fallita.
+func _compute_escape_dir(desired_dir: Vector3) -> Vector3:
+	var away := Vector3.ZERO
+	for i in range(get_slide_collision_count()):
+		var col := get_slide_collision(i)
+		var n: Vector3 = col.get_normal()
+		n.y = 0.0
+		away += n
+	if away.length() > 0.01:
+		away = away.normalized()
+		if _stuck_attempts > 1:
+			var angle := deg_to_rad(35.0 * float(_stuck_attempts - 1))
+			away = away.rotated(Vector3.UP, angle if _stuck_attempts % 2 == 0 else -angle)
+		return away
+	# Nessuna collisione registrata nell'ultimo frame (raro): ripiega sulla
+	# vecchia euristica, un passo laterale rispetto al bersaglio.
+	var side := Vector3(-desired_dir.z, 0, desired_dir.x)
+	return (side if randf() < 0.5 else -side).normalized()
 
 func _process_melee(delta: float) -> void:
 	var to_player := player.global_position - global_position
