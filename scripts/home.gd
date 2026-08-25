@@ -172,6 +172,12 @@ func _ready() -> void:
 	if not DevMode.enabled:
 		CheckpointData.save_continue()
 	_setup_hold_repeat_timer()
+	# Ripara anche una casa già salvata con banchi sovrapposti da un vecchio
+	# passaggio a un tier più stretto (bug corretto qui, ma i salvataggi
+	# precedenti l'avevano già subito): non solo quando si compra un tier,
+	# ma ogni volta che si entra in casa, così la situazione si sistema da
+	# sola al prossimo ingresso senza dover ricomprare nulla.
+	_relocate_benches_for_shrunk_floors()
 	_apply_house_tier_geometry()
 	_apply_screen_adjustment()
 	GameSettings.changed.connect(_apply_screen_adjustment)
@@ -678,31 +684,79 @@ func _on_buy_house_tier_pressed() -> void:
 	player.face_direction(Vector3(0, 0, -1))
 
 # Un tier più avanzato non ha sempre piani/griglie più grandi di quello
-# precedente (es. "casa" 4x5 -> "casa a due piani" 3x4 al piano terra): un
-# banco che era in una cella valida può finire fuori dai nuovi limiti,
-# causando un accesso fuori indice a col_values/row_values al prossimo
-# ricalcolo della geometria. Qui si riportano piano/cella a un valore
-# sicuro (0,0) per qualunque banco (compreso quello della casa, che non è
-# in placed_benches) che non rientri più nella nuova griglia.
+# precedente (es. "casa" 4x5 -> "casa a due piani" 3x4 al piano terra, o
+# "capanna" 3x3 -> "container" 2x6): un banco che era in una cella valida
+# può finire fuori dai nuovi limiti, causando un accesso fuori indice a
+# col_values/row_values al prossimo ricalcolo della geometria. Qui si
+# riporta ogni banco (compreso quello della casa, che non è in
+# placed_benches) alla prima cella libera della nuova griglia, invece che
+# sempre a (0,0): rimandarli tutti alla stessa cella li farebbe
+# compenetrare a vista, sembrando "incastrati nei muri".
 func _relocate_benches_for_shrunk_floors() -> void:
 	var new_floor_count := HouseTiers.floor_count(CheckpointData.house_tier)
+	var occupied_by_floor := {}
+
+	if not _fits_floor_grid(CheckpointData.house_bench_orientation, CheckpointData.house_bench_col_idx, CheckpointData.house_bench_row_idx, 0):
+		var slot = _find_free_cell_in_floor_grid(CheckpointData.house_bench_orientation, 0, {})
+		if slot == null:
+			slot = {"col_idx": 0, "row_idx": 0}
+		CheckpointData.house_bench_col_idx = slot.col_idx
+		CheckpointData.house_bench_row_idx = slot.row_idx
+	var occ0 := {}
+	for key in _footprint_cells(CheckpointData.house_bench_orientation, CheckpointData.house_bench_col_idx, CheckpointData.house_bench_row_idx):
+		occ0[key] = true
+	occupied_by_floor[0] = occ0
+
 	for i in range(CheckpointData.placed_benches.size()):
 		var b: Dictionary = CheckpointData.placed_benches[i]
 		var floor_idx: int = int(b.get("floor", 0))
 		if floor_idx >= new_floor_count:
-			b["floor"] = new_floor_count - 1
-			b["col_idx"] = 0
-			b["row_idx"] = 0
-			CheckpointData.placed_benches[i] = b
-			continue
+			floor_idx = new_floor_count - 1
+			b["floor"] = floor_idx
 		var orientation: String = String(b.get("orientation", "h"))
-		if not _fits_floor_grid(orientation, int(b.get("col_idx", 0)), int(b.get("row_idx", 0)), floor_idx):
-			b["col_idx"] = 0
-			b["row_idx"] = 0
+		var col_idx: int = int(b.get("col_idx", 0))
+		var row_idx: int = int(b.get("row_idx", 0))
+		var occ: Dictionary = occupied_by_floor.get(floor_idx, {})
+		var needs_new_slot: bool = not _fits_floor_grid(orientation, col_idx, row_idx, floor_idx)
+		if not needs_new_slot:
+			for key in _footprint_cells(orientation, col_idx, row_idx):
+				if occ.has(key):
+					needs_new_slot = true
+					break
+		if needs_new_slot:
+			var slot = _find_free_cell_in_floor_grid(orientation, floor_idx, occ)
+			if slot == null:
+				slot = {"col_idx": 0, "row_idx": 0}
+			col_idx = slot.col_idx
+			row_idx = slot.row_idx
+			b["col_idx"] = col_idx
+			b["row_idx"] = row_idx
 			CheckpointData.placed_benches[i] = b
-	if not _fits_floor_grid(CheckpointData.house_bench_orientation, CheckpointData.house_bench_col_idx, CheckpointData.house_bench_row_idx, 0):
-		CheckpointData.house_bench_col_idx = 0
-		CheckpointData.house_bench_row_idx = 0
+		for key in _footprint_cells(orientation, col_idx, row_idx):
+			occ[key] = true
+		occupied_by_floor[floor_idx] = occ
+
+# Come _first_free_slot(), ma per un piano/griglia/insieme di celle già
+# occupate espliciti invece del piano corrente: serve durante il
+# ridimensionamento della casa, dove la griglia della NUOVA tier va
+# ricalcolata per ogni banco prima ancora che _set_current_floor() la
+# aggiorni nei membri col_values/row_values.
+func _find_free_cell_in_floor_grid(orientation: String, floor_idx: int, occupied: Dictionary):
+	var cols: int = HouseTiers.col_values(CheckpointData.house_tier, floor_idx).size()
+	var rows: int = HouseTiers.row_values(CheckpointData.house_tier, floor_idx).size()
+	if _orientation_axis(orientation) == "h":
+		for r in range(rows):
+			for c in range(cols - 1):
+				var cells := _footprint_cells(orientation, c, r)
+				if not occupied.has(cells[0]) and not occupied.has(cells[1]):
+					return {"col_idx": c, "row_idx": r}
+	else:
+		for c in range(cols):
+			for r in range(rows - 1):
+				var cells := _footprint_cells(orientation, c, r)
+				if not occupied.has(cells[0]) and not occupied.has(cells[1]):
+					return {"col_idx": c, "row_idx": r}
+	return null
 
 # L'orientamento salvato ("h"/"v" più l'eventuale suffisso "180" per la
 # rotazione di 180°) codifica due cose distinte: l'asse dell'ingombro a due
