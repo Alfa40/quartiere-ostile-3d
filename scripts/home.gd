@@ -1364,6 +1364,16 @@ func _get_or_create_track_row(base: Node, tid: String) -> HBoxContainer:
 # Tocca il nome di un'arma per aprire/chiudere il suo "menu a tendina" con
 # statistiche e potenziamenti (nascosti di default, per non lasciare blocchi
 # di testo troppo lunghi nella lista). Ritoccando il nome si richiude.
+#
+# Un singolo tocco fisico sul touchscreen può generare sia un
+# InputEventScreenTouch che un InputEventMouseButton "emulato" per lo stesso
+# gesto: senza filtro, i due eventi facevano scattare il toggle due volte
+# (apre e richiude subito), lasciando il pannello bloccato aperto al tocco
+# successivo. Ignoriamo un secondo "pressed" sulla stessa arma se arriva a
+# ridosso del precedente.
+const WEAPON_TOGGLE_DEBOUNCE_MS := 250
+var _weapon_toggle_last_ms := {}
+
 func _on_weapon_name_gui_input(event: InputEvent, wid: String, refresh_callable: Callable) -> void:
 	var pressed := false
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -1372,6 +1382,11 @@ func _on_weapon_name_gui_input(event: InputEvent, wid: String, refresh_callable:
 		pressed = true
 	if not pressed:
 		return
+	var now := Time.get_ticks_msec()
+	var last: int = _weapon_toggle_last_ms.get(wid, -WEAPON_TOGGLE_DEBOUNCE_MS - 1)
+	if now - last < WEAPON_TOGGLE_DEBOUNCE_MS:
+		return
+	_weapon_toggle_last_ms[wid] = now
 	_expanded_weapons[wid] = not _expanded_weapons.get(wid, false)
 	refresh_callable.call()
 
