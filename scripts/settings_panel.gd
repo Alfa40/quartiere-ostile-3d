@@ -57,7 +57,8 @@ func _on_edit_finish_pressed() -> void:
 	controls_editor_finished.emit()
 
 func _on_edit_reset_positions_pressed() -> void:
-	GameSettings.reset_control_offsets()
+	var vp := get_viewport().get_visible_rect().size
+	GameSettings.reset_control_offsets(vp.x > vp.y)
 	_on_edit_finish_pressed()
 
 func open() -> void:

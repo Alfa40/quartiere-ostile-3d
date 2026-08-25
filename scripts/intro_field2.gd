@@ -130,9 +130,10 @@ func _update_throw_arm_button_position() -> void:
 	# Il tutorial non ha un modo proprio di entrare in modalità di modifica,
 	# ma se il player ha già spostato questo tasto dal gioco vero (stesso
 	# GameSettings condiviso) la posizione scelta si applica anche qui.
-	if GameSettings.control_offsets.has("throw_arm_button"):
-		var vp := get_viewport().get_visible_rect().size
-		var p: Vector2 = GameSettings.control_offsets["throw_arm_button"] * vp
+	var vp := get_viewport().get_visible_rect().size
+	var is_landscape := vp.x > vp.y
+	if GameSettings.has_control_offset("throw_arm_button", is_landscape):
+		var p: Vector2 = GameSettings.get_control_offset("throw_arm_button", is_landscape) * vp
 		throw_arm_button.offset_left = p.x - THROW_ARM_DIAMETER * 0.5
 		throw_arm_button.offset_right = p.x + THROW_ARM_DIAMETER * 0.5
 		throw_arm_button.offset_top = p.y - THROW_ARM_DIAMETER * 0.5

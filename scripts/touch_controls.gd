@@ -103,12 +103,13 @@ func _update_layout() -> void:
 # default sopra, solo per gli elementi che il player ha effettivamente
 # spostato (chiave assente = resta la posizione di default).
 func _apply_control_offset_overrides(vp: Vector2) -> void:
-	if GameSettings.control_offsets.has("move_joystick"):
-		_joy_base_pos = GameSettings.control_offsets["move_joystick"] * vp
-	if aim_enabled and GameSettings.control_offsets.has("aim_joystick"):
-		aim_base_pos = GameSettings.control_offsets["aim_joystick"] * vp
-	if GameSettings.control_offsets.has("attack_button"):
-		_btn_pos = GameSettings.control_offsets["attack_button"] * vp
+	var is_landscape := vp.x > vp.y
+	if GameSettings.has_control_offset("move_joystick", is_landscape):
+		_joy_base_pos = GameSettings.get_control_offset("move_joystick", is_landscape) * vp
+	if aim_enabled and GameSettings.has_control_offset("aim_joystick", is_landscape):
+		aim_base_pos = GameSettings.get_control_offset("aim_joystick", is_landscape) * vp
+	if GameSettings.has_control_offset("attack_button", is_landscape):
+		_btn_pos = GameSettings.get_control_offset("attack_button", is_landscape) * vp
 
 func _input(event: InputEvent) -> void:
 	if (get_tree().paused and not edit_mode) or not input_enabled:
@@ -169,7 +170,7 @@ func _handle_edit_pointer_down_up(index: int, pos: Vector2, pressed: bool) -> vo
 		if _edit_drag_key != "":
 			var vp := get_viewport_rect().size
 			var final_pos: Vector2 = _edit_draggable_positions().get(_edit_drag_key, Vector2.ZERO)
-			GameSettings.set_control_offset(_edit_drag_key, Vector2(final_pos.x / vp.x, final_pos.y / vp.y))
+			GameSettings.set_control_offset(_edit_drag_key, Vector2(final_pos.x / vp.x, final_pos.y / vp.y), vp.x > vp.y)
 		_edit_drag_key = ""
 		_edit_touch_index = -2
 		queue_redraw()

@@ -288,10 +288,11 @@ func _update_throw_button_positions() -> void:
 	_apply_control_offset_override(throw_arm_button, "throw_arm_button", THROW_ARM_DIAMETER)
 
 func _apply_control_offset_override(btn: Button, key: String, diameter: float) -> void:
-	if not GameSettings.control_offsets.has(key):
-		return
 	var vp := get_viewport().get_visible_rect().size
-	var p: Vector2 = GameSettings.control_offsets[key] * vp
+	var is_landscape := vp.x > vp.y
+	if not GameSettings.has_control_offset(key, is_landscape):
+		return
+	var p: Vector2 = GameSettings.get_control_offset(key, is_landscape) * vp
 	btn.offset_left = p.x - diameter * 0.5
 	btn.offset_right = p.x + diameter * 0.5
 	btn.offset_top = p.y - diameter * 0.5
