@@ -9674,10 +9674,11 @@ theme_override_font_sizes/font_size = 30
 theme_override_colors/font_color = Color(0.85, 0.87, 0.9, 1)
 text = "Colore del corpo"
 
-[node name="BodyColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box"]
+[node name="BodyColorButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 72)
-edit_alpha = false
-color = Color(0.2, 0.45, 0.95, 1)
+theme_override_font_sizes/font_size = 28
+self_modulate = Color(0.2, 0.45, 0.95, 1)
+text = "Cambia colore"
 
 [node name="HSeparator" type="HSeparator" parent="HUD/WardrobeMenu/Scroll/Box"]
 
@@ -9696,9 +9697,10 @@ theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 text = "Pareti"
 
-[node name="ColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box/WallRow"]
+[node name="ColorButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box/WallRow"]
 custom_minimum_size = Vector2(160, 68)
-edit_alpha = false
+theme_override_font_sizes/font_size = 24
+text = "Cambia"
 
 [node name="RoofRow" type="HBoxContainer" parent="HUD/WardrobeMenu/Scroll/Box"]
 theme_override_constants/separation = 20
@@ -9709,9 +9711,10 @@ theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 text = "Tetto"
 
-[node name="ColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box/RoofRow"]
+[node name="ColorButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box/RoofRow"]
 custom_minimum_size = Vector2(160, 68)
-edit_alpha = false
+theme_override_font_sizes/font_size = 24
+text = "Cambia"
 
 [node name="DoorRow" type="HBoxContainer" parent="HUD/WardrobeMenu/Scroll/Box"]
 theme_override_constants/separation = 20
@@ -9722,11 +9725,48 @@ theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 text = "Porta"
 
-[node name="ColorPicker" type="ColorPickerButton" parent="HUD/WardrobeMenu/Scroll/Box/DoorRow"]
+[node name="ColorButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box/DoorRow"]
 custom_minimum_size = Vector2(160, 68)
-edit_alpha = false
+theme_override_font_sizes/font_size = 24
+text = "Cambia"
 
 [node name="CloseButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 35
 text = "Chiudi"
+
+[node name="ColorPickScreen" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/ColorPickScreen"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.96)
+
+[node name="Box" type="VBoxContainer" parent="HUD/ColorPickScreen"]
+anchor_left = 0.03
+anchor_top = 0.03
+anchor_right = 0.97
+anchor_bottom = 0.97
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="HUD/ColorPickScreen/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Colore"
+
+[node name="Picker" type="ColorPicker" parent="HUD/ColorPickScreen/Box"]
+custom_minimum_size = Vector2(760, 560)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+edit_alpha = false
+
+[node name="ConfirmButton" type="Button" parent="HUD/ColorPickScreen/Box"]
+custom_minimum_size = Vector2(0, 90)
+theme_override_font_sizes/font_size = 35
+text = "Conferma"

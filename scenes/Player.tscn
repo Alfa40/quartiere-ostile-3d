@@ -77,7 +77,8 @@ position = Vector3(0, 0.9, 0)
 [node name="VisualRoot" type="Node3D" parent="FacingPivot"]
 
 [node name="CharacterModel" parent="FacingPivot/VisualRoot" instance=ExtResource("2_charmodel")]
-scale = Vector3(2.7, 2.7, 2.7)
+rotation_degrees = Vector3(0, 180, 0)
+scale = Vector3(1.8, 1.8, 1.8)
 
 [node name="AttackArea" type="Area3D" parent="FacingPivot"]
 position = Vector3(0, 1.0, -1.0)

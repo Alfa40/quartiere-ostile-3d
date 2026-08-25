@@ -105,10 +105,13 @@ const BENCH_UNLOCK_DESC := {
 @onready var explosive_menu: Control = $HUD/ExplosiveMenu
 @onready var explosive_money_label: Label = $HUD/ExplosiveMenu/Scroll/Box/MoneyMaterialsLabel
 @onready var wardrobe_menu: Control = $HUD/WardrobeMenu
-@onready var body_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/BodyColorPicker
-@onready var wall_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/WallRow/ColorPicker
-@onready var roof_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/RoofRow/ColorPicker
-@onready var door_color_picker: ColorPickerButton = $HUD/WardrobeMenu/Scroll/Box/DoorRow/ColorPicker
+@onready var body_color_button: Button = $HUD/WardrobeMenu/Scroll/Box/BodyColorButton
+@onready var wall_color_button: Button = $HUD/WardrobeMenu/Scroll/Box/WallRow/ColorButton
+@onready var roof_color_button: Button = $HUD/WardrobeMenu/Scroll/Box/RoofRow/ColorButton
+@onready var door_color_button: Button = $HUD/WardrobeMenu/Scroll/Box/DoorRow/ColorButton
+@onready var color_pick_screen: Control = $HUD/ColorPickScreen
+@onready var color_pick_title: Label = $HUD/ColorPickScreen/Box/Title
+@onready var color_picker_widget: ColorPicker = $HUD/ColorPickScreen/Box/Picker
 @onready var workbench_scroll: ScrollContainer = $HUD/WorkbenchMenu/Scroll
 @onready var weapon_scroll: ScrollContainer = $HUD/WeaponMenu/Scroll
 @onready var firearm_scroll: ScrollContainer = $HUD/FirearmMenu/Scroll
@@ -145,6 +148,9 @@ var _placed_bench_nodes := {}
 # HOLD_THRESHOLD_MS avvia lo spostamento. Vedi _try_claim_bench_touch().
 const HOLD_THRESHOLD_MS := 500
 var _bench_press_target := ""
+# Quale colore si sta scegliendo nella schermata a tutto schermo aperta
+# dall'Armadio: "body" | "wall" | "roof" | "door" (vuoto = nessuna).
+var _color_pick_target := ""
 var _bench_press_start_time := 0
 var _indicator_bob := 0.0
 # Stato "a tendina" dei menu delle armi: quali armi hanno statistiche e
@@ -170,6 +176,7 @@ func _ready() -> void:
 	throwable_menu.visible = false
 	explosive_menu.visible = false
 	wardrobe_menu.visible = false
+	color_pick_screen.visible = false
 	placement_ui.visible = false
 	placement_highlight.visible = false
 	pause_panel.visible = false
@@ -196,10 +203,11 @@ func _ready() -> void:
 	$HUD/ThrowableMenu/Scroll/Box/CloseButton.pressed.connect(_close_throwable_menu)
 	$HUD/ExplosiveMenu/Scroll/Box/CloseButton.pressed.connect(_close_explosive_menu)
 	$HUD/WardrobeMenu/Scroll/Box/CloseButton.pressed.connect(_close_wardrobe_menu)
-	body_color_picker.color_changed.connect(_on_body_color_changed)
-	wall_color_picker.color_changed.connect(_on_wall_color_changed)
-	roof_color_picker.color_changed.connect(_on_roof_color_changed)
-	door_color_picker.color_changed.connect(_on_door_color_changed)
+	body_color_button.pressed.connect(_open_color_pick.bind("body", "Colore del corpo"))
+	wall_color_button.pressed.connect(_open_color_pick.bind("wall", "Colore delle pareti"))
+	roof_color_button.pressed.connect(_open_color_pick.bind("roof", "Colore del tetto"))
+	door_color_button.pressed.connect(_open_color_pick.bind("door", "Colore della porta"))
+	$HUD/ColorPickScreen/Box/ConfirmButton.pressed.connect(_on_color_pick_confirmed)
 	$HUD/PlacementUI/ButtonRow/ConfirmButton.pressed.connect(_on_confirm_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/CancelButton.pressed.connect(_on_cancel_placement_pressed)
 	$HUD/PlacementUI/ButtonRow/RotateButton.pressed.connect(_on_rotate_placement_pressed)
@@ -312,6 +320,7 @@ func _update_menu_layout() -> void:
 	UIScale.apply_orientation_scale(throwable_menu, is_portrait)
 	UIScale.apply_orientation_scale(explosive_menu, is_portrait)
 	UIScale.apply_orientation_scale(wardrobe_menu, is_portrait)
+	UIScale.apply_orientation_scale(color_pick_screen, is_portrait)
 	UIScale.apply_orientation_scale(placement_ui, is_portrait)
 	UIScale.apply_orientation_scale(pause_panel, is_portrait)
 	UIScale.apply_orientation_scale($HUD/SettingsPanel, is_portrait)
@@ -332,7 +341,7 @@ func _update_menu_layout() -> void:
 func _process(delta: float) -> void:
 	if stairs_cooldown_timer > 0.0:
 		stairs_cooldown_timer = maxf(0.0, stairs_cooldown_timer - delta)
-	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible:
+	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible or color_pick_screen.visible:
 		_current_interact = ""
 		interact_indicator.visible = false
 		return
@@ -379,7 +388,7 @@ func _interact_target_node(type_id: String) -> Node3D:
 func _try_claim_bench_touch(pos: Vector2) -> bool:
 	if placing_bench_type != "" or _current_interact == "":
 		return false
-	if workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible:
+	if workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible or color_pick_screen.visible:
 		return false
 	var node := _interact_target_node(_current_interact)
 	if node == null:
@@ -493,10 +502,12 @@ func _start_bench_move(type_id: String) -> void:
 
 func _open_house_menu() -> void:
 	workbench_menu.visible = true
+	touch_controls.input_enabled = false
 	_refresh_workbench_menu()
 
 func _close_house_menu() -> void:
 	workbench_menu.visible = false
+	touch_controls.input_enabled = true
 
 func _show_upgrades_tab() -> void:
 	upgrades_tab.visible = true
@@ -1259,10 +1270,12 @@ func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: in
 
 func _open_weapon_menu() -> void:
 	weapon_menu.visible = true
+	touch_controls.input_enabled = false
 	_refresh_weapon_menu()
 
 func _close_weapon_menu() -> void:
 	weapon_menu.visible = false
+	touch_controls.input_enabled = true
 
 # Inserisce una linea sottile subito prima della riga di potenziamento tid,
 # per separare visivamente i vari potenziamenti tra loro (e dalla riga
@@ -1459,10 +1472,12 @@ func _on_upgrade_weapon_pressed(wid: String, tid: String) -> void:
 
 func _open_firearm_menu() -> void:
 	firearm_menu.visible = true
+	touch_controls.input_enabled = false
 	_refresh_firearm_menu()
 
 func _close_firearm_menu() -> void:
 	firearm_menu.visible = false
+	touch_controls.input_enabled = true
 
 func _show_firearm_category(cat_id: String) -> void:
 	current_firearm_category = cat_id
@@ -1564,10 +1579,12 @@ func _refresh_firearm_menu() -> void:
 
 func _open_explosive_menu() -> void:
 	explosive_menu.visible = true
+	touch_controls.input_enabled = false
 	_refresh_explosive_menu()
 
 func _close_explosive_menu() -> void:
 	explosive_menu.visible = false
+	touch_controls.input_enabled = true
 
 const DEFAULT_DOOR_COLOR := Color(0.08, 0.07, 0.06, 1)
 const DEFAULT_ROOF_COLOR := Color(0.4, 0.3, 0.25, 1)
@@ -1575,14 +1592,48 @@ const DEFAULT_BODY_COLOR := Color(0.2, 0.45, 0.95, 1)
 
 func _open_wardrobe_menu() -> void:
 	wardrobe_menu.visible = true
+	touch_controls.input_enabled = false
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
-	body_color_picker.color = Color(CheckpointData.player_body_color) if CheckpointData.player_body_color != "" else DEFAULT_BODY_COLOR
-	wall_color_picker.color = Color(CheckpointData.house_wall_color) if CheckpointData.house_wall_color != "" else Color(tier.wall_color)
-	roof_color_picker.color = Color(CheckpointData.house_roof_color) if CheckpointData.house_roof_color != "" else Color(tier.get("roof_color", DEFAULT_ROOF_COLOR))
-	door_color_picker.color = Color(CheckpointData.house_door_color) if CheckpointData.house_door_color != "" else DEFAULT_DOOR_COLOR
+	body_color_button.self_modulate = Color(CheckpointData.player_body_color) if CheckpointData.player_body_color != "" else DEFAULT_BODY_COLOR
+	wall_color_button.self_modulate = Color(CheckpointData.house_wall_color) if CheckpointData.house_wall_color != "" else Color(tier.wall_color)
+	roof_color_button.self_modulate = Color(CheckpointData.house_roof_color) if CheckpointData.house_roof_color != "" else Color(tier.get("roof_color", DEFAULT_ROOF_COLOR))
+	door_color_button.self_modulate = Color(CheckpointData.house_door_color) if CheckpointData.house_door_color != "" else DEFAULT_DOOR_COLOR
 
 func _close_wardrobe_menu() -> void:
 	wardrobe_menu.visible = false
+	touch_controls.input_enabled = true
+
+func _open_color_pick(target: String, title: String) -> void:
+	_color_pick_target = target
+	color_pick_title.text = title
+	var button: Button = body_color_button
+	if target == "wall":
+		button = wall_color_button
+	elif target == "roof":
+		button = roof_color_button
+	elif target == "door":
+		button = door_color_button
+	color_picker_widget.color = button.self_modulate
+	wardrobe_menu.visible = false
+	color_pick_screen.visible = true
+
+func _on_color_pick_confirmed() -> void:
+	var color := color_picker_widget.color
+	if _color_pick_target == "body":
+		body_color_button.self_modulate = color
+		_on_body_color_changed(color)
+	elif _color_pick_target == "wall":
+		wall_color_button.self_modulate = color
+		_on_wall_color_changed(color)
+	elif _color_pick_target == "roof":
+		roof_color_button.self_modulate = color
+		_on_roof_color_changed(color)
+	elif _color_pick_target == "door":
+		door_color_button.self_modulate = color
+		_on_door_color_changed(color)
+	_color_pick_target = ""
+	color_pick_screen.visible = false
+	wardrobe_menu.visible = true
 
 func _on_body_color_changed(color: Color) -> void:
 	CheckpointData.player_body_color = color.to_html(false)
@@ -1794,10 +1845,12 @@ func _on_upgrade_firearm_pressed(wid: String, tid: String) -> void:
 
 func _open_throwable_menu() -> void:
 	throwable_menu.visible = true
+	touch_controls.input_enabled = false
 	_refresh_throwable_menu()
 
 func _close_throwable_menu() -> void:
 	throwable_menu.visible = false
+	touch_controls.input_enabled = true
 
 func _show_throwable_category(cat_id: String) -> void:
 	current_throwable_category = cat_id
