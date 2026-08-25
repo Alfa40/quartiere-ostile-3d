@@ -704,11 +704,21 @@ func _relocate_benches_for_shrunk_floors() -> void:
 		CheckpointData.house_bench_col_idx = 0
 		CheckpointData.house_bench_row_idx = 0
 
+# L'orientamento salvato ("h"/"v" più l'eventuale suffisso "180" per la
+# rotazione di 180°) codifica due cose distinte: l'asse dell'ingombro a due
+# celle (invariato dalla rotazione: "h"/"h180" occupano sempre due colonne
+# sulla stessa riga, "v"/"v180" sempre due righe sulla stessa colonna) e la
+# direzione in cui l'oggetto guarda (0°/180° per "h", 90°/270° per "v").
+# Tutta la matematica di griglia/ingombro usa solo l'asse, mai il verso.
+func _orientation_axis(orientation: String) -> String:
+	return "h" if orientation.begins_with("h") else "v"
+
 func _fits_floor_grid(orientation: String, col_idx: int, row_idx: int, floor_idx: int) -> bool:
 	var cols: int = HouseTiers.col_values(CheckpointData.house_tier, floor_idx).size()
 	var rows: int = HouseTiers.row_values(CheckpointData.house_tier, floor_idx).size()
-	var max_col: int = cols - (2 if orientation == "h" else 1)
-	var max_row: int = rows - (1 if orientation == "h" else 2)
+	var is_h := _orientation_axis(orientation) == "h"
+	var max_col: int = cols - (2 if is_h else 1)
+	var max_row: int = rows - (1 if is_h else 2)
 	return col_idx >= 0 and row_idx >= 0 and col_idx <= max_col and row_idx <= max_row
 
 func _interior_spawn_position() -> Vector3:
@@ -822,7 +832,7 @@ func _build_floor0_geometry(dims: Dictionary, wall_color: Color) -> void:
 	var wb_orientation := CheckpointData.house_bench_orientation
 	var wb_col: int = CheckpointData.house_bench_col_idx
 	var wb_row: int = CheckpointData.house_bench_row_idx
-	if wb_orientation == "h":
+	if _orientation_axis(wb_orientation) == "h":
 		$Workbench.position = Vector3((cvals[wb_col] + cvals[wb_col + 1]) / 2.0, 0, rvals[wb_row])
 	else:
 		$Workbench.position = Vector3(cvals[wb_col], 0, (rvals[wb_row] + rvals[wb_row + 1]) / 2.0)
@@ -1071,7 +1081,7 @@ func _cell_key(col_idx: int, row_idx: int) -> String:
 	return "%d:%d" % [col_idx, row_idx]
 
 func _footprint_cells(orientation: String, col_idx: int, row_idx: int) -> Array:
-	if orientation == "h":
+	if _orientation_axis(orientation) == "h":
 		return [_cell_key(col_idx, row_idx), _cell_key(col_idx + 1, row_idx)]
 	return [_cell_key(col_idx, row_idx), _cell_key(col_idx, row_idx + 1)]
 
@@ -1114,14 +1124,26 @@ func _bench_world_position(orientation: String, col_idx: int, row_idx: int, floo
 	var cvals: Array = col_values if f == current_floor else HouseTiers.col_values(CheckpointData.house_tier, f)
 	var rvals: Array = row_values if f == current_floor else HouseTiers.row_values(CheckpointData.house_tier, f)
 	var y: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
-	if orientation == "h":
+	if _orientation_axis(orientation) == "h":
 		var x: float = (cvals[col_idx] + cvals[col_idx + 1]) / 2.0
 		return Vector3(x, y, rvals[row_idx])
 	var z: float = (rvals[row_idx] + rvals[row_idx + 1]) / 2.0
 	return Vector3(cvals[col_idx], y, z)
 
+# 4 direzioni, una ogni 90°: "h"=0°, "v"=90°, "h180"=180°, "v180"=270°. Il
+# giro di 180° non cambia l'asse dell'ingombro (vedi _orientation_axis), solo
+# il verso in cui l'oggetto guarda — così non resta bloccato a guardare
+# sempre la stessa parete o sempre quella opposta.
 func _bench_rotation_y(orientation: String) -> float:
-	return 90.0 if orientation == "v" else 0.0
+	match orientation:
+		"v":
+			return 90.0
+		"h180":
+			return 180.0
+		"v180":
+			return 270.0
+		_:
+			return 0.0
 
 func _nearest_index(values: Array, v: float) -> int:
 	var best_i := 0
@@ -1145,7 +1167,7 @@ func _nearest_pair_index(values: Array, v: float) -> int:
 	return best_i
 
 func _nearest_anchor(orientation: String, world_point: Vector3) -> Dictionary:
-	if orientation == "h":
+	if _orientation_axis(orientation) == "h":
 		return {"row_idx": _nearest_index(row_values, world_point.z), "col_idx": _nearest_pair_index(col_values, world_point.x)}
 	return {"row_idx": _nearest_pair_index(row_values, world_point.z), "col_idx": _nearest_index(col_values, world_point.x)}
 
@@ -1153,9 +1175,12 @@ func _apply_ghost_transform() -> void:
 	placing_ghost.position = _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
 	placing_ghost.rotation_degrees.y = _bench_rotation_y(placing_orientation)
 
+const ORIENTATION_CYCLE := ["h", "v", "h180", "v180"]
+
 func _on_rotate_placement_pressed() -> void:
 	var current_pos := _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
-	placing_orientation = "v" if placing_orientation == "h" else "h"
+	var idx := ORIENTATION_CYCLE.find(placing_orientation)
+	placing_orientation = ORIENTATION_CYCLE[(maxi(idx, 0) + 1) % ORIENTATION_CYCLE.size()]
 	var anchor := _nearest_anchor(placing_orientation, current_pos)
 	placing_row_idx = anchor.row_idx
 	placing_col_idx = anchor.col_idx
@@ -1179,7 +1204,7 @@ func _on_floor_down_pressed() -> void:
 # esattamente come prima, solo sul piano scelto.
 func _move_placement_to_floor(floor_idx: int) -> void:
 	_set_current_floor(floor_idx)
-	if placing_orientation == "h":
+	if _orientation_axis(placing_orientation) == "h":
 		placing_col_idx = clampi(placing_col_idx, 0, maxi(col_values.size() - 2, 0))
 		placing_row_idx = clampi(placing_row_idx, 0, maxi(row_values.size() - 1, 0))
 	else:
