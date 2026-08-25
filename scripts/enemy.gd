@@ -47,6 +47,12 @@ var arm_tween: Tween = null
 
 var erratic_state := "charge"
 var erratic_timer := 0.0
+# Verso di "sidestep" scelto una volta sola all'inizio dello stato (non ad
+# ogni frame, vedi _compute_move_dir): un tiro a sorte ripetuto ogni frame
+# farebbe rimbalzare la direzione desiderata da un lato all'altro decine di
+# volte al secondo, facendo vibrare il nemico invece di scartare di lato in
+# modo pulito.
+var erratic_sidestep_sign := 1.0
 
 var aware := false
 var wander_dir := Vector3.ZERO
@@ -71,6 +77,11 @@ const STUCK_MOVE_THRESHOLD := 0.35
 const UNSTUCK_DURATION := 0.7
 var _stuck_check_timer := STUCK_CHECK_INTERVAL
 var _stuck_check_pos := Vector3.ZERO
+# Direzione desiderata registrata insieme a _stuck_check_pos: serve a capire
+# se la mancata distanza percorsa è colpa di un vero ostacolo o solo del
+# comportamento "erratic" che inverte volontariamente rotta (inseguimento
+# poi ritirata) — vedi _resolve_move_dir().
+var _stuck_check_dir := Vector3.ZERO
 var _unstuck_timer := 0.0
 var _unstuck_dir := Vector3.ZERO
 # Quanti tentativi di sblocco consecutivi sono già falliti (si azzera appena
@@ -255,8 +266,22 @@ func _resolve_move_dir(desired_dir: Vector3, delta: float) -> Vector3:
 	if _stuck_check_timer > 0.0:
 		return desired_dir
 	_stuck_check_timer = STUCK_CHECK_INTERVAL
-	var stuck: bool = desired_dir.length() > 0.01 and global_position.distance_to(_stuck_check_pos) < STUCK_MOVE_THRESHOLD
+	# Se la direzione desiderata è cambiata parecchio rispetto all'ultima
+	# misurazione (es. il comportamento "erratic" che passa da inseguimento a
+	# ritirata), la distanza percorsa non è un buon indicatore di blocco: è
+	# la voluta inversione di rotta a "mangiarsi" lo spostamento netto, non
+	# un ostacolo. In quel caso si riparte a misurare da qui invece di
+	# scambiarlo per un incastro (che spingerebbe il nemico di lato a caso,
+	# sommandosi all'oscillazione già voluta e facendolo sembrare rotto).
+	var same_direction: bool = _stuck_check_dir.length() > 0.01 and desired_dir.length() > 0.01 and desired_dir.normalized().dot(_stuck_check_dir.normalized()) > 0.3
+	# Poco progresso da solo non basta: capita anche senza alcun ostacolo
+	# vero, es. orbitando proprio al limite del raggio d'attacco (si avvicina,
+	# entra in "attacco", decelera, esce di nuovo). Richiediamo anche una
+	# collisione reale nell'ultimo move_and_slide(), altrimenti non è un
+	# incastro da sbloccare con una fuga laterale forzata.
+	var stuck: bool = same_direction and get_slide_collision_count() > 0 and global_position.distance_to(_stuck_check_pos) < STUCK_MOVE_THRESHOLD
 	_stuck_check_pos = global_position
+	_stuck_check_dir = desired_dir
 	if not stuck:
 		_stuck_attempts = 0
 		return desired_dir
@@ -323,12 +348,14 @@ func _compute_move_dir(to_player: Vector3, delta: float) -> Vector3:
 		var states := ["charge", "charge", "sidestep", "retreat"]
 		erratic_state = states[randi() % states.size()]
 		erratic_timer = randf_range(0.6, 1.4)
+		if erratic_state == "sidestep":
+			erratic_sidestep_sign = 1.0 if randi() % 2 == 0 else -1.0
 
 	var to_player_dir := to_player.normalized()
 	match erratic_state:
 		"sidestep":
 			var side := Vector3(-to_player_dir.z, 0, to_player_dir.x)
-			return side if (randi() % 2 == 0) else -side
+			return side * erratic_sidestep_sign
 		"retreat":
 			return -to_player_dir
 		_:
