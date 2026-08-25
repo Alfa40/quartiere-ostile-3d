@@ -25,15 +25,8 @@ signal died
 
 const STATUS_BAR_WIDTH := 0.7
 
-@onready var visual_root: Node3D = $FacingPivot/VisualRoot
-@onready var right_shoulder: Node3D = $FacingPivot/VisualRoot/RightShoulder
-@onready var right_elbow: Node3D = $FacingPivot/VisualRoot/RightShoulder/RightElbow
-@onready var left_shoulder: Node3D = $FacingPivot/VisualRoot/LeftShoulder
-@onready var left_elbow: Node3D = $FacingPivot/VisualRoot/LeftShoulder/LeftElbow
-@onready var left_hip: Node3D = $FacingPivot/VisualRoot/LeftHip
-@onready var left_knee: Node3D = $FacingPivot/VisualRoot/LeftHip/LeftKnee
-@onready var right_hip: Node3D = $FacingPivot/VisualRoot/RightHip
-@onready var right_knee: Node3D = $FacingPivot/VisualRoot/RightHip/RightKnee
+@onready var anim_player: AnimationPlayer = $FacingPivot/VisualRoot/CharacterModel/AnimationPlayer
+@onready var body_mesh: MeshInstance3D = get_node("FacingPivot/VisualRoot/CharacterModel/character-male-a/Skeleton3D/body-mesh")
 
 var max_hp := 100.0
 var hp := 100.0
@@ -53,8 +46,6 @@ var facing := Vector3(0, 0, -1)
 var attack_cooldown_timer := 0.0
 var flash_timer := 0.0
 var dead := false
-var walk_phase := 0.0
-var arm_tween: Tween = null
 
 const AIM_CONE_DEGREES := 32.0
 const FIREARM_FLASH_TIME := 0.08
@@ -261,23 +252,15 @@ func _ready() -> void:
 	if CheckpointData.player_body_color != "":
 		apply_body_color(Color(CheckpointData.player_body_color))
 
-# Un solo Material nuovo condiviso da tutti i mesh del corpo (tranne
-# testa/faccia): stesso pattern di enemy.gd:_apply_color/_tint_recursive,
-# così ritingere non tocca il materiale originale condiviso nella .tscn.
+# Solo il mesh del corpo (non della testa, che condivide la stessa texture
+# "colormap" del modello Kenney): un duplicato del materiale originale così
+# la texture resta intatta e il colore scelto si moltiplica sopra, invece
+# di sostituirla con un colore piatto.
 func apply_body_color(color: Color) -> void:
-	var mat := StandardMaterial3D.new()
+	var base_mat: StandardMaterial3D = body_mesh.mesh.surface_get_material(0)
+	var mat: StandardMaterial3D = base_mat.duplicate()
 	mat.albedo_color = color
-	mat.metallic = 0.1
-	mat.roughness = 0.4
-	_tint_body_recursive(visual_root, mat)
-
-func _tint_body_recursive(node: Node, mat: Material) -> void:
-	if node.name == "Head" or node.name == "Face":
-		return
-	if node is MeshInstance3D:
-		node.set_surface_override_material(0, mat)
-	for c in node.get_children():
-		_tint_body_recursive(c, mat)
+	body_mesh.set_surface_override_material(0, mat)
 
 func face_direction(dir: Vector3) -> void:
 	if dir.length() < 0.0001:
@@ -616,37 +599,20 @@ func _finish_reload() -> void:
 	if main != null and main.has_method("consume_firearm_reserve_ammo"):
 		main.consume_firearm_reserve_ammo(firearm_id, loaded)
 
-func _play_attack_swing() -> void:
-	if arm_tween != null and arm_tween.is_valid():
-		arm_tween.kill()
-	right_shoulder.rotation.x = 0.0
-	right_elbow.rotation.x = 0.0
-	arm_tween = create_tween()
-	arm_tween.tween_property(right_shoulder, "rotation:x", deg_to_rad(110.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	arm_tween.parallel().tween_property(right_elbow, "rotation:x", deg_to_rad(65.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	arm_tween.tween_property(right_shoulder, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	arm_tween.parallel().tween_property(right_elbow, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+const ATTACK_ANIMS := ["attack-melee-left", "attack-melee-right"]
 
-func _animate_body(delta: float) -> void:
+func _play_attack_swing() -> void:
+	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()])
+
+# Un solo AnimationPlayer guida tutto lo scheletro: mentre un'animazione di
+# attacco è in corso non va interrotta per tornare a cammino/riposo, che
+# riprende da soli non appena l'attacco finisce (le clip di attacco non
+# sono in loop, vedi ATTACK_ANIMS).
+func _animate_body(_delta: float) -> void:
+	if anim_player.current_animation in ATTACK_ANIMS and anim_player.is_playing():
+		return
 	var horiz := Vector2(velocity.x, velocity.z).length()
-	if horiz > 0.3:
-		walk_phase += delta * horiz * 3.0
-		var swing := sin(walk_phase) * 0.45
-		left_hip.rotation.x = swing
-		right_hip.rotation.x = -swing
-		left_shoulder.rotation.x = -swing * 0.6
-		left_knee.rotation.x = -maxf(0.0, cos(walk_phase)) * 0.9
-		right_knee.rotation.x = -maxf(0.0, -cos(walk_phase)) * 0.9
-		left_elbow.rotation.x = -maxf(0.0, -cos(walk_phase)) * 0.4
-		visual_root.position.y = absf(sin(walk_phase)) * 0.05
-	else:
-		left_hip.rotation.x = lerp(left_hip.rotation.x, 0.0, delta * 8.0)
-		right_hip.rotation.x = lerp(right_hip.rotation.x, 0.0, delta * 8.0)
-		left_shoulder.rotation.x = lerp(left_shoulder.rotation.x, 0.0, delta * 8.0)
-		left_knee.rotation.x = lerp(left_knee.rotation.x, 0.0, delta * 8.0)
-		right_knee.rotation.x = lerp(right_knee.rotation.x, 0.0, delta * 8.0)
-		left_elbow.rotation.x = lerp(left_elbow.rotation.x, 0.0, delta * 8.0)
-		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
+	anim_player.play("walk" if horiz > 0.3 else "idle")
 
 func _update_status_bars() -> void:
 	if touch != null:
