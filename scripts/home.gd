@@ -158,12 +158,20 @@ var _indicator_bob := 0.0
 # testo troppo lunghi. Chiave = id arma, per tutti e 4 i banchi insieme.
 var _expanded_weapons := {}
 
+# Tasti "Compra"/"Potenzia" tenuti premuti: ripetono l'azione da soli finché
+# non si toglie il dito, invece di richiedere un tocco per ogni acquisto.
+const HOLD_REPEAT_INITIAL_DELAY := 0.4
+const HOLD_REPEAT_INTERVAL := 0.12
+var _hold_repeat_timer: Timer
+var _hold_repeat_action := Callable()
+
 func _ready() -> void:
 	# Entrare in casa salva subito la partita (separato dal checkpoint ogni
 	# 50 zone): così si può chiudere il gioco e riprendere da casa anche a
 	# giorni di distanza, ricominciando dalla zona non ancora completata.
 	if not DevMode.enabled:
 		CheckpointData.save_continue()
+	_setup_hold_repeat_timer()
 	_apply_house_tier_geometry()
 	_apply_screen_adjustment()
 	GameSettings.changed.connect(_apply_screen_adjustment)
@@ -217,7 +225,7 @@ func _ready() -> void:
 
 	for id in PlayerUpgrades.ORDER:
 		var btn: Button = get_node("HUD/WorkbenchMenu/Scroll/Box/UpgradesTab/Row_%s/BuyButton" % id)
-		btn.pressed.connect(_on_buy_upgrade_pressed.bind(id))
+		_wire_hold_repeat(btn, _on_buy_upgrade_pressed.bind(id))
 
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_bianche/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_bianche"))
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_fuoco/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_da_fuoco"))
@@ -236,12 +244,12 @@ func _ready() -> void:
 			tname_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			tname_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_throwable_menu))
 			var tammo_btn: Button = tbase.get_node("AmmoRow/BuyButton")
-			tammo_btn.pressed.connect(_on_buy_throwable_ammo_pressed.bind(wid))
+			_wire_hold_repeat(tammo_btn, _on_buy_throwable_ammo_pressed.bind(wid))
 			for tid in Throwables.UPGRADE_TRACK_ORDER:
 				var ttrack_row := tbase.get_node("Track_%s" % tid)
 				_insert_track_separator(tbase, tid, ttrack_row)
 				var tt_btn: Button = ttrack_row.get_node("BuyButton")
-				tt_btn.pressed.connect(_on_upgrade_throwable_pressed.bind(wid, tid))
+				_wire_hold_repeat(tt_btn, _on_upgrade_throwable_pressed.bind(wid, tid))
 
 	for fcat_id in FIREARM_CATEGORY_BOXES.keys():
 		var fcat_btn: Button = get_node("HUD/FirearmMenu/Scroll/Box/CategoryRow/Btn_%s" % fcat_id)
@@ -254,12 +262,12 @@ func _ready() -> void:
 			fname_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			fname_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_firearm_menu))
 			var fammo_btn: Button = fbase.get_node("AmmoRow/BuyButton")
-			fammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
+			_wire_hold_repeat(fammo_btn, _on_buy_ammo_pressed.bind(wid))
 			for tid in Firearms.UPGRADE_TRACK_ORDER:
 				var ftrack_row := fbase.get_node("Track_%s" % tid)
 				_insert_track_separator(fbase, tid, ftrack_row)
 				var ft_btn: Button = ftrack_row.get_node("BuyButton")
-				ft_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
+				_wire_hold_repeat(ft_btn, _on_upgrade_firearm_pressed.bind(wid, tid))
 
 	for ecat_id in EXPLOSIVE_CATEGORY_BOXES.keys():
 		var ecat_btn: Button = get_node("HUD/ExplosiveMenu/Scroll/Box/CategoryRow/Btn_%s" % ecat_id)
@@ -272,12 +280,12 @@ func _ready() -> void:
 			ename_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			ename_label.gui_input.connect(_on_weapon_name_gui_input.bind(wid, _refresh_explosive_menu))
 			var eammo_btn: Button = ebase.get_node("AmmoRow/BuyButton")
-			eammo_btn.pressed.connect(_on_buy_ammo_pressed.bind(wid))
+			_wire_hold_repeat(eammo_btn, _on_buy_ammo_pressed.bind(wid))
 			for tid in Firearms.UPGRADE_TRACK_ORDER:
 				var etrack_row := ebase.get_node("Track_%s" % tid)
 				_insert_track_separator(ebase, tid, etrack_row)
 				var et_btn: Button = etrack_row.get_node("BuyButton")
-				et_btn.pressed.connect(_on_upgrade_firearm_pressed.bind(wid, tid))
+				_wire_hold_repeat(et_btn, _on_upgrade_firearm_pressed.bind(wid, tid))
 
 	for cat_id in MeleeWeapons.CATEGORY_ORDER:
 		var cat_btn: Button = get_node("HUD/WeaponMenu/Scroll/Box/CategoryRow/Btn_%s" % cat_id)
@@ -293,7 +301,7 @@ func _ready() -> void:
 				var track_row := _get_or_create_track_row(base, tid)
 				_insert_track_separator(base, tid, track_row)
 				var t_btn: Button = track_row.get_node("BuyButton")
-				t_btn.pressed.connect(_on_upgrade_weapon_pressed.bind(wid, tid))
+				_wire_hold_repeat(t_btn, _on_upgrade_weapon_pressed.bind(wid, tid))
 
 	$DoorTrigger.body_entered.connect(_on_door_entered)
 
@@ -309,6 +317,39 @@ func _ready() -> void:
 
 	get_viewport().size_changed.connect(_update_menu_layout)
 	_update_menu_layout()
+
+func _setup_hold_repeat_timer() -> void:
+	_hold_repeat_timer = Timer.new()
+	_hold_repeat_timer.one_shot = false
+	_hold_repeat_timer.timeout.connect(_on_hold_repeat_tick)
+	add_child(_hold_repeat_timer)
+
+# Un tasto "Compra"/"Potenzia" tenuto premuto ripete l'azione da solo finché
+# non si toglie il dito, invece di richiedere un tocco per ogni acquisto.
+# L'azione stessa (es. _on_buy_upgrade_pressed) già controlla soldi/materiali/
+# livello massimo e non fa nulla se non è più possibile procedere, quindi è
+# sicuro continuare a chiamarla anche oltre il limite.
+func _wire_hold_repeat(btn: BaseButton, action: Callable) -> void:
+	btn.button_down.connect(_start_hold_repeat.bind(action))
+	btn.button_up.connect(_stop_hold_repeat)
+
+func _start_hold_repeat(action: Callable) -> void:
+	_hold_repeat_action = action
+	if action.is_valid():
+		action.call()
+	_hold_repeat_timer.wait_time = HOLD_REPEAT_INITIAL_DELAY
+	_hold_repeat_timer.start()
+
+func _on_hold_repeat_tick() -> void:
+	if not is_equal_approx(_hold_repeat_timer.wait_time, HOLD_REPEAT_INTERVAL):
+		_hold_repeat_timer.wait_time = HOLD_REPEAT_INTERVAL
+		_hold_repeat_timer.start()
+	if _hold_repeat_action.is_valid():
+		_hold_repeat_action.call()
+
+func _stop_hold_repeat() -> void:
+	_hold_repeat_timer.stop()
+	_hold_repeat_action = Callable()
 
 func _update_menu_layout() -> void:
 	var vp := get_viewport().get_visible_rect().size

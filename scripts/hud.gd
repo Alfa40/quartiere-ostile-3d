@@ -40,6 +40,14 @@ var zone_complete_time_left := 0.0
 const ZONE_COMPLETE_WAIT := 30.0
 var dev_target_zone := 1
 
+# Tasti +/- della zona in modalità creator tenuti premuti: ripetono da soli
+# finché non si toglie il dito, stesso schema dei tasti "Compra"/"Potenzia"
+# in home.gd.
+const HOLD_REPEAT_INITIAL_DELAY := 0.4
+const HOLD_REPEAT_INTERVAL := 0.12
+var _hold_repeat_timer: Timer
+var _hold_repeat_action := Callable()
+
 const HEALTH_BAR_HEIGHT_PORTRAIT := 54.0
 const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
 const HEALTH_BAR_LEFT_PORTRAIT := 24.0
@@ -90,6 +98,7 @@ var _throw_toast_tween: Tween = null
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	main = get_parent()
+	_setup_hold_repeat_timer()
 	pause_panel.visible = false
 	gameover_panel.visible = false
 	$PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
@@ -121,10 +130,41 @@ func _ready() -> void:
 	creator_button.pressed.connect(_on_creator_button_pressed)
 	_refresh_creator_button()
 
-	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/MinusButton.pressed.connect(_on_dev_zone_step.bind(-1))
-	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/PlusButton.pressed.connect(_on_dev_zone_step.bind(1))
+	_wire_hold_repeat($PausePanel/Scroll/Box/DevToolsBox/ZoneRow/MinusButton, _on_dev_zone_step.bind(-1))
+	_wire_hold_repeat($PausePanel/Scroll/Box/DevToolsBox/ZoneRow/PlusButton, _on_dev_zone_step.bind(1))
 	$PausePanel/Scroll/Box/DevToolsBox/ZoneRow/GoButton.pressed.connect(_on_dev_zone_go_pressed)
 	$PausePanel/Scroll/Box/DevToolsBox/ClearZoneButton.pressed.connect(_on_dev_clear_zone_pressed)
+
+func _setup_hold_repeat_timer() -> void:
+	_hold_repeat_timer = Timer.new()
+	_hold_repeat_timer.one_shot = false
+	_hold_repeat_timer.timeout.connect(_on_hold_repeat_tick)
+	add_child(_hold_repeat_timer)
+
+# Un tasto tenuto premuto (es. +/- zona in modalità creator) ripete l'azione
+# da solo finché non si toglie il dito, invece di richiedere un tocco per
+# ogni passo.
+func _wire_hold_repeat(btn: BaseButton, action: Callable) -> void:
+	btn.button_down.connect(_start_hold_repeat.bind(action))
+	btn.button_up.connect(_stop_hold_repeat)
+
+func _start_hold_repeat(action: Callable) -> void:
+	_hold_repeat_action = action
+	if action.is_valid():
+		action.call()
+	_hold_repeat_timer.wait_time = HOLD_REPEAT_INITIAL_DELAY
+	_hold_repeat_timer.start()
+
+func _on_hold_repeat_tick() -> void:
+	if not is_equal_approx(_hold_repeat_timer.wait_time, HOLD_REPEAT_INTERVAL):
+		_hold_repeat_timer.wait_time = HOLD_REPEAT_INTERVAL
+		_hold_repeat_timer.start()
+	if _hold_repeat_action.is_valid():
+		_hold_repeat_action.call()
+
+func _stop_hold_repeat() -> void:
+	_hold_repeat_timer.stop()
+	_hold_repeat_action = Callable()
 
 func set_house_button_visible(value: bool) -> void:
 	if not pause_panel.visible and not gameover_panel.visible:
