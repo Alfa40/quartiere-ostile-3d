@@ -188,8 +188,9 @@ func _ready() -> void:
 	touch_controls.external_release = _on_bench_touch_released
 	pause_button.pressed.connect(toggle_pause)
 	$HUD/PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
-	$HUD/PausePanel/Scroll/Box/SettingsButton.pressed.connect(func(): $HUD/SettingsPanel.open())
+	$HUD/PausePanel/Scroll/Box/SettingsButton.pressed.connect(_on_settings_pressed)
 	$HUD/SettingsPanel.set_controls_editor_button_visible(true)
+	$HUD/SettingsPanel.closed.connect(_on_settings_closed)
 	$HUD/SettingsPanel.controls_editor_requested.connect(_on_controls_editor_requested)
 	$HUD/SettingsPanel.controls_editor_finished.connect(_on_controls_editor_finished)
 	$HUD/PausePanel/Scroll/Box/MainMenuButton.pressed.connect(_on_pause_main_menu_pressed)
@@ -460,15 +461,18 @@ func _on_pause_main_menu_pressed() -> void:
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
-func _on_controls_editor_requested() -> void:
-	# Il pannello pausa (col suo sfondo scuro) resterebbe altrimenti visibile
-	# sotto le Impostazioni, coprendo la vista sui comandi da spostare.
+func _on_settings_pressed() -> void:
 	pause_panel.visible = false
+	$HUD/SettingsPanel.open()
+
+func _on_settings_closed() -> void:
+	pause_panel.visible = true
+
+func _on_controls_editor_requested() -> void:
 	touch_controls.begin_edit_mode({})
 
 func _on_controls_editor_finished() -> void:
 	touch_controls.end_edit_mode()
-	pause_panel.visible = true
 
 func _on_interact_pressed() -> void:
 	if _current_interact == "casa":
