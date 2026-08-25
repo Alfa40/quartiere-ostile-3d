@@ -127,27 +127,27 @@ const WEAPONS := {
 	"bastone_appuntito": {
 		"label": "Bastone appuntito", "category": "lance", "tier": 1,
 		"price_money": 85, "price_material": "legno", "price_amount": 4,
-		"damage": 18.0, "cooldown": 0.40, "reach_mult": 1.40, "draw_time": 0.15, "knockback": 2.5,
+		"damage": 18.0, "cooldown": 0.50, "reach_mult": 1.40, "draw_time": 0.15, "knockback": 2.5,
 	},
 	"forca_giardino": {
 		"label": "Forca da giardino", "category": "lance", "tier": 2,
 		"price_money": 195, "price_material": "metallo", "price_amount": 6,
-		"damage": 24.0, "cooldown": 0.38, "reach_mult": 1.50, "draw_time": 0.13, "knockback": 3.0,
+		"damage": 24.0, "cooldown": 0.48, "reach_mult": 1.50, "draw_time": 0.13, "knockback": 3.0,
 	},
 	"lancia_da_pesca": {
 		"label": "Lancia da pesca", "category": "lance", "tier": 3,
 		"price_money": 365, "price_material": "metallo", "price_amount": 10,
-		"damage": 31.0, "cooldown": 0.36, "reach_mult": 1.60, "draw_time": 0.11, "knockback": 3.6,
+		"damage": 31.0, "cooldown": 0.45, "reach_mult": 1.60, "draw_time": 0.11, "knockback": 3.6,
 	},
 	"lancia_da_combattimento": {
 		"label": "Lancia da combattimento", "category": "lance", "tier": 4,
 		"price_money": 620, "price_material": "metallo", "price_amount": 16,
-		"damage": 41.0, "cooldown": 0.34, "reach_mult": 1.75, "draw_time": 0.09, "knockback": 4.3,
+		"damage": 41.0, "cooldown": 0.42, "reach_mult": 1.75, "draw_time": 0.09, "knockback": 4.3,
 	},
 	"lancia_cerimoniale": {
 		"label": "Lancia cerimoniale forgiata", "category": "lance", "tier": 5,
 		"price_money": 1100, "price_material": "metallo", "price_amount": 26,
-		"damage": 55.0, "cooldown": 0.32, "reach_mult": 1.90, "draw_time": 0.06, "knockback": 5.2,
+		"damage": 55.0, "cooldown": 0.40, "reach_mult": 1.90, "draw_time": 0.06, "knockback": 5.2,
 	},
 }
 
