@@ -1231,13 +1231,23 @@ func _apply_ghost_transform() -> void:
 
 const ORIENTATION_CYCLE := ["h", "v", "h180", "v180"]
 
+# Ruota sul posto (stessa cella di griglia), invece di saltare alla cella
+# più vicina per il nuovo asse: quel salto poteva atterrare su tutt'altra
+# parte della stanza — anche sopra un altro banco — sorprendendo il player.
+# Restiamo sulla stessa cella (indispensabile solo il clamp ai bordi della
+# griglia, per non uscire dall'array col_values/row_values); se il nuovo
+# verso non ci sta più (bordo o sovrapposizione), _update_placement_validity()
+# lo segnala in rosso e il tasto Conferma resta disabilitato finché non si
+# trascina il fantasma in una cella valida.
 func _on_rotate_placement_pressed() -> void:
-	var current_pos := _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
 	var idx := ORIENTATION_CYCLE.find(placing_orientation)
 	placing_orientation = ORIENTATION_CYCLE[(maxi(idx, 0) + 1) % ORIENTATION_CYCLE.size()]
-	var anchor := _nearest_anchor(placing_orientation, current_pos)
-	placing_row_idx = anchor.row_idx
-	placing_col_idx = anchor.col_idx
+	if _orientation_axis(placing_orientation) == "h":
+		placing_col_idx = clampi(placing_col_idx, 0, maxi(col_values.size() - 2, 0))
+		placing_row_idx = clampi(placing_row_idx, 0, maxi(row_values.size() - 1, 0))
+	else:
+		placing_col_idx = clampi(placing_col_idx, 0, maxi(col_values.size() - 1, 0))
+		placing_row_idx = clampi(placing_row_idx, 0, maxi(row_values.size() - 2, 0))
 	_apply_ghost_transform()
 	_update_placement_validity()
 
