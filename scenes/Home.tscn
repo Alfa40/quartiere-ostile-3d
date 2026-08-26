@@ -641,6 +641,11 @@ text = ""
 alignment = 1
 theme_override_constants/separation = 12
 
+[node name="Btn_lance" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
+custom_minimum_size = Vector2(150, 56)
+theme_override_font_sizes/font_size = 25
+text = "Lance"
+
 [node name="Btn_coltelli" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 25
@@ -660,11 +665,6 @@ text = "Mazze"
 custom_minimum_size = Vector2(150, 56)
 theme_override_font_sizes/font_size = 25
 text = "Martelli"
-
-[node name="Btn_lance" type="Button" parent="HUD/WeaponMenu/Scroll/Box/CategoryRow"]
-custom_minimum_size = Vector2(150, 56)
-theme_override_font_sizes/font_size = 25
-text = "Lance"
 
 [node name="KnivesBox" type="VBoxContainer" parent="HUD/WeaponMenu/Scroll/Box"]
 theme_override_constants/separation = 10

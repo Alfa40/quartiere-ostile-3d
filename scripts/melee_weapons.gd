@@ -1,7 +1,7 @@
 class_name MeleeWeapons
 extends RefCounted
 
-const CATEGORY_ORDER := ["coltelli", "spade", "mazze", "martelli", "lance"]
+const CATEGORY_ORDER := ["lance", "coltelli", "spade", "mazze", "martelli"]
 
 const CATEGORIES := {
 	"coltelli": {"label": "Coltelli", "unlocked": true},
