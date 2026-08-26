@@ -20,31 +20,31 @@ const CATEGORY_WEAPONS := {
 const WEAPONS := {
 	"coltello_da_lancio": {
 		"label": "Coltello da lancio", "category": "armi_bianche_lancio", "tier": 1,
-		"price_money": 200, "price_material": "legno", "price_amount": 8,
+		"price_money": 380, "price_material": "legno", "price_amount": 8,
 		"damage": 20.0, "throw_cooldown": 0.5, "range": 14.0, "draw_time": 0.15,
 		"ammo_pack_price_money": 25,
 	},
 	"pugnale_da_lancio": {
 		"label": "Pugnale da lancio", "category": "armi_bianche_lancio", "tier": 2,
-		"price_money": 350, "price_material": "metallo", "price_amount": 10,
+		"price_money": 720, "price_material": "metallo", "price_amount": 10,
 		"damage": 28.0, "throw_cooldown": 0.45, "range": 15.0, "draw_time": 0.13,
 		"ammo_pack_price_money": 38,
 	},
 	"accetta_da_lancio": {
 		"label": "Accetta da lancio", "category": "armi_bianche_lancio", "tier": 3,
-		"price_money": 550, "price_material": "metallo", "price_amount": 16,
+		"price_money": 1370, "price_material": "metallo", "price_amount": 16,
 		"damage": 42.0, "throw_cooldown": 0.55, "range": 13.0, "draw_time": 0.18,
 		"ammo_pack_price_money": 50,
 	},
 	"stella_ninja": {
 		"label": "Stella ninja", "category": "armi_bianche_lancio", "tier": 4,
-		"price_money": 780, "price_material": "metallo", "price_amount": 20,
+		"price_money": 2605, "price_material": "metallo", "price_amount": 20,
 		"damage": 32.0, "throw_cooldown": 0.35, "range": 16.0, "draw_time": 0.10,
 		"ammo_pack_price_money": 60,
 	},
 	"ascia_battaglia_lancio": {
 		"label": "Ascia da battaglia da lancio", "category": "armi_bianche_lancio", "tier": 5,
-		"price_money": 1150, "price_material": "metallo", "price_amount": 30,
+		"price_money": 4950, "price_material": "metallo", "price_amount": 30,
 		"damage": 65.0, "throw_cooldown": 0.7, "range": 14.0, "draw_time": 0.20,
 		"ammo_pack_price_money": 75,
 	},
@@ -53,7 +53,7 @@ const WEAPONS := {
 	# gestito da scripts/grenade_projectile.gd tramite il campo "grenade_type".
 	"molotov": {
 		"label": "Molotov", "category": "granate_esplosive", "tier": 1,
-		"price_money": 500, "price_material": "legno", "price_amount": 20,
+		"price_money": 5000, "price_material": "legno", "price_amount": 20,
 		"damage": 15.0, "throw_cooldown": 1.6, "range": 12.0, "draw_time": 0.3,
 		"ammo_pack_price_money": 90,
 		"grenade_type": "molotov", "explosion_radius": 3.0,
@@ -61,21 +61,21 @@ const WEAPONS := {
 	},
 	"granata": {
 		"label": "Granata", "category": "granate_esplosive", "tier": 2,
-		"price_money": 900, "price_material": "metallo", "price_amount": 35,
+		"price_money": 8750, "price_material": "metallo", "price_amount": 35,
 		"damage": 55.0, "throw_cooldown": 2.0, "range": 12.0, "draw_time": 0.35,
 		"ammo_pack_price_money": 120,
 		"grenade_type": "frag", "explosion_radius": 4.0,
 	},
 	"granata_appiccicosa": {
 		"label": "Granata appiccicosa", "category": "granate_esplosive", "tier": 3,
-		"price_money": 1400, "price_material": "metallo", "price_amount": 55,
+		"price_money": 15310, "price_material": "metallo", "price_amount": 55,
 		"damage": 75.0, "throw_cooldown": 2.4, "range": 11.0, "draw_time": 0.4,
 		"ammo_pack_price_money": 160,
 		"grenade_type": "sticky", "explosion_radius": 4.5,
 	},
 	"granata_a_grappolo": {
 		"label": "Granata a grappolo", "category": "granate_esplosive", "tier": 4,
-		"price_money": 2200, "price_material": "metallo", "price_amount": 90,
+		"price_money": 26795, "price_material": "metallo", "price_amount": 90,
 		"damage": 35.0, "throw_cooldown": 2.8, "range": 10.0, "draw_time": 0.45,
 		"ammo_pack_price_money": 230,
 		"grenade_type": "cluster", "explosion_radius": 2.5,
@@ -86,21 +86,21 @@ const WEAPONS := {
 	# stordiscono sul colpo i nemici presenti nell'area di esplosione.
 	"granata_fumogena": {
 		"label": "Granata fumogena", "category": "granate_speciali", "tier": 1,
-		"price_money": 700, "price_material": "metallo", "price_amount": 30,
+		"price_money": 4200, "price_material": "metallo", "price_amount": 30,
 		"damage": 0.0, "throw_cooldown": 1.8, "range": 12.0, "draw_time": 0.3,
 		"ammo_pack_price_money": 100,
 		"grenade_type": "fumogena", "explosion_radius": 5.0, "burn_duration": 7.0,
 	},
 	"granata_stordente": {
 		"label": "Granata stordente", "category": "granate_speciali", "tier": 2,
-		"price_money": 1100, "price_material": "metallo", "price_amount": 45,
+		"price_money": 7350, "price_material": "metallo", "price_amount": 45,
 		"damage": 0.0, "throw_cooldown": 2.0, "range": 11.0, "draw_time": 0.35,
 		"ammo_pack_price_money": 130,
 		"grenade_type": "stordente", "explosion_radius": 4.0, "stun_duration": 2.5,
 	},
 	"granata_puzzosa": {
 		"label": "Granata puzzosa", "category": "granate_speciali", "tier": 3,
-		"price_money": 1500, "price_material": "metallo", "price_amount": 60,
+		"price_money": 12860, "price_material": "metallo", "price_amount": 60,
 		"damage": 0.0, "throw_cooldown": 2.2, "range": 11.0, "draw_time": 0.35,
 		"ammo_pack_price_money": 150,
 		"grenade_type": "puzzosa", "explosion_radius": 3.5,
