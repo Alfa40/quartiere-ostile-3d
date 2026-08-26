@@ -19,7 +19,7 @@ const TRANSITION_MAX_PROGRESS := 0.87
 const DATA := {
 	0: {
 		"label": "Parco",
-		"floor_color": Color(0.42, 0.58, 0.32, 1),
+		"floor_color": Color(0.29, 0.41, 0.22, 1),
 		"wall_color": Color(0.35, 0.18, 0.16, 1),
 		"sky_top_color": Color(0.15, 0.18, 0.35, 1),
 		"sky_horizon_color": Color(0.45, 0.4, 0.4, 1),
