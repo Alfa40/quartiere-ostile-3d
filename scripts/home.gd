@@ -129,6 +129,9 @@ const BENCH_UNLOCK_DESC := {
 @onready var pause_panel: Control = $HUD/PausePanel
 @onready var pause_stats_label: Label = $HUD/PausePanel/Scroll/Box/StatsLabel
 @onready var pause_inventory_label: Label = $HUD/PausePanel/Scroll/Box/InventoryLabel
+@onready var leaderboard_screen: Control = $HUD/LeaderboardScreen
+@onready var leaderboard_status_label: Label = $HUD/LeaderboardScreen/Box/StatusLabel
+@onready var leaderboard_list: VBoxContainer = $HUD/LeaderboardScreen/Box/Scroll/List
 
 var placing_bench_type := ""
 var placing_ghost: Node3D = null
@@ -203,6 +206,11 @@ func _ready() -> void:
 	pause_button.pressed.connect(toggle_pause)
 	$HUD/PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
 	$HUD/PausePanel/Scroll/Box/SettingsButton.pressed.connect(_on_settings_pressed)
+	$HUD/PausePanel/Scroll/Box/LeaderboardButton.pressed.connect(_on_leaderboard_pressed)
+	leaderboard_screen.visible = false
+	$HUD/LeaderboardScreen/Box/CloseButton.pressed.connect(_on_leaderboard_close_pressed)
+	Leaderboard.leaderboard_loaded.connect(_on_leaderboard_loaded)
+	Leaderboard.leaderboard_failed.connect(_on_leaderboard_failed)
 	$HUD/SettingsPanel.set_controls_editor_button_visible(true)
 	$HUD/SettingsPanel.closed.connect(_on_settings_closed)
 	$HUD/SettingsPanel.controls_editor_requested.connect(_on_controls_editor_requested)
@@ -372,6 +380,7 @@ func _update_menu_layout() -> void:
 	UIScale.apply_orientation_scale(placement_ui, is_portrait)
 	UIScale.apply_orientation_scale(pause_panel, is_portrait)
 	UIScale.apply_orientation_scale($HUD/SettingsPanel, is_portrait)
+	UIScale.apply_orientation_scale(leaderboard_screen, is_portrait)
 
 	var left := MENU_SCROLL_LEFT_LANDSCAPE if is_landscape else MENU_SCROLL_LEFT_PORTRAIT
 	var right := MENU_SCROLL_RIGHT_LANDSCAPE if is_landscape else MENU_SCROLL_RIGHT_PORTRAIT
@@ -514,6 +523,46 @@ func _on_settings_pressed() -> void:
 
 func _on_settings_closed() -> void:
 	pause_panel.visible = true
+
+func _on_leaderboard_pressed() -> void:
+	pause_panel.visible = false
+	for child in leaderboard_list.get_children():
+		child.queue_free()
+	leaderboard_status_label.text = "Caricamento..."
+	leaderboard_status_label.visible = true
+	leaderboard_screen.visible = true
+	Leaderboard.fetch_leaderboard()
+
+func _on_leaderboard_close_pressed() -> void:
+	leaderboard_screen.visible = false
+	pause_panel.visible = true
+
+func _on_leaderboard_loaded(entries: Array) -> void:
+	if not leaderboard_screen.visible:
+		return
+	for child in leaderboard_list.get_children():
+		child.queue_free()
+	if entries.is_empty():
+		leaderboard_status_label.text = "Nessun risultato ancora."
+		leaderboard_status_label.visible = true
+		return
+	leaderboard_status_label.visible = false
+	for entry in entries:
+		var row := Label.new()
+		var rank: int = int(entry.get("rank", 0))
+		var nick: String = String(entry.get("nickname", "?"))
+		var zone: int = int(entry.get("zone", 0))
+		var money: int = int(entry.get("money", 0))
+		row.text = "%d. %s — Zona %d — %d€" % [rank, nick, zone, money]
+		row.add_theme_font_size_override("font_size", 28)
+		row.add_theme_color_override("font_color", Color(0.92, 0.93, 0.95, 1))
+		leaderboard_list.add_child(row)
+
+func _on_leaderboard_failed() -> void:
+	if not leaderboard_screen.visible:
+		return
+	leaderboard_status_label.text = "Impossibile caricare la classifica. Riprova più tardi."
+	leaderboard_status_label.visible = true
 
 func _on_controls_editor_requested() -> void:
 	touch_controls.begin_edit_mode({})

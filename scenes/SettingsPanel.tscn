@@ -67,12 +67,14 @@ custom_minimum_size = Vector2(0, 56)
 [node name="ControlsEditorButton" type="Button" parent="Scroll/Box"]
 custom_minimum_size = Vector2(0, 90)
 theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
 text = "Personalizza posizione comandi"
 visible = false
 
 [node name="ResetButton" type="Button" parent="Scroll/Box"]
 custom_minimum_size = Vector2(0, 90)
 theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
 text = "Ripristina impostazioni predefinite"
 
 [node name="CloseButton" type="Button" parent="Scroll/Box"]

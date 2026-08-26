@@ -749,7 +749,6 @@ func _start_zone() -> void:
 	hud.show_message("Zona %d iniziata: ripulisci il quartiere!" % zone)
 	if not DevMode.enabled:
 		SaveData.report_run(zone, int(money))
-		Leaderboard.submit(zone, int(money))
 
 func _process(delta: float) -> void:
 	# Tempo di gioco cumulativo di tutta la partita (dalla zona 1): a
@@ -876,8 +875,13 @@ func _on_object_destroyed(obj: Node3D) -> void:
 
 func _complete_zone() -> void:
 	zone_transitioning = true
-	if not DevMode.enabled and CheckpointData.is_checkpoint_zone(zone):
-		CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
+	if not DevMode.enabled:
+		if CheckpointData.is_checkpoint_zone(zone):
+			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
+		# La classifica riflette l'ultima zona davvero completata, non quella
+		# in corso: qui "zone" è ancora il numero appena superato (l'incremento
+		# avviene solo dopo, in _go_home()/_skip_home()).
+		Leaderboard.submit(zone, int(money))
 	hud.show_zone_complete_choice()
 
 func _go_home() -> void:

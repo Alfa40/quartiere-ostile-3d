@@ -186,11 +186,13 @@ anchor_left = 0.5
 anchor_top = 0.6
 anchor_right = 0.5
 anchor_bottom = 0.6
-offset_left = -160.0
-offset_top = -40.0
-offset_right = 160.0
-offset_bottom = 40.0
+offset_left = -220.0
+offset_top = -55.0
+offset_right = 220.0
+offset_bottom = 55.0
 theme_override_font_sizes/font_size = 32
+autowrap_mode = 2
+horizontal_alignment = 1
 text = "Usa il banco delle armi da fuoco"
 
 [node name="BuyPanel" type="Control" parent="HUD"]

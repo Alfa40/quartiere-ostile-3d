@@ -9611,12 +9611,14 @@ text = "Pausa"
 theme_override_font_sizes/font_size = 52
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 horizontal_alignment = 1
+autowrap_mode = 2
 text = ""
 
 [node name="InventoryLabel" type="Label" parent="HUD/PausePanel/Scroll/Box"]
 theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(0.85, 0.95, 0.85, 1)
 horizontal_alignment = 1
+autowrap_mode = 2
 text = ""
 
 [node name="ResumeButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
@@ -9629,12 +9631,63 @@ custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Impostazioni"
 
-[node name="MainMenuButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
+[node name="LeaderboardButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
 custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
-text = "Esci alla partita: torna al menu principale"
+text = "Classifica"
+
+[node name="MainMenuButton" type="Button" parent="HUD/PausePanel/Scroll/Box"]
+custom_minimum_size = Vector2(0, 170)
+theme_override_font_sizes/font_size = 52
+autowrap_mode = 3
+text = "Torna al menu principale"
 
 [node name="SettingsPanel" parent="HUD" instance=ExtResource("4_settings")]
+
+[node name="LeaderboardScreen" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/LeaderboardScreen"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.96)
+
+[node name="Box" type="VBoxContainer" parent="HUD/LeaderboardScreen"]
+anchor_left = 0.05
+anchor_top = 0.04
+anchor_right = 0.95
+anchor_bottom = 0.96
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="HUD/LeaderboardScreen/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Classifica globale"
+
+[node name="StatusLabel" type="Label" parent="HUD/LeaderboardScreen/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.75, 0.76, 0.8, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Caricamento..."
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/LeaderboardScreen/Box"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="HUD/LeaderboardScreen/Box/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CloseButton" type="Button" parent="HUD/LeaderboardScreen/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 30
+text = "Chiudi"
 
 [node name="WardrobeMenu" type="Control" parent="HUD"]
 anchor_left = 0.0

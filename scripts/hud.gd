@@ -27,6 +27,9 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var dev_tools_box: Control = $PausePanel/Scroll/Box/DevToolsBox
 @onready var dev_zone_label: Label = $PausePanel/Scroll/Box/DevToolsBox/ZoneRow/ZoneValueLabel
 @onready var creator_password_panel: Control = $CreatorPasswordPanel
+@onready var leaderboard_screen: Control = $LeaderboardScreen
+@onready var leaderboard_status_label: Label = $LeaderboardScreen/Box/StatusLabel
+@onready var leaderboard_list: VBoxContainer = $LeaderboardScreen/Box/Scroll/List
 
 signal go_home_chosen
 signal skip_home_chosen
@@ -103,6 +106,11 @@ func _ready() -> void:
 	gameover_panel.visible = false
 	$PausePanel/Scroll/Box/ResumeButton.pressed.connect(_on_resume_pressed)
 	$PausePanel/Scroll/Box/SettingsButton.pressed.connect(_on_settings_pressed)
+	$PausePanel/Scroll/Box/LeaderboardButton.pressed.connect(_on_leaderboard_pressed)
+	leaderboard_screen.visible = false
+	$LeaderboardScreen/Box/CloseButton.pressed.connect(_on_leaderboard_close_pressed)
+	Leaderboard.leaderboard_loaded.connect(_on_leaderboard_loaded)
+	Leaderboard.leaderboard_failed.connect(_on_leaderboard_failed)
 	$SettingsPanel.set_controls_editor_button_visible(true)
 	$SettingsPanel.closed.connect(_on_settings_closed)
 	$SettingsPanel.controls_editor_requested.connect(_on_controls_editor_requested)
@@ -336,6 +344,7 @@ func _update_top_hud_layout() -> void:
 	UIScale.apply_orientation_scale(house_enter_button, is_portrait)
 	UIScale.apply_orientation_scale(zone_complete_panel, is_portrait)
 	UIScale.apply_orientation_scale($SettingsPanel, is_portrait)
+	UIScale.apply_orientation_scale(leaderboard_screen, is_portrait)
 
 	var zc_box := ZONE_COMPLETE_BOX_PORTRAIT if is_portrait else ZONE_COMPLETE_BOX_LANDSCAPE
 	zone_complete_panel.offset_left = zc_box.position.x
@@ -461,6 +470,46 @@ func _on_settings_pressed() -> void:
 
 func _on_settings_closed() -> void:
 	pause_panel.visible = true
+
+func _on_leaderboard_pressed() -> void:
+	pause_panel.visible = false
+	for child in leaderboard_list.get_children():
+		child.queue_free()
+	leaderboard_status_label.text = "Caricamento..."
+	leaderboard_status_label.visible = true
+	leaderboard_screen.visible = true
+	Leaderboard.fetch_leaderboard()
+
+func _on_leaderboard_close_pressed() -> void:
+	leaderboard_screen.visible = false
+	pause_panel.visible = true
+
+func _on_leaderboard_loaded(entries: Array) -> void:
+	if not leaderboard_screen.visible:
+		return
+	for child in leaderboard_list.get_children():
+		child.queue_free()
+	if entries.is_empty():
+		leaderboard_status_label.text = "Nessun risultato ancora."
+		leaderboard_status_label.visible = true
+		return
+	leaderboard_status_label.visible = false
+	for entry in entries:
+		var row := Label.new()
+		var rank: int = int(entry.get("rank", 0))
+		var nick: String = String(entry.get("nickname", "?"))
+		var zone: int = int(entry.get("zone", 0))
+		var money: int = int(entry.get("money", 0))
+		row.text = "%d. %s — Zona %d — %d€" % [rank, nick, zone, money]
+		row.add_theme_font_size_override("font_size", 28)
+		row.add_theme_color_override("font_color", Color(0.92, 0.93, 0.95, 1))
+		leaderboard_list.add_child(row)
+
+func _on_leaderboard_failed() -> void:
+	if not leaderboard_screen.visible:
+		return
+	leaderboard_status_label.text = "Impossibile caricare la classifica. Riprova più tardi."
+	leaderboard_status_label.visible = true
 
 func _on_controls_editor_requested() -> void:
 	touch_controls.begin_edit_mode({"throw_type_button": throw_type_button, "throw_arm_button": throw_arm_button})

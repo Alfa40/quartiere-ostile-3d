@@ -19,7 +19,7 @@ const TRANSITION_MAX_PROGRESS := 0.87
 const DATA := {
 	0: {
 		"label": "Parco",
-		"floor_color": Color(0.29, 0.41, 0.22, 1),
+		"floor_color": Color(0.47, 0.56, 0.42, 1),
 		"wall_color": Color(0.35, 0.18, 0.16, 1),
 		"sky_top_color": Color(0.15, 0.18, 0.35, 1),
 		"sky_horizon_color": Color(0.45, 0.4, 0.4, 1),
@@ -40,7 +40,7 @@ const DATA := {
 	},
 	1: {
 		"label": "Bosco",
-		"floor_color": Color(0.24, 0.32, 0.18, 1),
+		"floor_color": Color(0.43, 0.49, 0.39, 1),
 		"wall_color": Color(0.22, 0.16, 0.11, 1),
 		"sky_top_color": Color(0.10, 0.14, 0.12, 1),
 		"sky_horizon_color": Color(0.28, 0.30, 0.22, 1),
@@ -61,7 +61,7 @@ const DATA := {
 	},
 	2: {
 		"label": "Palude",
-		"floor_color": Color(0.28, 0.26, 0.16, 1),
+		"floor_color": Color(0.46, 0.45, 0.37, 1),
 		"wall_color": Color(0.30, 0.32, 0.26, 1),
 		"sky_top_color": Color(0.22, 0.24, 0.16, 1),
 		"sky_horizon_color": Color(0.38, 0.36, 0.26, 1),
