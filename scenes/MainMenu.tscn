@@ -630,10 +630,10 @@ custom_minimum_size = Vector2(108, 108)
 theme_override_font_sizes/font_size = 44
 text = "9"
 
-[node name="Key_Space" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
-custom_minimum_size = Vector2(108, 108)
-theme_override_font_sizes/font_size = 22
-text = "␣"
+[node name="Key_Space" type="Button" parent="NicknameScreen/Scroll/Box"]
+custom_minimum_size = Vector2(0, 96)
+theme_override_font_sizes/font_size = 30
+text = "Spazio"
 
 [node name="BackspaceButton" type="Button" parent="NicknameScreen/Scroll/Box"]
 custom_minimum_size = Vector2(0, 56)

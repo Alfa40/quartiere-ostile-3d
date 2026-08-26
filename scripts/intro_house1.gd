@@ -3,8 +3,11 @@ extends Node3D
 # Interno della prima casa del tutorial obbligatorio: la stessa casa in cui
 # più avanti (dopo aver salvato l'npc) troveremo il banco della casa e la
 # tenda donati dall'npc — qui però c'è già solo il banco delle armi da
-# fuoco, con un menu ridotto che vende soltanto la Magnum, l'unica arma che
-# i pochi soldi/materiali del tutorial permettono di comprare.
+# fuoco, con un menu ridotto che regala la Magnum: qui l'acquisto è sempre
+# gratuito (non usa def.price_money/price_amount), a prescindere da quanto
+# costi nel resto del gioco, così un futuro riequilibrio dei prezzi non può
+# più rendere questo passo del tutorial impossibile da completare con i
+# pochi soldi/materiali che si raccolgono prima di arrivarci.
 
 const Firearms := preload("res://scripts/firearms.gd")
 const FIREARM_ID := "magnum_44"
@@ -52,23 +55,16 @@ func _refresh_buy_panel() -> void:
 		buy_button.text = "Acquistata"
 		hint_label.text = "Hai la tua pistola! Esci dalla porta a sud per proseguire"
 	else:
-		var mat_name := "Metallo"
-		info_label.text = "%s\nDanno %d · Caricatore %d · Portata %d\nCosta %d€ + %d %s" % [
+		info_label.text = "%s\nDanno %d · Caricatore %d · Portata %d\nGratis, è un regalo per iniziare!" % [
 			def.label, int(def.damage), int(def.magazine_size), int(def.range),
-			int(def.price_money), int(def.price_amount), mat_name,
 		]
-		var afford: bool = CheckpointData.money >= def.price_money and CheckpointData.materials.get(def.price_material, 0) >= def.price_amount
-		buy_button.disabled = not afford
-		buy_button.text = "Compra"
+		buy_button.disabled = false
+		buy_button.text = "Prendi"
 
 func _on_buy_pressed() -> void:
-	var def: Dictionary = Firearms.WEAPONS[FIREARM_ID]
 	if CheckpointData.owned_firearms.get(FIREARM_ID, false):
 		return
-	if CheckpointData.money < def.price_money or CheckpointData.materials.get(def.price_material, 0) < def.price_amount:
-		return
-	CheckpointData.money -= int(def.price_money)
-	CheckpointData.materials[def.price_material] = CheckpointData.materials.get(def.price_material, 0) - int(def.price_amount)
+	var def: Dictionary = Firearms.WEAPONS[FIREARM_ID]
 	CheckpointData.owned_firearms[FIREARM_ID] = true
 	CheckpointData.firearm_upgrades[FIREARM_ID] = {}
 	CheckpointData.firearm_ammo[FIREARM_ID] = int(def.magazine_size)

@@ -188,6 +188,8 @@ func _on_confirm_pressed() -> void:
 func _wire_nickname_screen() -> void:
 	for key in nickname_keyboard.get_children():
 		key.pressed.connect(_on_nickname_key_pressed.bind(key))
+	var space_key: Button = $NicknameScreen/Scroll/Box/Key_Space
+	space_key.pressed.connect(_on_nickname_key_pressed.bind(space_key))
 	$NicknameScreen/Scroll/Box/BackspaceButton.pressed.connect(_on_nickname_backspace_pressed)
 	$NicknameScreen/Scroll/Box/ConfirmButton.pressed.connect(_on_nickname_confirm_pressed)
 	nickname_cancel_button.pressed.connect(_on_nickname_cancel_pressed)
