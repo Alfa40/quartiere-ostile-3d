@@ -114,6 +114,11 @@ custom_minimum_size = Vector2(0, 136)
 theme_override_font_sizes/font_size = 52
 text = "Impostazioni"
 
+[node name="LeaderboardButton" type="Button" parent="Box"]
+custom_minimum_size = Vector2(0, 136)
+theme_override_font_sizes/font_size = 52
+text = "Classifica"
+
 [node name="SettingsPanel" parent="." instance=ExtResource("2_settings")]
 
 [node name="CreatorButton" type="Button" parent="."]
@@ -128,6 +133,20 @@ offset_bottom = -14.0
 theme_override_font_sizes/font_size = 19
 theme_override_colors/font_color = Color(0.4, 0.4, 0.45, 1)
 text = "Creator"
+flat = true
+
+[node name="NicknameButton" type="Button" parent="."]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -50.0
+offset_right = 240.0
+offset_bottom = -14.0
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.4, 0.4, 0.45, 1)
+text = "Cambia nickname"
 flat = true
 
 [node name="PasswordPanel" type="Control" parent="."]
@@ -370,3 +389,309 @@ text = "Sì, ricomincia"
 custom_minimum_size = Vector2(0, 64)
 theme_override_font_sizes/font_size = 27
 text = "Annulla"
+
+[node name="NicknameScreen" type="Control" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="NicknameScreen"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.96)
+
+[node name="Scroll" type="ScrollContainer" parent="NicknameScreen"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 24.0
+offset_right = -40.0
+offset_bottom = -24.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="NicknameScreen/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="NicknameScreen/Scroll/Box"]
+theme_override_font_sizes/font_size = 35
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Scegli un nickname"
+
+[node name="Subtitle" type="Label" parent="NicknameScreen/Scroll/Box"]
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.75, 0.76, 0.8, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Sarà mostrato nella classifica globale."
+
+[node name="NicknameEdit" type="LineEdit" parent="NicknameScreen/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 27
+placeholder_text = "Nickname"
+horizontal_alignment = 1
+max_length = 20
+
+[node name="ErrorLabel" type="Label" parent="NicknameScreen/Scroll/Box"]
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="Keyboard" type="GridContainer" parent="NicknameScreen/Scroll/Box"]
+size_flags_horizontal = 4
+columns = 6
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+
+[node name="Key_A" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "A"
+
+[node name="Key_B" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "B"
+
+[node name="Key_C" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "C"
+
+[node name="Key_D" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "D"
+
+[node name="Key_E" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "E"
+
+[node name="Key_F" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "F"
+
+[node name="Key_G" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "G"
+
+[node name="Key_H" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "H"
+
+[node name="Key_I" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "I"
+
+[node name="Key_J" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "J"
+
+[node name="Key_K" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "K"
+
+[node name="Key_L" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "L"
+
+[node name="Key_M" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "M"
+
+[node name="Key_N" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "N"
+
+[node name="Key_O" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "O"
+
+[node name="Key_P" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "P"
+
+[node name="Key_Q" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "Q"
+
+[node name="Key_R" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "R"
+
+[node name="Key_S" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "S"
+
+[node name="Key_T" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "T"
+
+[node name="Key_U" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "U"
+
+[node name="Key_V" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "V"
+
+[node name="Key_W" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "W"
+
+[node name="Key_X" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "X"
+
+[node name="Key_Y" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "Y"
+
+[node name="Key_Z" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "Z"
+
+[node name="Key_0" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "0"
+
+[node name="Key_1" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "1"
+
+[node name="Key_2" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "2"
+
+[node name="Key_3" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "3"
+
+[node name="Key_4" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "4"
+
+[node name="Key_5" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "5"
+
+[node name="Key_6" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "6"
+
+[node name="Key_7" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "7"
+
+[node name="Key_8" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "8"
+
+[node name="Key_9" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 44
+text = "9"
+
+[node name="Key_Space" type="Button" parent="NicknameScreen/Scroll/Box/Keyboard"]
+custom_minimum_size = Vector2(108, 108)
+theme_override_font_sizes/font_size = 22
+text = "␣"
+
+[node name="BackspaceButton" type="Button" parent="NicknameScreen/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 25
+text = "⌫ Cancella"
+
+[node name="ConfirmButton" type="Button" parent="NicknameScreen/Scroll/Box"]
+custom_minimum_size = Vector2(0, 64)
+theme_override_font_sizes/font_size = 27
+text = "Conferma"
+
+[node name="CancelButton" type="Button" parent="NicknameScreen/Scroll/Box"]
+custom_minimum_size = Vector2(0, 56)
+theme_override_font_sizes/font_size = 23
+text = "Annulla"
+visible = false
+
+[node name="LeaderboardScreen" type="Control" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="LeaderboardScreen"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.96)
+
+[node name="Box" type="VBoxContainer" parent="LeaderboardScreen"]
+anchor_left = 0.05
+anchor_top = 0.04
+anchor_right = 0.95
+anchor_bottom = 0.96
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="LeaderboardScreen/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Classifica globale"
+
+[node name="StatusLabel" type="Label" parent="LeaderboardScreen/Box"]
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.75, 0.76, 0.8, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Caricamento..."
+
+[node name="Scroll" type="ScrollContainer" parent="LeaderboardScreen/Box"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="LeaderboardScreen/Box/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CloseButton" type="Button" parent="LeaderboardScreen/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 30
+text = "Chiudi"

@@ -749,6 +749,7 @@ func _start_zone() -> void:
 	hud.show_message("Zona %d iniziata: ripulisci il quartiere!" % zone)
 	if not DevMode.enabled:
 		SaveData.report_run(zone, int(money))
+		Leaderboard.submit(zone, int(money))
 
 func _process(delta: float) -> void:
 	# Tempo di gioco cumulativo di tutta la partita (dalla zona 1): a
@@ -978,6 +979,10 @@ func _on_player_died() -> void:
 		# morte a un successivo riavvio del gioco: lo invalido insieme al
 		# ripristino del checkpoint.
 		CheckpointData.clear_continue_save()
+		# La classifica torna anch'essa ai valori dell'ultimo checkpoint (0 se
+		# la zona 50 non è ancora stata superata): CheckpointData.zone/money
+		# sono già stati riportati indietro dalla load_checkpoint() qui sopra.
+		Leaderboard.submit(CheckpointData.zone, int(CheckpointData.money))
 	hud.show_game_over()
 
 func get_stats_text() -> String:

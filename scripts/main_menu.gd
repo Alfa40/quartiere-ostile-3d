@@ -6,7 +6,21 @@ extends Control
 @onready var keyboard: GridContainer = $PasswordPanel/Scroll/Box/Keyboard
 @onready var confirm_reset_panel: Control = $ConfirmResetPanel
 
+@onready var nickname_screen: Control = $NicknameScreen
+@onready var nickname_edit: LineEdit = $NicknameScreen/Scroll/Box/NicknameEdit
+@onready var nickname_error_label: Label = $NicknameScreen/Scroll/Box/ErrorLabel
+@onready var nickname_keyboard: GridContainer = $NicknameScreen/Scroll/Box/Keyboard
+@onready var nickname_cancel_button: Button = $NicknameScreen/Scroll/Box/CancelButton
+
+@onready var leaderboard_screen: Control = $LeaderboardScreen
+@onready var leaderboard_status_label: Label = $LeaderboardScreen/Box/StatusLabel
+@onready var leaderboard_list: VBoxContainer = $LeaderboardScreen/Box/Scroll/List
+
 var _pending_reset_slot := 0
+# true finché il player non ha ancora scelto un nickname al primissimo avvio:
+# in quel caso _continue_ready() (il resto della normale inizializzazione del
+# menu) resta in sospeso finché la schermata nickname non viene confermata.
+var _nickname_gate_pending := false
 
 # Estratta a parte (pura, nessun cambio scena) per poterla testare senza
 # innescare un vero change_scene_to_file.
@@ -22,6 +36,21 @@ static func intro_redirect_scene_path() -> String:
 			return "res://scenes/IntroField1.tscn"
 
 func _ready() -> void:
+	_wire_nickname_screen()
+	_wire_leaderboard_screen()
+
+	# Nickname obbligatorio al primissimo avvio (nessun sistema di account
+	# nel gioco): finché non viene scelto, il resto dell'inizializzazione del
+	# menu resta in sospeso, stesso principio del tutorial obbligatorio qui
+	# sotto.
+	if not Leaderboard.has_nickname():
+		_nickname_gate_pending = true
+		_open_nickname_screen(false)
+		return
+
+	_continue_ready()
+
+func _continue_ready() -> void:
 	# Tutorial giocabile obbligatorio al primissimo avvio del gioco: finché
 	# non è stato completato, il menu normale resta bloccato e si riprende
 	# sempre dal passo in cui il player si era fermato.
@@ -38,7 +67,9 @@ func _ready() -> void:
 
 	$Box/TutorialButton.pressed.connect(_on_tutorial_pressed)
 	$Box/SettingsButton.pressed.connect(_on_settings_pressed)
+	$Box/LeaderboardButton.pressed.connect(_on_leaderboard_pressed)
 	$CreatorButton.pressed.connect(_on_creator_pressed)
+	$NicknameButton.pressed.connect(_on_change_nickname_pressed)
 	$PasswordPanel/Scroll/Box/BackspaceButton.pressed.connect(_on_backspace_pressed)
 	$PasswordPanel/Scroll/Box/ConfirmButton.pressed.connect(_on_confirm_pressed)
 	$PasswordPanel/Scroll/Box/CancelButton.pressed.connect(_on_cancel_pressed)
@@ -151,3 +182,94 @@ func _on_confirm_pressed() -> void:
 		error_label.text = "Password errata"
 		password_edit.text = ""
 		password_edit.grab_focus()
+
+# --- Nickname (classifica globale) ---
+
+func _wire_nickname_screen() -> void:
+	for key in nickname_keyboard.get_children():
+		key.pressed.connect(_on_nickname_key_pressed.bind(key))
+	$NicknameScreen/Scroll/Box/BackspaceButton.pressed.connect(_on_nickname_backspace_pressed)
+	$NicknameScreen/Scroll/Box/ConfirmButton.pressed.connect(_on_nickname_confirm_pressed)
+	nickname_cancel_button.pressed.connect(_on_nickname_cancel_pressed)
+	nickname_edit.text_submitted.connect(func(_t): _on_nickname_confirm_pressed())
+
+func _open_nickname_screen(cancellable: bool) -> void:
+	nickname_edit.text = Leaderboard.nickname
+	nickname_error_label.text = ""
+	nickname_cancel_button.visible = cancellable
+	nickname_screen.visible = true
+	nickname_edit.grab_focus()
+
+func _on_change_nickname_pressed() -> void:
+	_open_nickname_screen(true)
+
+func _on_nickname_key_pressed(key: Button) -> void:
+	if nickname_edit.text.length() >= 20:
+		return
+	var ch: String = " " if key.name == "Key_Space" else key.text
+	nickname_edit.text += ch
+	nickname_edit.caret_column = nickname_edit.text.length()
+
+func _on_nickname_backspace_pressed() -> void:
+	if nickname_edit.text.length() > 0:
+		nickname_edit.text = nickname_edit.text.substr(0, nickname_edit.text.length() - 1)
+		nickname_edit.caret_column = nickname_edit.text.length()
+
+func _on_nickname_confirm_pressed() -> void:
+	var trimmed := nickname_edit.text.strip_edges()
+	if trimmed.length() == 0:
+		nickname_error_label.text = "Inserisci un nickname"
+		return
+	Leaderboard.set_nickname(trimmed)
+	nickname_screen.visible = false
+	if _nickname_gate_pending:
+		_nickname_gate_pending = false
+		_continue_ready()
+
+func _on_nickname_cancel_pressed() -> void:
+	nickname_screen.visible = false
+
+# --- Classifica globale ---
+
+func _wire_leaderboard_screen() -> void:
+	$LeaderboardScreen/Box/CloseButton.pressed.connect(_on_leaderboard_close_pressed)
+	Leaderboard.leaderboard_loaded.connect(_on_leaderboard_loaded)
+	Leaderboard.leaderboard_failed.connect(_on_leaderboard_failed)
+
+func _on_leaderboard_pressed() -> void:
+	for child in leaderboard_list.get_children():
+		child.queue_free()
+	leaderboard_status_label.text = "Caricamento..."
+	leaderboard_status_label.visible = true
+	leaderboard_screen.visible = true
+	Leaderboard.fetch_leaderboard()
+
+func _on_leaderboard_close_pressed() -> void:
+	leaderboard_screen.visible = false
+
+func _on_leaderboard_loaded(entries: Array) -> void:
+	if not leaderboard_screen.visible:
+		return
+	for child in leaderboard_list.get_children():
+		child.queue_free()
+	if entries.is_empty():
+		leaderboard_status_label.text = "Nessun risultato ancora."
+		leaderboard_status_label.visible = true
+		return
+	leaderboard_status_label.visible = false
+	for entry in entries:
+		var row := Label.new()
+		var rank: int = int(entry.get("rank", 0))
+		var nick: String = String(entry.get("nickname", "?"))
+		var zone: int = int(entry.get("zone", 0))
+		var money: int = int(entry.get("money", 0))
+		row.text = "%d. %s — Zona %d — %d€" % [rank, nick, zone, money]
+		row.add_theme_font_size_override("font_size", 28)
+		row.add_theme_color_override("font_color", Color(0.92, 0.93, 0.95, 1))
+		leaderboard_list.add_child(row)
+
+func _on_leaderboard_failed() -> void:
+	if not leaderboard_screen.visible:
+		return
+	leaderboard_status_label.text = "Impossibile caricare la classifica. Riprova più tardi."
+	leaderboard_status_label.visible = true
