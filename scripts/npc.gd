@@ -10,6 +10,7 @@ const GRAVITY := 20.0
 const WALK_SPEED := 3.0
 
 @onready var facing_pivot: Node3D = $FacingPivot
+@onready var anim_player: AnimationPlayer = $FacingPivot/VisualRoot/CharacterModel/AnimationPlayer
 
 var state := "idle"
 var walk_target := Vector3.ZERO
@@ -49,3 +50,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= GRAVITY * delta
 	move_and_slide()
+	_animate_body()
+
+func _animate_body() -> void:
+	var horiz := Vector2(velocity.x, velocity.z).length()
+	anim_player.play("walk" if horiz > 0.3 else "idle")

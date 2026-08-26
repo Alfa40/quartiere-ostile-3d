@@ -18,18 +18,34 @@ const DETECT_RANGE_RANGED := 16.0
 const ProjectileScene := preload("res://scenes/Projectile.tscn")
 const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 
+# Un modello Kenney diverso per ogni tipo di nemico (stesso stile/rig/
+# animazioni del player, solo silhouette diversa), così si distinguono anche
+# senza guardare il colore. Tutti condividono un unico set di animazioni
+# (idle/walk/attack-melee-left/right) e la stessa scala/rotazione del player.
+const CHARACTER_MODELS := {
+	"character-male-b": preload("res://assets/models/characters/character-male-b.glb"),
+	"character-male-f": preload("res://assets/models/characters/character-male-f.glb"),
+	"character-female-a": preload("res://assets/models/characters/character-female-a.glb"),
+	"character-female-b": preload("res://assets/models/characters/character-female-b.glb"),
+	"character-female-c": preload("res://assets/models/characters/character-female-c.glb"),
+}
+const ARCHETYPE_MODEL := {
+	"balordo": "character-male-f",
+	"nervoso": "character-female-b",
+	"imprevedibile": "character-female-a",
+	"bruto": "character-male-b",
+	"tiratore": "character-female-c",
+}
+const MODEL_ROTATION_Y := 180.0
+const MODEL_SCALE := 1.8
+const ATTACK_ANIMS := ["attack-melee-left", "attack-melee-right"]
+
 signal died
 
 @onready var facing_pivot: Node3D = $FacingPivot
 @onready var visual_root: Node3D = $FacingPivot/VisualRoot
-@onready var right_shoulder: Node3D = $FacingPivot/VisualRoot/RightShoulder
-@onready var right_elbow: Node3D = $FacingPivot/VisualRoot/RightShoulder/RightElbow
-@onready var left_shoulder: Node3D = $FacingPivot/VisualRoot/LeftShoulder
-@onready var left_elbow: Node3D = $FacingPivot/VisualRoot/LeftShoulder/LeftElbow
-@onready var left_hip: Node3D = $FacingPivot/VisualRoot/LeftHip
-@onready var left_knee: Node3D = $FacingPivot/VisualRoot/LeftHip/LeftKnee
-@onready var right_hip: Node3D = $FacingPivot/VisualRoot/RightHip
-@onready var right_knee: Node3D = $FacingPivot/VisualRoot/RightHip/RightKnee
+var anim_player: AnimationPlayer = null
+var body_mesh: MeshInstance3D = null
 
 var speed := BASE_SPEED
 var max_hp := BASE_MAX_HP
@@ -42,8 +58,6 @@ var behavior := "steady"
 var attack_cooldown_timer := 0.0
 var dead := false
 var player: Node3D = null
-var walk_phase := 0.0
-var arm_tween: Tween = null
 
 var erratic_state := "charge"
 var erratic_timer := 0.0
@@ -137,7 +151,31 @@ func configure(hp_mult: float, dmg_mult: float, speed_mult: float, cooldown_seco
 	attack_damage = BASE_ATTACK_DAMAGE * arch.damage_mult * dmg_mult
 	speed = BASE_SPEED * arch.speed_mult * speed_mult
 	attack_cooldown = max(cooldown_seconds * arch.cooldown_mult, MIN_ATTACK_COOLDOWN)
+	_instantiate_model(ARCHETYPE_MODEL.get(archetype_id, "character-male-f"))
 	_apply_color(arch.color)
+
+func _instantiate_model(model_name: String) -> void:
+	for c in visual_root.get_children():
+		c.queue_free()
+	var inst: Node3D = CHARACTER_MODELS[model_name].instantiate()
+	visual_root.add_child(inst)
+	# Stessa correzione del player: il modello glTF ha "avanti" a +Z, Godot
+	# a -Z, e la scala nativa Kenney va ingrandita per riempire la capsula di
+	# collisione del nemico (identica a quella del player: raggio 0.5, altezza
+	# 1.8).
+	inst.rotation_degrees = Vector3(0, MODEL_ROTATION_Y, 0)
+	inst.scale = Vector3.ONE * MODEL_SCALE
+	anim_player = inst.get_node("AnimationPlayer")
+	# Il nome del nodo con lo scheletro può differire da model_name (Godot lo
+	# rinomina se collide con un altro nodo già esistente nell'albero, es.
+	# istanziando due volte lo stesso personaggio): lo cerchiamo per struttura
+	# (ha un figlio Skeleton3D) invece che per nome esatto.
+	var char_node: Node = null
+	for c in inst.get_children():
+		if c.has_node("Skeleton3D"):
+			char_node = c
+			break
+	body_mesh = char_node.get_node("Skeleton3D/body-mesh")
 
 # Usata da main.gd per applicare il colore dello scenario attuale (o, in
 # transizione, di quello successivo) al posto del colore fisso
@@ -145,20 +183,17 @@ func configure(hp_mult: float, dmg_mult: float, speed_mult: float, cooldown_seco
 func apply_color_override(color: Color) -> void:
 	_apply_color(color)
 
+# Solo il mesh del corpo (non della testa, che condivide la stessa texture
+# "colormap" del modello Kenney): un duplicato del materiale originale così
+# la texture resta intatta e il colore scelto si moltiplica sopra, invece di
+# sostituirla con un colore piatto. Stesso approccio di player.gd.
 func _apply_color(color: Color) -> void:
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = color
-	mat.metallic = 0.1
-	mat.roughness = 0.5
-	_tint_recursive(visual_root, mat)
-
-func _tint_recursive(node: Node, mat: Material) -> void:
-	if node.name == "Head" or node.name == "Face":
+	if body_mesh == null:
 		return
-	if node is MeshInstance3D:
-		node.set_surface_override_material(0, mat)
-	for c in node.get_children():
-		_tint_recursive(c, mat)
+	var base_mat: StandardMaterial3D = body_mesh.mesh.surface_get_material(0)
+	var mat: StandardMaterial3D = base_mat.duplicate()
+	mat.albedo_color = color
+	body_mesh.set_surface_override_material(0, mat)
 
 func _find_player() -> void:
 	var players := get_tree().get_nodes_in_group("player")
@@ -398,36 +433,17 @@ func _fire_projectile(dir: Vector3) -> void:
 	proj.source = self
 
 func _play_attack_swing() -> void:
-	if arm_tween != null and arm_tween.is_valid():
-		arm_tween.kill()
-	right_shoulder.rotation.x = 0.0
-	right_elbow.rotation.x = 0.0
-	arm_tween = create_tween()
-	arm_tween.tween_property(right_shoulder, "rotation:x", deg_to_rad(110.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	arm_tween.parallel().tween_property(right_elbow, "rotation:x", deg_to_rad(65.0), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	arm_tween.tween_property(right_shoulder, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	arm_tween.parallel().tween_property(right_elbow, "rotation:x", 0.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()])
 
-func _animate_body(delta: float) -> void:
+# Un solo AnimationPlayer guida tutto lo scheletro: mentre un'animazione di
+# attacco è in corso non va interrotta per tornare a cammino/riposo, che
+# riprende da solo non appena l'attacco finisce (le clip di attacco non sono
+# in loop, vedi ATTACK_ANIMS). Stesso approccio di player.gd.
+func _animate_body(_delta: float) -> void:
+	if anim_player.current_animation in ATTACK_ANIMS and anim_player.is_playing():
+		return
 	var horiz := Vector2(velocity.x, velocity.z).length()
-	if horiz > 0.3:
-		walk_phase += delta * horiz * 3.0
-		var swing := sin(walk_phase) * 0.45
-		left_hip.rotation.x = swing
-		right_hip.rotation.x = -swing
-		left_shoulder.rotation.x = -swing * 0.6
-		left_knee.rotation.x = -maxf(0.0, cos(walk_phase)) * 0.9
-		right_knee.rotation.x = -maxf(0.0, -cos(walk_phase)) * 0.9
-		left_elbow.rotation.x = -maxf(0.0, -cos(walk_phase)) * 0.4
-		visual_root.position.y = absf(sin(walk_phase)) * 0.05
-	else:
-		left_hip.rotation.x = lerp(left_hip.rotation.x, 0.0, delta * 8.0)
-		right_hip.rotation.x = lerp(right_hip.rotation.x, 0.0, delta * 8.0)
-		left_shoulder.rotation.x = lerp(left_shoulder.rotation.x, 0.0, delta * 8.0)
-		left_knee.rotation.x = lerp(left_knee.rotation.x, 0.0, delta * 8.0)
-		right_knee.rotation.x = lerp(right_knee.rotation.x, 0.0, delta * 8.0)
-		left_elbow.rotation.x = lerp(left_elbow.rotation.x, 0.0, delta * 8.0)
-		visual_root.position.y = lerp(visual_root.position.y, 0.0, delta * 8.0)
+	anim_player.play("walk" if horiz > 0.3 else "idle")
 
 func take_damage(amount: float, _source = null) -> void:
 	if dead:
