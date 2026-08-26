@@ -196,11 +196,53 @@ func _apply_screen_adjustment() -> void:
 # (mai gradualmente: solo l'aspetto di alberi e nemici transita, vedi
 # _scenario_data_for_spawn()). La casa esterna non è mai toccata da
 # questo sistema, resta quella scelta dal player con l'Armadio.
+#
+# Solo il Parco (scenario 0) ha già una vera texture per terreno/muri e un
+# cielo fotografico al posto del gradiente procedurale: Bosco e Palude
+# restano con l'aspetto a tinta unita di sempre, non ancora rifatti.
+const PARCO_SKY_PANORAMA := preload("res://assets/textures/sky/skybox-day.png")
+var _parco_ground_noise_tex: NoiseTexture2D = null
+var _parco_wall_noise_tex: NoiseTexture2D = null
+
+func _parco_ground_texture() -> NoiseTexture2D:
+	if _parco_ground_noise_tex == null:
+		var noise := FastNoiseLite.new()
+		noise.seed = 1
+		noise.frequency = 0.06
+		noise.fractal_octaves = 3
+		_parco_ground_noise_tex = NoiseTexture2D.new()
+		_parco_ground_noise_tex.seamless = true
+		_parco_ground_noise_tex.width = 256
+		_parco_ground_noise_tex.height = 256
+		_parco_ground_noise_tex.noise = noise
+	return _parco_ground_noise_tex
+
+func _parco_wall_texture() -> NoiseTexture2D:
+	if _parco_wall_noise_tex == null:
+		var noise := FastNoiseLite.new()
+		noise.seed = 2
+		noise.frequency = 0.09
+		noise.fractal_octaves = 3
+		_parco_wall_noise_tex = NoiseTexture2D.new()
+		_parco_wall_noise_tex.seamless = true
+		_parco_wall_noise_tex.width = 256
+		_parco_wall_noise_tex.height = 256
+		_parco_wall_noise_tex.noise = noise
+	return _parco_wall_noise_tex
+
 func _apply_scenario_visuals() -> void:
-	var data: Dictionary = Scenarios.scenario_data(Scenarios.scenario_index_for_zone(zone))
+	var idx := Scenarios.scenario_index_for_zone(zone)
+	var data: Dictionary = Scenarios.scenario_data(idx)
+	var is_parco := idx == 0
 
 	var floor_mat := $Floor/MeshInstance3D.get_surface_override_material(0) as StandardMaterial3D
 	floor_mat.albedo_color = data.floor_color
+	if is_parco:
+		floor_mat.albedo_texture = _parco_ground_texture()
+		floor_mat.uv1_scale = Vector3(24.0, 24.0, 1.0)
+	else:
+		floor_mat.albedo_texture = null
+		floor_mat.uv1_scale = Vector3.ONE
 
 	for occ in _wall_occluders:
 		var wall_mat := (occ.mesh as MeshInstance3D).get_surface_override_material(0) as StandardMaterial3D
@@ -209,27 +251,44 @@ func _apply_scenario_visuals() -> void:
 		# occlusione (_update_occlusion_fade), non è compito nostro azzerarla.
 		new_color.a = wall_mat.albedo_color.a
 		wall_mat.albedo_color = new_color
+		if is_parco:
+			wall_mat.albedo_texture = _parco_wall_texture()
+			wall_mat.uv1_scale = Vector3(10.0, 3.0, 1.0)
+		else:
+			wall_mat.albedo_texture = null
+			wall_mat.uv1_scale = Vector3.ONE
 
 	var env: Environment = $Environment.environment
-	var sky_mat: ProceduralSkyMaterial = env.sky.sky_material
-	sky_mat.sky_top_color = data.sky_top_color
-	sky_mat.sky_horizon_color = data.sky_horizon_color
-	sky_mat.ground_bottom_color = data.ground_bottom_color
-	sky_mat.ground_horizon_color = data.ground_horizon_color
+	if is_parco:
+		if not (env.sky.sky_material is PanoramaSkyMaterial):
+			var pano := PanoramaSkyMaterial.new()
+			pano.panorama = PARCO_SKY_PANORAMA
+			env.sky.sky_material = pano
+	else:
+		if not (env.sky.sky_material is ProceduralSkyMaterial):
+			env.sky.sky_material = ProceduralSkyMaterial.new()
+		var sky_mat: ProceduralSkyMaterial = env.sky.sky_material
+		sky_mat.sky_top_color = data.sky_top_color
+		sky_mat.sky_horizon_color = data.sky_horizon_color
+		sky_mat.ground_bottom_color = data.ground_bottom_color
+		sky_mat.ground_horizon_color = data.ground_horizon_color
 	env.ambient_light_color = data.ambient_light_color
 	env.ambient_light_energy = data.ambient_light_energy
 
-# Estratta i dati dello scenario da usare per il prossimo albero/nemico che
+# Indice dello scenario da usare per il prossimo albero/nemico/oggetto che
 # nasce: durante la finestra di transizione (le ultime zone prima del
 # checkpoint), ogni nascita tira a sorte in modo indipendente se usare già
-# l'aspetto dello scenario successivo, con probabilità crescente zona per
-# zona — così il passaggio è graduale e "misto" invece che a scatti.
-func _scenario_data_for_spawn() -> Dictionary:
+# lo scenario successivo, con probabilità crescente zona per zona — così il
+# passaggio è graduale e "misto" invece che a scatti.
+func _scenario_index_for_spawn() -> int:
 	var current_idx := Scenarios.scenario_index_for_zone(zone)
 	var p := Scenarios.transition_progress(zone)
 	if p > 0.0 and randf() < p:
-		return Scenarios.scenario_data(Scenarios.next_scenario_index_for_zone(zone))
-	return Scenarios.scenario_data(current_idx)
+		return Scenarios.next_scenario_index_for_zone(zone)
+	return current_idx
+
+func _scenario_data_for_spawn() -> Dictionary:
+	return Scenarios.scenario_data(_scenario_index_for_spawn())
 
 func _apply_house_exterior() -> void:
 	var tier: Dictionary = HouseTiers.tier_data(CheckpointData.house_tier)
@@ -845,7 +904,7 @@ func _regenerate_objects() -> void:
 		var scene: PackedScene = OBJECT_SCENES[type_id]
 		var obj = scene.instantiate()
 		obj.position = _random_object_position()
-		var tree_sdata: Dictionary = {}
+		var scenario_idx := _scenario_index_for_spawn()
 		if type_id == "albero":
 			var tier := randf()
 			if tier < 0.34:
@@ -860,14 +919,16 @@ func _regenerate_objects() -> void:
 				obj.scale = Vector3.ONE * 1.5
 				obj.max_hp = 480.0
 				obj.material_drops = {"legno": 6}
-			tree_sdata = _scenario_data_for_spawn()
 		elif type_id == "recinzione":
 			obj.rotation_degrees.y = 90.0 if randf() < 0.5 else 0.0
 		add_child(obj)
-		# apply_scenario_appearance tocca $Trunk/$Foliage (@onready): serve
-		# che l'albero sia già nella scena, quindi dopo add_child().
+		# apply_scenario_appearance/set_parco_visual toccano nodi @onready:
+		# serve che l'oggetto sia già nella scena, quindi dopo add_child().
 		if type_id == "albero":
+			var tree_sdata: Dictionary = Scenarios.scenario_data(scenario_idx)
 			obj.apply_scenario_appearance(tree_sdata.tree_trunk_color, tree_sdata.tree_foliage_color, tree_sdata.tree_shape)
+		elif obj.has_method("set_parco_visual"):
+			obj.set_parco_visual(scenario_idx == 0)
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 
 const OBJECT_SPAWN_POINT_CLEARANCE := 3.5

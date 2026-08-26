@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/albero.gd" id="1_object"]
+[ext_resource type="PackedScene" path="res://assets/models/props/nature/tree_default.glb" id="2_realmodel"]
 
 [sub_resource type="CylinderShape3D" id="AlberoShape"]
 radius = 0.5
@@ -43,3 +44,7 @@ position = Vector3(0, 0.7, 0)
 mesh = SubResource("FoliageMesh")
 surface_material_override/0 = SubResource("FoliageMaterial")
 position = Vector3(0, 1.9, 0)
+
+[node name="RealModel" parent="." instance=ExtResource("2_realmodel")]
+visible = false
+scale = Vector3(1.6, 1.6, 1.6)
