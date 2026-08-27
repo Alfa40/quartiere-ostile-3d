@@ -91,6 +91,7 @@ const DAMAGE_FLASH_HIT_DECAY := 1.6
 var _damage_flash_baseline := 0.0
 var _damage_flash_hit_boost := 0.0
 
+const STORM_WARNING_GAP := 20.0
 const ZONE_COMPLETE_BOX_LANDSCAPE := Rect2(-230.0, 150.0, 460.0, 130.0)
 const ZONE_COMPLETE_BOX_PORTRAIT := Rect2(-310.0, 140.0, 620.0, 190.0)
 
@@ -359,6 +360,14 @@ func _update_top_hud_layout() -> void:
 	zone_complete_panel.offset_top = zc_box.position.y
 	zone_complete_panel.offset_right = zc_box.position.x + zc_box.size.x
 	zone_complete_panel.offset_bottom = zc_box.position.y + zc_box.size.y
+
+	# Subito sotto al pannello "Zona ripulita!", qualunque sia la sua altezza
+	# reale nell'orientazione corrente: mai calcolata a numeri fissi, così non
+	# può più sovrapporsi.
+	var warning_height: float = storm_warning_label.offset_bottom - storm_warning_label.offset_top
+	storm_warning_label.offset_top = zone_complete_panel.offset_bottom + STORM_WARNING_GAP
+	storm_warning_label.offset_bottom = storm_warning_label.offset_top + warning_height
+
 
 	if is_landscape:
 		var bar_right: float = health_bar.offset_right
