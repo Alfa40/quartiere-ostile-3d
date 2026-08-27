@@ -63,15 +63,19 @@ const STORM_START_RADIUS := 90.0
 const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 
 # Buio personale: appena il player esce dal raggio sicuro (sopra) non muore
-# sul colpo — ci vede pochissimo attorno a sé (piccola sfera che lo segue) e
-# ogni NIGHT_GOD_SPAWN_INTERVAL secondi nasce ai bordi di quella visuale,
+# sul colpo — ci vede pochissimo attorno a sé (vignetta a schermo intero,
+# non un effetto nel mondo 3D: la telecamera in terza persona sta a diversi
+# metri dal player, vedi _update_darkness) e a intervalli casuali tra
+# NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX nasce ai bordi della bolla di visuale,
 # dal lato rivolto verso casa, un "dio della notte": lento (una frazione
 # della velocità attuale del player, aggiornamenti/potenziamenti compresi)
 # ma letale al contatto e con vita spropositata (in pratica infondabile,
 # l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
 # subito: il buio, da quel momento, torna innocuo.
 const VISION_BUBBLE_RADIUS := 3.0
-const NIGHT_GOD_SPAWN_INTERVAL := 5.0
+const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
+const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
+const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
 const NIGHT_GOD_SPEED_FACTOR := 0.5
 const NIGHT_GOD_HP_MULTIPLIER := 100.0
 
@@ -183,7 +187,6 @@ var _time_outside := 0.0
 var _storm_mesh: MeshInstance3D = null
 
 var in_darkness := false
-var _vision_mesh: MeshInstance3D = null
 var _night_god_spawn_timer := 0.0
 var _night_gods: Array = []
 
@@ -851,19 +854,18 @@ func _make_dark_sphere() -> MeshInstance3D:
 	inst.visible = false
 	return inst
 
-# Due sfere nere viste dall'interno (cull_mode Front): _storm_mesh è ancorata
-# alla casa e si restringe nel tempo (il "muro" della tempesta); _vision_mesh
-# segue il player ed è una bolla piccola e fissa, visibile solo quando il
-# player è già nel buio (vedi _enter_darkness) — è quella che dà la
-# sensazione di "vedere pochissimo".
+# Sfera nera vista dall'interno (cull_mode Front), ancorata alla casa: è il
+# "muro" della tempesta che si restringe nel tempo. La bolla di visuale
+# ridotta nel buio invece NON è un effetto nel mondo 3D (vedi
+# _update_darkness): è una vignetta a schermo intero, gestita da hud.gd.
 func _setup_storm() -> void:
 	_storm_mesh = _make_dark_sphere()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
 
-	_vision_mesh = _make_dark_sphere()
-	_vision_mesh.scale = Vector3.ONE * VISION_BUBBLE_RADIUS
-	add_child(_vision_mesh)
+func _random_night_god_interval() -> float:
+	var steps: int = int(round((NIGHT_GOD_SPAWN_INTERVAL_MAX - NIGHT_GOD_SPAWN_INTERVAL_MIN) / NIGHT_GOD_SPAWN_INTERVAL_STEP))
+	return NIGHT_GOD_SPAWN_INTERVAL_MIN + float(randi() % (steps + 1)) * NIGHT_GOD_SPAWN_INTERVAL_STEP
 
 func _storm_safe_radius() -> float:
 	return HouseLight.radius_for_level(CheckpointData.house_light_level)
@@ -924,24 +926,23 @@ func _on_storm_fully_closed() -> void:
 # _update_darkness/_spawn_night_god).
 func _enter_darkness() -> void:
 	in_darkness = true
-	_vision_mesh.visible = true
-	_night_god_spawn_timer = NIGHT_GOD_SPAWN_INTERVAL
+	hud.set_darkness_visible(true)
+	_night_god_spawn_timer = _random_night_god_interval()
 
 # Rientrati nel raggio sicuro (o in casa): il buio torna innocuo, gli dei
 # della notte che stavano inseguendo il player si dissolvono subito.
 func _exit_darkness() -> void:
 	in_darkness = false
-	_vision_mesh.visible = false
+	hud.set_darkness_visible(false)
 	for god in _night_gods:
 		if is_instance_valid(god):
 			god.queue_free()
 	_night_gods.clear()
 
 func _update_darkness(delta: float) -> void:
-	_vision_mesh.global_position = player.global_position
 	_night_god_spawn_timer -= delta
 	if _night_god_spawn_timer <= 0.0:
-		_night_god_spawn_timer = NIGHT_GOD_SPAWN_INTERVAL
+		_night_god_spawn_timer = _random_night_god_interval()
 		_spawn_night_god()
 
 # Nasce sempre sul bordo della bolla di visuale del player, dal lato rivolto

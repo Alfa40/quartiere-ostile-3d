@@ -10,6 +10,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var ammo_label: Label = $AmmoLabel
 @onready var message_label: Label = $MessageLabel
 @onready var storm_warning_label: Label = $StormWarningLabel
+@onready var darkness_vignette: ColorRect = $DarknessVignette
 @onready var pause_panel: Control = $PausePanel
 @onready var pause_stats_label: Label = $PausePanel/Scroll/Box/StatsLabel
 @onready var pause_inventory_label: Label = $PausePanel/Scroll/Box/InventoryLabel
@@ -562,6 +563,9 @@ func show_storm_warning() -> void:
 	storm_warning_label.text = "Non restare nel buio"
 	storm_warning_label.visible = true
 	_storm_warning_time_left = STORM_WARNING_DURATION
+
+func set_darkness_visible(value: bool) -> void:
+	darkness_vignette.visible = value
 
 func update_zone(zone: int, zone_name: String) -> void:
 	zone_label.text = "Zona %d — %s" % [zone, zone_name]
