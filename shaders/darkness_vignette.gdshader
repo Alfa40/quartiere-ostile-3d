@@ -7,7 +7,7 @@ shader_type canvas_item;
 // mondo centrato sul player lascerebbe la telecamera stessa fuori dalla
 // bolla, rendendo visibile tutto il resto (vedi main.gd, _update_darkness).
 
-uniform float visible_radius : hint_range(0.0, 1.0) = 0.15;
+uniform float visible_radius : hint_range(0.0, 1.0) = 0.30;
 uniform float edge_softness : hint_range(0.0, 0.5) = 0.05;
 
 void fragment() {

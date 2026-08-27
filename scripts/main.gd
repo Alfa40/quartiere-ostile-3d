@@ -72,7 +72,7 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 # ma letale al contatto e con vita spropositata (in pratica infondabile,
 # l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
 # subito: il buio, da quel momento, torna innocuo.
-const VISION_BUBBLE_RADIUS := 3.0
+const VISION_BUBBLE_RADIUS := 6.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
@@ -149,6 +149,11 @@ const CLOSE_SPAWN_RADIUS := 30.0
 @onready var touch_controls = $HUD/TouchControls
 
 const OCCLUDER_FADE_TRANSPARENCY := 0.85
+# Gli oggetti distruttibili (alberi, panchine, ecc.) restano ben visibili
+# anche quando sfumano per non coprire il player: solo un'attenuazione
+# leggera, non la quasi-invisibilità usata per muri/casa (molto più grandi e
+# quindi molto più invasivi se restano opachi).
+const OBJECT_FADE_TRANSPARENCY := 0.35
 const OCCLUDER_FADE_SPEED := 4.0
 const OBJECT_OCCLUDER_RADIUS := 1.3
 # Margine aggiunto al test di occlusione: non solo il punto esatto in cui si
@@ -506,7 +511,7 @@ func _update_occlusion_fade(delta: float) -> void:
 		if not obj_blocking and not obj.has_meta("occluder_meshes"):
 			continue
 		for m in _object_occluder_meshes(obj):
-			_fade_toward(m, obj_blocking, delta)
+			_fade_toward(m, obj_blocking, delta, OBJECT_FADE_TRANSPARENCY)
 
 # Materiali unici per gli oggetti creati la prima volta che servono (un
 # albero/lampione/ecc. può avere più mesh, es. tronco+chioma), non subito
@@ -529,13 +534,13 @@ func _collect_unique_meshes(node: Node, out: Array) -> void:
 	for child in node.get_children():
 		_collect_unique_meshes(child, out)
 
-func _fade_toward(mesh_inst: MeshInstance3D, blocking: bool, delta: float) -> void:
+func _fade_toward(mesh_inst: MeshInstance3D, blocking: bool, delta: float, fade_transparency: float = OCCLUDER_FADE_TRANSPARENCY) -> void:
 	if mesh_inst == null:
 		return
 	var mat := mesh_inst.get_surface_override_material(0) as StandardMaterial3D
 	if mat == null:
 		return
-	var target: float = 1.0 - OCCLUDER_FADE_TRANSPARENCY if blocking else 1.0
+	var target: float = 1.0 - fade_transparency if blocking else 1.0
 	var new_alpha: float = move_toward(mat.albedo_color.a, target, OCCLUDER_FADE_SPEED * delta)
 	mat.albedo_color.a = new_alpha
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if new_alpha < 1.0 else BaseMaterial3D.TRANSPARENCY_DISABLED
