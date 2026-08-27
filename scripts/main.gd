@@ -151,9 +151,13 @@ const CLOSE_SPAWN_RADIUS := 30.0
 const OCCLUDER_FADE_TRANSPARENCY := 0.85
 # Gli oggetti distruttibili (alberi, panchine, ecc.) restano ben visibili
 # anche quando sfumano per non coprire il player: solo un'attenuazione
-# leggera, non la quasi-invisibilità usata per muri/casa (molto più grandi e
+# leggera, non la quasi-invisibilità usata per i muri (molto più grandi e
 # quindi molto più invasivi se restano opachi).
 const OBJECT_FADE_TRANSPARENCY := 0.35
+# La casa resta un po' più visibile dei muri quando sfuma (30% invece del
+# 15%): è l'elemento a cui il player deve tornare, vale la pena riconoscerla
+# anche mentre è tra telecamera e player.
+const HOUSE_FADE_TRANSPARENCY := 0.7
 const OCCLUDER_FADE_SPEED := 4.0
 const OBJECT_OCCLUDER_RADIUS := 1.3
 # Margine aggiunto al test di occlusione: non solo il punto esatto in cui si
@@ -501,7 +505,7 @@ func _update_occlusion_fade(delta: float) -> void:
 	# restare sempre ben visibile in quel momento, non sfumare.
 	var house_blocking := not zone_transitioning and _segment_hits_aabb(p0, p1, $HouseExterior.global_position, _house_half_extents + margin)
 	for m in _house_exterior_meshes:
-		_fade_toward(m, house_blocking, delta)
+		_fade_toward(m, house_blocking, delta, HOUSE_FADE_TRANSPARENCY)
 
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		if not is_instance_valid(obj) or bool(obj.get("low_object")):
