@@ -42,6 +42,23 @@ const HOUSE_DOOR_POS := Vector3(0, 0, 17.5)
 const HOUSE_INTERACT_RANGE := 2.5
 const HOUSE_EXIT_SPAWN_POS := Vector3(0, 0, 21)
 
+# "Tempesta": il buio inizia a chiudersi verso la casa 90s dopo essere
+# usciti, oppure subito alla sconfitta di tutti i nemici della zona (quale
+# delle due capita prima) — non si riazzera cambiando zona senza tornare a
+# casa (_skip_home()), solo tornando davvero a casa (nuova istanza di
+# Main.tscn). Raggio di partenza abbastanza grande da coprire tutta l'arena
+# vista dalla casa (diagonale ~70, con margine).
+const STORM_DELAY := 90.0
+const STORM_DURATION := 30.0
+const STORM_START_RADIUS := 90.0
+const STORM_MIN_RADIUS := 3.0
+const STORM_INSTANT_KILL_DAMAGE := 999999.0
+# Quando il buio si chiude del tutto senza che la zona sia stata ripulita, i
+# nemici ancora vivi devono "sentire" il player ovunque nell'arena (vedi
+# Enemy.detect_range_override, già usato per gli incontri scriptati del
+# tutorial).
+const STORM_ENEMY_DETECT_OVERRIDE := 200.0
+
 const MATERIAL_LABELS := {
 	"legno": "Legno",
 	"metallo": "Metallo",
@@ -143,6 +160,12 @@ var spawn_timer := 0.0
 var zone_transitioning := false
 var spawn_points := []
 
+var storm_active := false
+var storm_full_closed := false
+var storm_elapsed := 0.0
+var _time_outside := 0.0
+var _storm_mesh: MeshInstance3D = null
+
 var _pre_creator_money := 0.0
 var _pre_creator_materials := {}
 
@@ -181,6 +204,7 @@ func _ready() -> void:
 	for obj in get_tree().get_nodes_in_group("park_objects"):
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 	_build_spawn_points()
+	_setup_storm()
 	_start_zone()
 
 # Luminosità/contrasto regolabili dalle Impostazioni, applicati tramite le
@@ -761,6 +785,7 @@ func _process(delta: float) -> void:
 		get_tree().reload_current_scene()
 
 	_update_occlusion_fade(delta)
+	_update_storm(delta)
 
 	if zone_transitioning or player.dead:
 		if zone_transitioning and not player.dead:
@@ -771,7 +796,14 @@ func _process(delta: float) -> void:
 		hud.set_throw_buttons_visible(false)
 		return
 
-	hud.set_house_button_visible(false)
+	# Il buio del tutto chiuso senza aver ripulito la zona lascia comunque
+	# rifugiarsi in casa (vedi _on_storm_fully_closed()): la zona passa,
+	# solo con meno soldi per i nemici non uccisi.
+	if storm_full_closed:
+		var dist_to_house2 := player.global_position.distance_to(HOUSE_DOOR_POS)
+		hud.set_house_button_visible(dist_to_house2 <= HOUSE_INTERACT_RANGE)
+	else:
+		hud.set_house_button_visible(false)
 	hud.set_throw_buttons_visible(not CheckpointData.owned_throwables.is_empty())
 	_update_spawn_points()
 
@@ -779,6 +811,68 @@ func _process(delta: float) -> void:
 		spawn_timer -= delta
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
+
+# Sfera nera vista dall'interno (cull_mode Front): finché il player resta
+# dentro il raggio non cambia nulla, oltre quel raggio è tutto buio pesto.
+# Si restringe verso la casa invece che verso il player, quindi la
+# posizione resta fissa per tutta la partita.
+func _setup_storm() -> void:
+	var mesh := SphereMesh.new()
+	mesh.radius = 1.0
+	mesh.height = 2.0
+	mesh.radial_segments = 32
+	mesh.rings = 16
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color.BLACK
+	mat.cull_mode = BaseMaterial3D.CULL_FRONT
+	mat.disable_receive_shadows = true
+	_storm_mesh = MeshInstance3D.new()
+	_storm_mesh.mesh = mesh
+	_storm_mesh.material_override = mat
+	_storm_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_storm_mesh.visible = false
+	add_child(_storm_mesh)
+	_storm_mesh.global_position = $HouseExterior.global_position
+
+func _update_storm(delta: float) -> void:
+	if DevMode.enabled or player.dead:
+		return
+	if not storm_active:
+		_time_outside += delta
+		if _time_outside >= STORM_DELAY:
+			_start_storm()
+		return
+	storm_elapsed += delta
+	var t: float = clamp(storm_elapsed / STORM_DURATION, 0.0, 1.0)
+	var radius: float = lerp(STORM_START_RADIUS, STORM_MIN_RADIUS, t)
+	_storm_mesh.scale = Vector3.ONE * radius
+	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
+		storm_full_closed = true
+		_on_storm_fully_closed()
+	if player.global_position.distance_to(_storm_mesh.global_position) > radius:
+		player.take_damage(STORM_INSTANT_KILL_DAMAGE)
+
+func _start_storm() -> void:
+	if storm_active:
+		return
+	storm_active = true
+	storm_elapsed = 0.0
+	_storm_mesh.scale = Vector3.ONE * STORM_START_RADIUS
+	_storm_mesh.visible = true
+	hud.show_storm_warning()
+
+# Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
+# ancora vivi (e quelli che nasceranno da qui in avanti, vedi _spawn_enemy)
+# "sentono" il player ovunque nell'arena, per forzare lo scontro invece di
+# lasciare che il player li ignori — ma non è obbligatorio ucciderli: si può
+# comunque correre a casa (vedi _enter_house_anytime), la zona passa lo
+# stesso, solo con meno soldi guadagnati per i nemici non uccisi.
+func _on_storm_fully_closed() -> void:
+	if zone_enemies_alive <= 0:
+		return
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
 
 func _update_spawn_points() -> void:
 	var cam := get_viewport().get_camera_3d()
@@ -830,6 +924,8 @@ func _spawn_enemy() -> void:
 	var cooldown: float = BASE_ENEMY_COOLDOWN * (1.0 - COOLDOWN_MAX_REDUCTION * sat)
 	var archetype_id := EnemyArchetypes.pick(zone)
 	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown, archetype_id)
+	if storm_full_closed:
+		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
 	var sdata := _scenario_data_for_spawn()
 	enemy.apply_color_override(sdata.enemy_colors.get(archetype_id, EnemyArchetypes.DATA[archetype_id].color))
 	enemy.died.connect(_on_enemy_died.bind(enemy))
@@ -876,6 +972,7 @@ func _on_object_destroyed(obj: Node3D) -> void:
 func _complete_zone() -> void:
 	zone_transitioning = true
 	if not DevMode.enabled:
+		_start_storm()
 		if CheckpointData.is_checkpoint_zone(zone):
 			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
 		# La classifica riflette l'ultima zona davvero completata, non quella
@@ -895,8 +992,25 @@ func _skip_home() -> void:
 	_start_zone()
 
 func _enter_house_anytime() -> void:
+	if not zone_transitioning and storm_full_closed:
+		_force_home_after_storm()
+		return
 	CheckpointData.set_live_state(zone, int(money), materials, upgrades)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
+
+# Rifugio forzato: il buio ha chiuso del tutto e la zona non era stata
+# ripulita, ma il player è comunque riuscito a rientrare in casa. La zona
+# passa lo stesso (stesso trattamento di _complete_zone(), checkpoint e
+# classifica compresi), semplicemente con meno soldi guadagnati per i
+# nemici non uccisi — niente pannello di scelta, il player ha già scelto
+# correndo a casa.
+func _force_home_after_storm() -> void:
+	zone_transitioning = true
+	if not DevMode.enabled:
+		if CheckpointData.is_checkpoint_zone(zone):
+			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
+		Leaderboard.submit(zone, int(money))
+	_go_home()
 
 func _regenerate_objects() -> void:
 	for obj in get_tree().get_nodes_in_group("park_objects"):

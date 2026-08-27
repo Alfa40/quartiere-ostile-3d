@@ -1203,6 +1203,24 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 text = ""
 
+[node name="StormWarningLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -320.0
+offset_top = 40.0
+offset_right = 320.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 0.35, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+horizontal_alignment = 1
+autowrap_mode = 2
+text = ""
+visible = false
+
 [node name="TouchControls" type="Control" parent="HUD"]
 script = ExtResource("6_touch")
 

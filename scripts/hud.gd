@@ -9,6 +9,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var money_label: Label = $MoneyLabel
 @onready var ammo_label: Label = $AmmoLabel
 @onready var message_label: Label = $MessageLabel
+@onready var storm_warning_label: Label = $StormWarningLabel
 @onready var pause_panel: Control = $PausePanel
 @onready var pause_stats_label: Label = $PausePanel/Scroll/Box/StatsLabel
 @onready var pause_inventory_label: Label = $PausePanel/Scroll/Box/InventoryLabel
@@ -41,6 +42,9 @@ var main: Node = null
 var zone_complete_active := false
 var zone_complete_time_left := 0.0
 const ZONE_COMPLETE_WAIT := 30.0
+
+var _storm_warning_time_left := 0.0
+const STORM_WARNING_DURATION := 6.0
 var dev_target_zone := 1
 
 # Tasti +/- della zona in modalità creator tenuti premuti: ripetono da soli
@@ -213,6 +217,10 @@ func _update_damage_flash(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_update_damage_flash(delta)
+	if _storm_warning_time_left > 0.0:
+		_storm_warning_time_left -= delta
+		if _storm_warning_time_left <= 0.0:
+			storm_warning_label.visible = false
 	if zone_complete_active:
 		zone_complete_time_left -= delta
 		zone_complete_timer_label.text = "Ritorno automatico a casa tra %d s" % int(ceil(zone_complete_time_left))
@@ -540,6 +548,11 @@ func on_player_hp_changed(current: float, max_hp: float) -> void:
 
 func show_message(text: String) -> void:
 	message_label.text = text
+
+func show_storm_warning() -> void:
+	storm_warning_label.text = "Non restare nel buio"
+	storm_warning_label.visible = true
+	_storm_warning_time_left = STORM_WARNING_DURATION
 
 func update_zone(zone: int, zone_name: String) -> void:
 	zone_label.text = "Zona %d — %s" % [zone, zone_name]

@@ -2,7 +2,16 @@ extends Node
 
 const Throwables := preload("res://scripts/throwables.gd")
 
-const CHECKPOINT_INTERVAL := 50
+# Intervallo tra un checkpoint e il successivo, a soglie: più fitto nelle
+# prime zone (più semplice prendere confidenza col gioco), poi via via più
+# largo. Scenarios.gd usa esattamente le stesse soglie per i confini degli
+# scenari (vedi Scenarios._next_checkpoint_zone), i due sistemi devono
+# restare sincronizzati.
+const CHECKPOINT_INTERVAL_TIER1 := 20
+const CHECKPOINT_TIER1_END := 100
+const CHECKPOINT_INTERVAL_TIER2 := 30
+const CHECKPOINT_TIER2_END := 250
+const CHECKPOINT_INTERVAL_TIER3 := 50
 
 # Fino a SLOT_COUNT partite separate, ognuna con il proprio checkpoint e il
 # proprio salvataggio "riprendi partita", in cartelle indipendenti.
@@ -361,4 +370,9 @@ func save_continue() -> void:
 	_write_json(_slot_continue_path(current_slot), _state_dict())
 
 func is_checkpoint_zone(zone_num: int) -> bool:
-	return zone_num % CHECKPOINT_INTERVAL == 0
+	if zone_num <= CHECKPOINT_TIER1_END:
+		return zone_num % CHECKPOINT_INTERVAL_TIER1 == 0
+	elif zone_num <= CHECKPOINT_TIER2_END:
+		return (zone_num - CHECKPOINT_TIER1_END) % CHECKPOINT_INTERVAL_TIER2 == 0
+	else:
+		return (zone_num - CHECKPOINT_TIER2_END) % CHECKPOINT_INTERVAL_TIER3 == 0
