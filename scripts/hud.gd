@@ -335,6 +335,7 @@ func _update_top_hud_layout() -> void:
 	var vp := get_viewport().get_visible_rect().size
 	var is_landscape := vp.x > vp.y
 	var is_portrait := not is_landscape
+	darkness_vignette.material.set_shader_parameter("viewport_size", vp)
 	var height := HEALTH_BAR_HEIGHT_LANDSCAPE if is_landscape else HEALTH_BAR_HEIGHT_PORTRAIT
 	health_bar.offset_bottom = health_bar.offset_top + height
 	var left := HEALTH_BAR_LEFT_LANDSCAPE if is_landscape else HEALTH_BAR_LEFT_PORTRAIT
