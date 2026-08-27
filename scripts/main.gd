@@ -875,7 +875,12 @@ func _current_storm_radius() -> float:
 	return lerp(STORM_START_RADIUS, _storm_safe_radius(), t)
 
 func _update_storm(delta: float) -> void:
-	if DevMode.enabled or player.dead:
+	# Deve funzionare (e potersi testare) anche in Modalità Creator: l'unico
+	# vero blocco è il player morto. In Creator il player resta comunque
+	# invincibile (vedi Player.take_damage), quindi gli dei della notte non
+	# possono davvero ucciderlo lì, ma il buio/la vignetta/il loro
+	# comportamento restano visibili e testabili.
+	if player.dead:
 		return
 	if not storm_active:
 		_time_outside += delta
@@ -1062,8 +1067,11 @@ func _on_object_destroyed(obj: Node3D) -> void:
 
 func _complete_zone() -> void:
 	zone_transitioning = true
+	# La tempesta/buio deve comparire anche in Modalità Creator (per poterla
+	# testare), a differenza di checkpoint/classifica che restano isolati
+	# dalle partite normali.
+	_start_storm()
 	if not DevMode.enabled:
-		_start_storm()
 		if CheckpointData.is_checkpoint_zone(zone):
 			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
 		# La classifica riflette l'ultima zona davvero completata, non quella
