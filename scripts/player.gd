@@ -327,7 +327,7 @@ func _handle_attack(delta: float) -> void:
 		attack_flash.visible = true
 		_play_attack_swing()
 		for body in attack_area.get_overlapping_bodies():
-			if (body.is_in_group("enemies") or body.is_in_group("park_objects")) and body.has_method("take_damage"):
+			if (body.is_in_group("enemies") or body.is_in_group("park_objects") or body.is_in_group("night_gods")) and body.has_method("take_damage"):
 				body.take_damage(attack_damage, self)
 				if attack_knockback > 0.0 and body.is_in_group("enemies") and body.has_method("apply_knockback"):
 					var push_dir: Vector3 = body.global_position - global_position

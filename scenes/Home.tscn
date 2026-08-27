@@ -524,6 +524,28 @@ custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 30
 text = "Compra"
 
+[node name="LightNote" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab"]
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "La luce della casa tiene lontano il buio: più è potenziata, più spazio avrai per difenderti quando arriva"
+
+[node name="Row_light" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_light"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_light"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
 [node name="CloseButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 35

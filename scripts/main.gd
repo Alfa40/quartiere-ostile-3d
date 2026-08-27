@@ -8,7 +8,9 @@ const MeleeWeapons := preload("res://scripts/melee_weapons.gd")
 const Firearms := preload("res://scripts/firearms.gd")
 const Throwables := preload("res://scripts/throwables.gd")
 const HouseTiers := preload("res://scripts/house_tiers.gd")
+const HouseLight := preload("res://scripts/house_light.gd")
 const Scenarios := preload("res://scripts/scenarios.gd")
+const NightGodScene := preload("res://scenes/NightGod.tscn")
 const MEDIKIT_CHANCE := 0.16
 
 const STEAL_CHANCE := 0.35
@@ -47,17 +49,31 @@ const HOUSE_EXIT_SPAWN_POS := Vector3(0, 0, 21)
 # delle due capita prima) — non si riazzera cambiando zona senza tornare a
 # casa (_skip_home()), solo tornando davvero a casa (nuova istanza di
 # Main.tscn). Raggio di partenza abbastanza grande da coprire tutta l'arena
-# vista dalla casa (diagonale ~70, con margine).
+# vista dalla casa (diagonale ~70, con margine). Il raggio minimo verso cui
+# si restringe non è fisso: dipende dalla luce della casa (HouseLight,
+# 0 senza luce acquistata — il buio arriva fino alla porta — fino a 24 al
+# livello massimo), un margine che il player può ampliare potenziandola.
 const STORM_DELAY := 90.0
 const STORM_DURATION := 30.0
 const STORM_START_RADIUS := 90.0
-const STORM_MIN_RADIUS := 3.0
-const STORM_INSTANT_KILL_DAMAGE := 999999.0
 # Quando il buio si chiude del tutto senza che la zona sia stata ripulita, i
 # nemici ancora vivi devono "sentire" il player ovunque nell'arena (vedi
 # Enemy.detect_range_override, già usato per gli incontri scriptati del
 # tutorial).
 const STORM_ENEMY_DETECT_OVERRIDE := 200.0
+
+# Buio personale: appena il player esce dal raggio sicuro (sopra) non muore
+# sul colpo — ci vede pochissimo attorno a sé (piccola sfera che lo segue) e
+# ogni NIGHT_GOD_SPAWN_INTERVAL secondi nasce ai bordi di quella visuale,
+# dal lato rivolto verso casa, un "dio della notte": lento (una frazione
+# della velocità attuale del player, aggiornamenti/potenziamenti compresi)
+# ma letale al contatto e con vita spropositata (in pratica infondabile,
+# l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
+# subito: il buio, da quel momento, torna innocuo.
+const VISION_BUBBLE_RADIUS := 7.0
+const NIGHT_GOD_SPAWN_INTERVAL := 5.0
+const NIGHT_GOD_SPEED_FACTOR := 0.5
+const NIGHT_GOD_HP_MULTIPLIER := 100.0
 
 const MATERIAL_LABELS := {
 	"legno": "Legno",
@@ -165,6 +181,11 @@ var storm_full_closed := false
 var storm_elapsed := 0.0
 var _time_outside := 0.0
 var _storm_mesh: MeshInstance3D = null
+
+var in_darkness := false
+var _vision_mesh: MeshInstance3D = null
+var _night_god_spawn_timer := 0.0
+var _night_gods: Array = []
 
 var _pre_creator_money := 0.0
 var _pre_creator_materials := {}
@@ -812,28 +833,44 @@ func _process(delta: float) -> void:
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
 
-# Sfera nera vista dall'interno (cull_mode Front): finché il player resta
-# dentro il raggio non cambia nulla, oltre quel raggio è tutto buio pesto.
-# Si restringe verso la casa invece che verso il player, quindi la
-# posizione resta fissa per tutta la partita.
-func _setup_storm() -> void:
+func _make_dark_sphere() -> MeshInstance3D:
 	var mesh := SphereMesh.new()
 	mesh.radius = 1.0
 	mesh.height = 2.0
-	mesh.radial_segments = 32
-	mesh.rings = 16
+	mesh.radial_segments = 24
+	mesh.rings = 12
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.albedo_color = Color.BLACK
 	mat.cull_mode = BaseMaterial3D.CULL_FRONT
 	mat.disable_receive_shadows = true
-	_storm_mesh = MeshInstance3D.new()
-	_storm_mesh.mesh = mesh
-	_storm_mesh.material_override = mat
-	_storm_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_storm_mesh.visible = false
+	var inst := MeshInstance3D.new()
+	inst.mesh = mesh
+	inst.material_override = mat
+	inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	inst.visible = false
+	return inst
+
+# Due sfere nere viste dall'interno (cull_mode Front): _storm_mesh è ancorata
+# alla casa e si restringe nel tempo (il "muro" della tempesta); _vision_mesh
+# segue il player ed è una bolla piccola e fissa, visibile solo quando il
+# player è già nel buio (vedi _enter_darkness) — è quella che dà la
+# sensazione di "vedere pochissimo".
+func _setup_storm() -> void:
+	_storm_mesh = _make_dark_sphere()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
+
+	_vision_mesh = _make_dark_sphere()
+	_vision_mesh.scale = Vector3.ONE * VISION_BUBBLE_RADIUS
+	add_child(_vision_mesh)
+
+func _storm_safe_radius() -> float:
+	return HouseLight.radius_for_level(CheckpointData.house_light_level)
+
+func _current_storm_radius() -> float:
+	var t: float = clamp(storm_elapsed / STORM_DURATION, 0.0, 1.0)
+	return lerp(STORM_START_RADIUS, _storm_safe_radius(), t)
 
 func _update_storm(delta: float) -> void:
 	if DevMode.enabled or player.dead:
@@ -843,15 +880,21 @@ func _update_storm(delta: float) -> void:
 		if _time_outside >= STORM_DELAY:
 			_start_storm()
 		return
+
 	storm_elapsed += delta
-	var t: float = clamp(storm_elapsed / STORM_DURATION, 0.0, 1.0)
-	var radius: float = lerp(STORM_START_RADIUS, STORM_MIN_RADIUS, t)
+	var radius: float = _current_storm_radius()
 	_storm_mesh.scale = Vector3.ONE * radius
 	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
 		storm_full_closed = true
 		_on_storm_fully_closed()
-	if player.global_position.distance_to(_storm_mesh.global_position) > radius:
-		player.take_damage(STORM_INSTANT_KILL_DAMAGE)
+
+	var now_in_darkness: bool = player.global_position.distance_to(_storm_mesh.global_position) > radius
+	if now_in_darkness and not in_darkness:
+		_enter_darkness()
+	elif not now_in_darkness and in_darkness:
+		_exit_darkness()
+	if in_darkness:
+		_update_darkness(delta)
 
 func _start_storm() -> void:
 	if storm_active:
@@ -873,6 +916,53 @@ func _on_storm_fully_closed() -> void:
 		return
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
+
+# Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
+# attuale, che sia ancora in restringimento o già fermo al minimo dato dalla
+# luce della casa): niente morte istantanea, solo vista ridotta a una
+# bolla che lo segue e la minaccia degli dei della notte (vedi
+# _update_darkness/_spawn_night_god).
+func _enter_darkness() -> void:
+	in_darkness = true
+	_vision_mesh.visible = true
+	_night_god_spawn_timer = NIGHT_GOD_SPAWN_INTERVAL
+
+# Rientrati nel raggio sicuro (o in casa): il buio torna innocuo, gli dei
+# della notte che stavano inseguendo il player si dissolvono subito.
+func _exit_darkness() -> void:
+	in_darkness = false
+	_vision_mesh.visible = false
+	for god in _night_gods:
+		if is_instance_valid(god):
+			god.queue_free()
+	_night_gods.clear()
+
+func _update_darkness(delta: float) -> void:
+	_vision_mesh.global_position = player.global_position
+	_night_god_spawn_timer -= delta
+	if _night_god_spawn_timer <= 0.0:
+		_night_god_spawn_timer = NIGHT_GOD_SPAWN_INTERVAL
+		_spawn_night_god()
+
+# Nasce sempre sul bordo della bolla di visuale del player, dal lato rivolto
+# verso casa: si troverà così sempre di fronte al player, che dovrà scartare
+# di lato invece di poter semplicemente correre in linea retta verso casa.
+func _spawn_night_god() -> void:
+	var house_pos: Vector3 = _storm_mesh.global_position
+	var dir_to_house: Vector3 = house_pos - player.global_position
+	dir_to_house.y = 0.0
+	if dir_to_house.length() < 0.01:
+		dir_to_house = Vector3(0, 0, 1)
+	dir_to_house = dir_to_house.normalized()
+
+	var god := NightGodScene.instantiate()
+	add_child(god)
+	god.global_position = player.global_position + dir_to_house * VISION_BUBBLE_RADIUS
+	god.target = player
+	god.speed = player.BASE_SPEED * player.speed_mult * NIGHT_GOD_SPEED_FACTOR
+	god.max_hp = player.max_hp * NIGHT_GOD_HP_MULTIPLIER
+	god.hp = god.max_hp
+	_night_gods.append(god)
 
 func _update_spawn_points() -> void:
 	var cam := get_viewport().get_camera_3d()

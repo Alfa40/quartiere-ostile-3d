@@ -6,6 +6,7 @@ const Firearms := preload("res://scripts/firearms.gd")
 const Throwables := preload("res://scripts/throwables.gd")
 const UIScale := preload("res://scripts/ui_scale.gd")
 const HouseTiers := preload("res://scripts/house_tiers.gd")
+const HouseLight := preload("res://scripts/house_light.gd")
 
 const EQUIPPED_BUTTON_MODULATE := Color(1.2, 1.12, 0.7, 1.0)
 const OWNED_BUTTON_MODULATE := Color(1.0, 1.0, 1.0, 1.0)
@@ -221,6 +222,7 @@ func _ready() -> void:
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/BenchesTabButton.pressed.connect(_show_benches_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/TabsRow/CasaTabButton.pressed.connect(_show_casa_tab)
 	$HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_house/BuyButton.pressed.connect(_on_buy_house_tier_pressed)
+	$HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_light/BuyButton.pressed.connect(_on_buy_light_pressed)
 	$HUD/WeaponMenu/Scroll/Box/CloseButton.pressed.connect(_close_weapon_menu)
 	$HUD/FirearmMenu/Scroll/Box/CloseButton.pressed.connect(_close_firearm_menu)
 	$HUD/ThrowableMenu/Scroll/Box/CloseButton.pressed.connect(_close_throwable_menu)
@@ -686,6 +688,7 @@ func _refresh_casa_tab() -> void:
 		CheckpointData.money, CheckpointData.materials.get("legno", 0),
 		CheckpointData.materials.get("metallo", 0), CheckpointData.materials.get("cablaggi", 0),
 	]
+	_refresh_light_row()
 	var row := $HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_house
 	var info: Label = row.get_node("InfoLabel")
 	var btn: Button = row.get_node("BuyButton")
@@ -713,6 +716,47 @@ func _refresh_casa_tab() -> void:
 	var afford: bool = CheckpointData.money >= int(nxt.cost_money) and CheckpointData.materials.get(String(nxt.cost_material), 0) >= int(nxt.cost_amount)
 	btn.disabled = not afford
 	btn.text = "Compra"
+
+func _refresh_light_row() -> void:
+	var row := $HUD/WorkbenchMenu/Scroll/Box/CasaTab/Row_light
+	var info: Label = row.get_node("InfoLabel")
+	var btn: Button = row.get_node("BuyButton")
+	var level: int = CheckpointData.house_light_level
+	var cur_radius := HouseLight.radius_for_level(level)
+	if HouseLight.is_max_level(level):
+		info.text = "Luce della casa: livello %d/%d (raggio %d)\nLivello massimo raggiunto." % [level, HouseLight.MAX_LEVEL, int(cur_radius)]
+		btn.disabled = true
+		btn.text = "Massimo"
+		return
+	var nxt: Dictionary = HouseLight.next_level_data(level)
+	var mat_name: String = MATERIAL_LABELS.get(String(nxt.cost_material), String(nxt.cost_material))
+	if CheckpointData.zone < int(nxt.zone_required):
+		info.text = "Luce della casa: livello %d/%d (raggio %d)\nProssimo livello (raggio %d) — si sblocca alla zona %d" % [
+			level, HouseLight.MAX_LEVEL, int(cur_radius), int(nxt.radius), nxt.zone_required,
+		]
+		btn.disabled = true
+		btn.text = "Bloccata"
+		return
+	info.text = "Luce della casa: livello %d/%d (raggio %d)\nProssimo livello (raggio %d) — costa %d€ + %d %s" % [
+		level, HouseLight.MAX_LEVEL, int(cur_radius), int(nxt.radius), int(nxt.cost_money), int(nxt.cost_amount), mat_name,
+	]
+	var afford2: bool = CheckpointData.money >= int(nxt.cost_money) and CheckpointData.materials.get(String(nxt.cost_material), 0) >= int(nxt.cost_amount)
+	btn.disabled = not afford2
+	btn.text = "Compra"
+
+func _on_buy_light_pressed() -> void:
+	if HouseLight.is_max_level(CheckpointData.house_light_level):
+		return
+	var next_level := CheckpointData.house_light_level + 1
+	var nxt: Dictionary = HouseLight.next_level_data(CheckpointData.house_light_level)
+	if CheckpointData.zone < int(nxt.zone_required):
+		return
+	if CheckpointData.money < int(nxt.cost_money) or CheckpointData.materials.get(String(nxt.cost_material), 0) < int(nxt.cost_amount):
+		return
+	CheckpointData.money -= int(nxt.cost_money)
+	CheckpointData.materials[String(nxt.cost_material)] = CheckpointData.materials.get(String(nxt.cost_material), 0) - int(nxt.cost_amount)
+	CheckpointData.house_light_level = next_level
+	_refresh_casa_tab()
 
 func _on_buy_house_tier_pressed() -> void:
 	if HouseTiers.is_max_tier(CheckpointData.house_tier):
