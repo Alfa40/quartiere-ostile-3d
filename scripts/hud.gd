@@ -44,7 +44,7 @@ var zone_complete_time_left := 0.0
 const ZONE_COMPLETE_WAIT := 30.0
 
 var _storm_warning_time_left := 0.0
-const STORM_WARNING_DURATION := 6.0
+const STORM_WARNING_DURATION := 12.0
 var dev_target_zone := 1
 
 # Tasti +/- della zona in modalità creator tenuti premuti: ripetono da soli

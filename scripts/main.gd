@@ -70,7 +70,7 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 # ma letale al contatto e con vita spropositata (in pratica infondabile,
 # l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
 # subito: il buio, da quel momento, torna innocuo.
-const VISION_BUBBLE_RADIUS := 7.0
+const VISION_BUBBLE_RADIUS := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL := 5.0
 const NIGHT_GOD_SPEED_FACTOR := 0.5
 const NIGHT_GOD_HP_MULTIPLIER := 100.0
