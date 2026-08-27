@@ -73,6 +73,14 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 # l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
 # subito: il buio, da quel momento, torna innocuo.
 const VISION_BUBBLE_RADIUS := 6.0
+# La vignetta del buio non scatta di colpo alla dimensione finale: appena si
+# mette piede nel buio si vede quasi tutto (DARKNESS_VISION_MAX), e ci si
+# restringe verso il piccolo cerchio finale (DARKNESS_VISION_MIN) solo man
+# mano che ci si allontana oltre il confine del raggio sicuro, fino a
+# DARKNESS_DEPTH_FALLOFF unità di distanza.
+const DARKNESS_VISION_MAX := 1.0
+const DARKNESS_VISION_MIN := 0.30
+const DARKNESS_DEPTH_FALLOFF := 8.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
@@ -151,13 +159,13 @@ const CLOSE_SPAWN_RADIUS := 30.0
 const OCCLUDER_FADE_TRANSPARENCY := 0.85
 # Gli oggetti distruttibili (alberi, panchine, ecc.) restano ben visibili
 # anche quando sfumano per non coprire il player: solo un'attenuazione
-# leggera, non la quasi-invisibilità usata per i muri (molto più grandi e
-# quindi molto più invasivi se restano opachi).
-const OBJECT_FADE_TRANSPARENCY := 0.35
-# La casa resta un po' più visibile dei muri quando sfuma (30% invece del
-# 15%): è l'elemento a cui il player deve tornare, vale la pena riconoscerla
-# anche mentre è tra telecamera e player.
-const HOUSE_FADE_TRANSPARENCY := 0.7
+# leggera (90% di opacità), non la quasi-invisibilità usata per i muri
+# (molto più grandi e quindi molto più invasivi se restano opachi).
+const OBJECT_FADE_TRANSPARENCY := 0.10
+# La casa resta più visibile dei muri quando sfuma (65% invece del 15%): è
+# l'elemento a cui il player deve tornare, vale la pena riconoscerla anche
+# mentre è tra telecamera e player.
+const HOUSE_FADE_TRANSPARENCY := 0.35
 const OCCLUDER_FADE_SPEED := 4.0
 const OBJECT_OCCLUDER_RADIUS := 1.3
 # Margine aggiunto al test di occlusione: non solo il punto esatto in cui si
@@ -910,7 +918,7 @@ func _update_storm(delta: float) -> void:
 	elif not now_in_darkness and in_darkness:
 		_exit_darkness()
 	if in_darkness:
-		_update_darkness(delta)
+		_update_darkness(delta, radius)
 
 func _start_storm() -> void:
 	if storm_active:
@@ -941,6 +949,7 @@ func _on_storm_fully_closed() -> void:
 func _enter_darkness() -> void:
 	in_darkness = true
 	hud.set_darkness_visible(true)
+	hud.set_darkness_radius(DARKNESS_VISION_MAX)
 	_night_god_spawn_timer = _random_night_god_interval()
 
 # Rientrati nel raggio sicuro (o in casa): il buio torna innocuo, gli dei
@@ -953,7 +962,16 @@ func _exit_darkness() -> void:
 			god.queue_free()
 	_night_gods.clear()
 
-func _update_darkness(delta: float) -> void:
+# Appena il player mette piede nel buio la visuale resta quasi del tutto
+# aperta (DARKNESS_VISION_MAX): si restringe gradualmente verso il piccolo
+# cerchio finale (DARKNESS_VISION_MIN) man mano che si allontana oltre il
+# confine del raggio sicuro, non di colpo.
+func _update_darkness(delta: float, safe_radius: float) -> void:
+	var dist_from_house: float = player.global_position.distance_to(_storm_mesh.global_position)
+	var depth: float = clamp(dist_from_house - safe_radius, 0.0, DARKNESS_DEPTH_FALLOFF)
+	var t: float = depth / DARKNESS_DEPTH_FALLOFF
+	hud.set_darkness_radius(lerp(DARKNESS_VISION_MAX, DARKNESS_VISION_MIN, t))
+
 	_night_god_spawn_timer -= delta
 	if _night_god_spawn_timer <= 0.0:
 		_night_god_spawn_timer = _random_night_god_interval()

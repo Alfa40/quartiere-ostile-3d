@@ -567,6 +567,9 @@ func show_storm_warning() -> void:
 func set_darkness_visible(value: bool) -> void:
 	darkness_vignette.visible = value
 
+func set_darkness_radius(value: float) -> void:
+	darkness_vignette.material.set_shader_parameter("visible_radius", value)
+
 func update_zone(zone: int, zone_name: String) -> void:
 	zone_label.text = "Zona %d — %s" % [zone, zone_name]
 
