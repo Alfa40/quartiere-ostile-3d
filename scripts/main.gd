@@ -865,7 +865,7 @@ func _make_dark_sphere() -> MeshInstance3D:
 	# del tutto la vista di chi ci sta ancora dentro guardando fuori — quel
 	# compito resta solo alla vignetta personale (_update_darkness_vignette),
 	# separata, che evita lo stacco netto quando lo si attraversa davvero.
-	mat.albedo_color = Color(0.0, 0.0, 0.0, 0.75)
+	mat.albedo_color = Color(0.0, 0.0, 0.0, 0.97)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.cull_mode = BaseMaterial3D.CULL_FRONT
 	mat.disable_receive_shadows = true
