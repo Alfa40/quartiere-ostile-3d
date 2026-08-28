@@ -63,35 +63,33 @@ const STORM_START_RADIUS := 90.0
 const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 
 # Buio personale: appena il player esce dal raggio sicuro (sopra) non muore
-# sul colpo — ci vede pochissimo attorno a sé (una luce reale agganciata al
-# player, vedi _update_player_light/_player_light, non un effetto a schermo:
-# così si integra in modo naturale col resto dell'illuminazione del mondo,
-# vedi _update_storm_lighting) e a intervalli casuali tra
-# NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX nasce ai bordi della bolla di visuale
-# attuale del player, dal lato rivolto verso casa, un "dio della notte":
-# lento (una frazione della velocità attuale del player, aggiornamenti/
-# potenziamenti compresi) ma letale al contatto e con vita spropositata (in
-# pratica infondabile, l'unica strategia è scappare). Rientrare nel raggio
-# sicuro li dissolve subito: il buio, da quel momento, torna innocuo.
-const PLAYER_LIGHT_RADIUS_AT_EDGE := 6.0
-const PLAYER_LIGHT_RADIUS_MIN := 3.0
-const PLAYER_LIGHT_DEPTH_FALLOFF := 8.0
+# sul colpo — vede solo pochi passi attorno a sé (una luce reale agganciata
+# al player, vedi _update_player_light/_player_light, non un effetto a
+# schermo) e a intervalli casuali tra NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX
+# nasce ai bordi di quella bolla di visuale, dal lato rivolto verso casa, un
+# "dio della notte": lento (una frazione della velocità attuale del player,
+# aggiornamenti/potenziamenti compresi) ma letale al contatto e con vita
+# spropositata (in pratica infondabile, l'unica strategia è scappare).
+# Rientrare nel raggio sicuro li dissolve subito: il buio, da quel momento,
+# torna innocuo.
+const PLAYER_LIGHT_RADIUS_SAFE := 6.0
+const PLAYER_LIGHT_RADIUS_DARK := 4.0
 const PLAYER_LIGHT_ENERGY := 1.2
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
 const NIGHT_GOD_SPEED_FACTOR := 0.5
 const NIGHT_GOD_HP_MULTIPLIER := 100.0
-# Picco della luce "sopra la casa" quando il raggio sicuro è al massimo
-# potenziamento (24 unità, livello 5): scala linearmente con
-# _storm_safe_radius(), quindi resta proporzionalmente più debole ai livelli
-# più bassi e nulla senza alcun potenziamento (vedi _update_storm_lighting).
-const STORM_LIGHT_ENERGY_PEAK := 1.5
-# Energia originale di sole/ambiente (deve combaciare coi valori impostati su
-# $Sun e su Env_1 in Main.tscn): usata come punto di partenza del calo, non
-# letta a runtime (vedi _setup_storm) per non ereditare per errore un valore
-# già smorzato da una partita precedente nello stesso processo.
-const SUN_BASE_ENERGY := 1.1
+# Luce "sopra la casa" che sostituisce sole/ambiente durante la tempesta: non
+# cala mai di intensità, solo di raggio d'azione (vedi _current_storm_radius,
+# STORM_START_RADIUS -> _storm_safe_radius in STORM_DURATION secondi). Come
+# un'eclissi che si allarga: dentro il cerchio resta sempre piena luce,
+# fuori dal cerchio è già del tutto nero, nessun calo intermedio.
+const STORM_LIGHT_ENERGY := 2.0
+# Deve combaciare col valore impostato su Env_1 in Main.tscn: usato per
+# ripristinare l'ambiente su questa istanza (vedi _setup_storm), non letto
+# dalla risorsa a runtime per non ereditare un valore già azzerato da una
+# partita precedente nello stesso processo.
 const AMBIENT_BASE_ENERGY := 0.6
 
 const MATERIAL_LABELS := {
@@ -211,8 +209,6 @@ var storm_full_closed := false
 var storm_elapsed := 0.0
 var _time_outside := 0.0
 var _storm_mesh: Node3D = null
-var _sun_base_energy := 0.0
-var _ambient_base_energy := 0.0
 var _player_light: OmniLight3D = null
 
 var in_darkness := false
@@ -869,32 +865,26 @@ func _process(delta: float) -> void:
 # is_in_darkness, chiusura completa, nemici e posizione degli dei della
 # notte. Tutte le distanze contano solo sul piano orizzontale
 # (_horizontal_distance_to_house), mai sulla quota di player/telecamera.
-# Memorizza anche l'energia originale di sole/ambiente (prima che la
-# tempesta inizi a farli calare, vedi _update_storm_lighting) e crea la
-# piccola luce personale che segue il player: garantisce sempre un raggio
-# minimo visibile anche a luce del giorno/ambiente ormai azzerate (vedi
+# Duplica anche la risorsa Environment (le sotto-risorse incorporate in un
+# .tscn sono condivise dal resource loader tra istanze diverse della stessa
+# scena: senza duplicarla, spegnere l'ambiente in _start_storm() rischierebbe
+# di "restare acceso" anche per la prossima partita nello stesso processo) e
+# crea la piccola luce personale che segue il player: garantisce sempre un
+# raggio minimo visibile anche a sole/ambiente ormai spenti (vedi
 # _update_player_light).
 func _setup_storm() -> void:
 	_storm_mesh = Node3D.new()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
 
-	# Valori fissi (non letti dalla risorsa Environment in scena): le
-	# sotto-risorse incorporate in un .tscn sono condivise dal resource
-	# loader tra istanze diverse della stessa scena, quindi una lettura a
-	# runtime rischia di ereditare il valore già smorzato da una partita
-	# precedente nello stesso processo. La duplica qui sotto rende comunque
-	# questa istanza indipendente dalle altre per il resto della sessione.
-	_sun_base_energy = SUN_BASE_ENERGY
-	_ambient_base_energy = AMBIENT_BASE_ENERGY
 	var env: Environment = $Environment.environment.duplicate()
-	env.ambient_light_energy = _ambient_base_energy
+	env.ambient_light_energy = AMBIENT_BASE_ENERGY
 	$Environment.environment = env
 
 	_player_light = OmniLight3D.new()
 	_player_light.light_color = Color(0.9, 0.85, 0.75, 1.0)
 	_player_light.light_energy = PLAYER_LIGHT_ENERGY
-	_player_light.omni_range = PLAYER_LIGHT_RADIUS_AT_EDGE
+	_player_light.omni_range = PLAYER_LIGHT_RADIUS_SAFE
 	_player_light.shadow_enabled = false
 	_player_light.position = Vector3(0, 1.2, 0)
 	player.add_child(_player_light)
@@ -935,14 +925,13 @@ func _update_storm(delta: float) -> void:
 
 	storm_elapsed += delta
 	var radius: float = _current_storm_radius()
+	_storm_light.omni_range = radius
 	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
 		storm_full_closed = true
 		_on_storm_fully_closed()
 
-	_update_storm_lighting(radius)
-	_update_player_light(radius)
-
 	var now_in_darkness: bool = _horizontal_distance_to_house(player.global_position) > radius
+	_update_player_light(now_in_darkness)
 	if now_in_darkness and not in_darkness:
 		_enter_darkness()
 	elif not now_in_darkness and in_darkness:
@@ -955,6 +944,17 @@ func _start_storm() -> void:
 		return
 	storm_active = true
 	storm_elapsed = 0.0
+	# Nessun calo graduale: il sole/l'ambiente sparisce e la luce sopra la
+	# casa prende il suo posto da subito, alla massima intensità e con
+	# raggio pari a STORM_START_RADIUS (copre già tutta la mappa) — un
+	# cambio impercettibile, perché a quel raggio non c'è ancora nulla fuori
+	# dal cerchio. Da qui in avanti è solo il raggio a restringersi
+	# (_current_storm_radius), mai l'intensità: un'eclissi che avanza, non
+	# un tramonto uniforme.
+	_sun.light_energy = 0.0
+	$Environment.environment.ambient_light_energy = 0.0
+	_storm_light.light_energy = STORM_LIGHT_ENERGY
+	_storm_light.omni_range = STORM_START_RADIUS
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
@@ -969,37 +969,14 @@ func _on_storm_fully_closed() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
 
-# Il sole e la luce ambientale calano insieme, con continuità, verso lo zero:
-# non c'è mai una divisione netta tra "giorno" e "buio", solo un'unica luce
-# che progressivamente si spegne. La luce sopra la casa (StormLight) segue
-# lo stesso raggio della tempesta (si restringe insieme, mai una mesh o un
-# muro: vedi _current_storm_radius) e la sua intensità cresce da zero verso
-# un residuo finale proporzionale al livello della luce della casa — nullo
-# senza alcun potenziamento (il buio arriva fino alla porta), un "ultimo
-# filo di luce" con la luce potenziata. Anche mentre la sua energia sale, la
-# luminosità complessiva vicino a casa cala comunque nel tempo, perché sole
-# e ambiente perdono molto di più di quanto essa restituisca.
-func _update_storm_lighting(radius: float) -> void:
-	var t: float = _storm_progress()
-	_sun.light_energy = lerp(_sun_base_energy, 0.0, t)
-	var env: Environment = $Environment.environment
-	env.ambient_light_energy = lerp(_ambient_base_energy, 0.0, t)
-	_storm_light.omni_range = radius
-	var target_local_energy: float = STORM_LIGHT_ENERGY_PEAK * (_storm_safe_radius() / STORM_START_RADIUS)
-	_storm_light.light_energy = lerp(0.0, target_local_energy, t)
-
-# Raggio minimo sempre visibile attorno al player, tramite una luce vera
-# agganciata a lui (non un effetto a schermo): dentro il raggio sicuro resta
-# al suo valore massimo, irrilevante perché il resto della scena è comunque
-# ben illuminato; oltre il bordo si restringe con continuità (mai un salto)
-# fino al minimo assoluto dopo PLAYER_LIGHT_DEPTH_FALLOFF unità nel buio.
-func _update_player_light(radius: float) -> void:
-	var signed_depth: float = _horizontal_distance_to_house(player.global_position) - radius
-	if signed_depth <= 0.0:
-		_player_light.omni_range = PLAYER_LIGHT_RADIUS_AT_EDGE
-		return
-	var t: float = clamp(signed_depth / PLAYER_LIGHT_DEPTH_FALLOFF, 0.0, 1.0)
-	_player_light.omni_range = lerp(PLAYER_LIGHT_RADIUS_AT_EDGE, PLAYER_LIGHT_RADIUS_MIN, t)
+# Raggio di visibilità del player, tramite una luce vera agganciata a lui
+# (non un effetto a schermo): dentro il raggio sicuro resta ampio (comunque
+# irrilevante, il resto della scena è ben illuminato), fuori diventa
+# improvvisamente stretto — pochi passi, niente sfumatura intermedia, in
+# coerenza con l'eclissi che avanza (vedi _start_storm/_update_storm: fuori
+# dal cerchio è già del tutto nero).
+func _update_player_light(in_darkness_now: bool) -> void:
+	_player_light.omni_range = PLAYER_LIGHT_RADIUS_DARK if in_darkness_now else PLAYER_LIGHT_RADIUS_SAFE
 
 # Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
 # attuale, che sia ancora in restringimento o già fermo al minimo dato dalla
