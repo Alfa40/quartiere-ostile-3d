@@ -314,11 +314,14 @@ light_color = Color(1.0, 0.85, 0.55, 1)
 light_energy = 1.0
 omni_range = 5.0
 
-[node name="StormLight" type="OmniLight3D" parent="HouseExterior"]
-position = Vector3(0, 18, 0)
+[node name="StormLight" type="SpotLight3D" parent="HouseExterior"]
+position = Vector3(0, 40, 0)
+rotation_degrees = Vector3(-90, 0, 0)
 light_color = Color(1.0, 0.92, 0.75, 1)
 light_energy = 0.0
-omni_range = 90.0
+spot_range = 60.0
+spot_angle = 0.0
+spot_angle_attenuation = 0.5
 shadow_enabled = false
 
 [node name="Albero1" type="StaticBody3D" parent="."]

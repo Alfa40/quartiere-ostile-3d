@@ -85,7 +85,18 @@ const NIGHT_GOD_HP_MULTIPLIER := 100.0
 # STORM_START_RADIUS -> _storm_safe_radius in STORM_DURATION secondi). Come
 # un'eclissi che si allarga: dentro il cerchio resta sempre piena luce,
 # fuori dal cerchio è già del tutto nero, nessun calo intermedio.
+#
+# È un faro (SpotLight3D) puntato dritto verso il basso, non una lampadina
+# (OmniLight3D): un cono di luce vero, con un cerchio a terra dai bordi
+# netti che si allarga o restringe cambiando l'angolo del cono — come lo
+# zoom del flash di un iPhone, non una sfera di luce che si espande in ogni
+# direzione. STORM_LIGHT_HEIGHT deve combaciare con la posizione Y del nodo
+# StormLight in Main.tscn: raggio-a-terra = altezza * tan(angolo), quindi
+# l'angolo per un dato raggio è atan(raggio / altezza) — vedi
+# _spot_angle_for_radius.
 const STORM_LIGHT_ENERGY := 2.0
+const STORM_LIGHT_HEIGHT := 40.0
+const STORM_LIGHT_SPOT_RANGE := 60.0
 # Deve combaciare col valore impostato su Env_1 in Main.tscn: usato per
 # ripristinare l'ambiente su questa istanza (vedi _setup_storm), non letto
 # dalla risorsa a runtime per non ereditare un valore già azzerato da una
@@ -161,7 +172,7 @@ const CLOSE_SPAWN_RADIUS := 30.0
 @onready var player: Node3D = $Player
 @onready var touch_controls = $HUD/TouchControls
 @onready var _sun: DirectionalLight3D = $Sun
-@onready var _storm_light: OmniLight3D = $HouseExterior/StormLight
+@onready var _storm_light: SpotLight3D = $HouseExterior/StormLight
 
 const OCCLUDER_FADE_TRANSPARENCY := 0.85
 # Gli oggetti distruttibili (alberi, panchine, ecc.) restano ben visibili
@@ -909,6 +920,13 @@ func _storm_progress() -> float:
 func _current_storm_radius() -> float:
 	return lerp(STORM_START_RADIUS, _storm_safe_radius(), _storm_progress())
 
+# Converte un raggio a terra nell'angolo del cono del faro sopra la casa:
+# raggio = altezza * tan(angolo), quindi angolo = atan(raggio / altezza).
+# Zero raggio -> zero angolo (cono chiuso, nessuna luce a terra); clampato
+# sotto i 90° perché a 90° il cono diventerebbe un piano infinito.
+func _spot_angle_for_radius(radius: float) -> float:
+	return clamp(rad_to_deg(atan(radius / STORM_LIGHT_HEIGHT)), 0.0, 89.0)
+
 func _update_storm(delta: float) -> void:
 	# Deve funzionare (e potersi testare) anche in Modalità Creator: l'unico
 	# vero blocco è il player morto. In Creator il player resta comunque
@@ -925,7 +943,7 @@ func _update_storm(delta: float) -> void:
 
 	storm_elapsed += delta
 	var radius: float = _current_storm_radius()
-	_storm_light.omni_range = radius
+	_storm_light.spot_angle = _spot_angle_for_radius(radius)
 	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
 		storm_full_closed = true
 		_on_storm_fully_closed()
@@ -954,7 +972,8 @@ func _start_storm() -> void:
 	_sun.light_energy = 0.0
 	$Environment.environment.ambient_light_energy = 0.0
 	_storm_light.light_energy = STORM_LIGHT_ENERGY
-	_storm_light.omni_range = STORM_START_RADIUS
+	_storm_light.spot_range = STORM_LIGHT_SPOT_RANGE
+	_storm_light.spot_angle = _spot_angle_for_radius(STORM_START_RADIUS)
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
