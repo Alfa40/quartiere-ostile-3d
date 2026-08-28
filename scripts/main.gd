@@ -860,7 +860,13 @@ func _make_dark_sphere() -> MeshInstance3D:
 	mesh.rings = 12
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = Color.BLACK
+	# Semi-trasparente (non nera opaca): serve a far VEDERE l'anello
+	# avvicinarsi da lontano come una foschia densa e scura, senza bloccare
+	# del tutto la vista di chi ci sta ancora dentro guardando fuori — quel
+	# compito resta solo alla vignetta personale (_update_darkness_vignette),
+	# separata, che evita lo stacco netto quando lo si attraversa davvero.
+	mat.albedo_color = Color(0.0, 0.0, 0.0, 0.75)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.cull_mode = BaseMaterial3D.CULL_FRONT
 	mat.disable_receive_shadows = true
 	var inst := MeshInstance3D.new()
@@ -927,12 +933,12 @@ func _start_storm() -> void:
 	storm_active = true
 	storm_elapsed = 0.0
 	_storm_mesh.scale = Vector3.ONE * STORM_START_RADIUS
-	# _storm_mesh resta invisibile (solo confine logico, per is_in_darkness/
-	# is_full_closed/nemici): un secondo muro pieno e opaco nel mondo 3D,
-	# oltre alla vignetta, dava uno stacco netto nell'istante in cui il
-	# player lo attraversava. Solo la vignetta (già graduale, da quasi
-	# tutto aperto a stretta) rappresenta il buio: appena si entra si vede
-	# ancora bene dove si sta andando, si restringe piano man mano.
+	# _storm_mesh torna visibile (foschia semi-trasparente, non un muro
+	# opaco): serve a far vedere l'anello chiudersi da lontano. Non blocca
+	# del tutto la vista (evita lo stacco netto di prima): quello resta
+	# compito della vignetta personale (_update_darkness_vignette), libera
+	# finché si è dentro l'anello, si restringe solo attraversandolo.
+	_storm_mesh.visible = true
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
