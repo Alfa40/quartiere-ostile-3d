@@ -954,18 +954,28 @@ func _on_storm_fully_closed() -> void:
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
 
 func _update_darkness_vignette(safe_radius: float) -> void:
-	# Dentro l'anello (raggio sicuro) la visuale resta libera, nessuna
-	# vignetta: la restrizione inizia esattamente al bordo (DARKNESS_VISION_
-	# AT_EDGE) e cresce andando verso l'esterno, fino al minimo assoluto
-	# bene dentro il buio (DARKNESS_VISION_MIN).
+	# L'anello visivo personale (raggio VISION_BUBBLE_RADIUS) esiste sempre
+	# attorno al player, ma non si nota in piena luce perché tutto è
+	# comunque visibile. Non appare dal nulla: comincia a "entrare" nel buio
+	# (e quindi a diventare visibile) proprio quando il confine della
+	# tempesta arriva a toccarlo, cioè VISION_BUBBLE_RADIUS unità prima che
+	# il player stesso lo attraversi — non un salto istantaneo, ma la
+	# stessa geometria a farlo emergere gradualmente. Gli dei della notte
+	# restano legati solo al vero attraversamento (in_darkness), più avanti.
 	var dist_from_house: float = player.global_position.distance_to(_storm_mesh.global_position)
 	var signed_depth: float = dist_from_house - safe_radius
-	if signed_depth <= 0.0:
+	if signed_depth <= -VISION_BUBBLE_RADIUS:
 		hud.set_darkness_visible(false)
 		return
 	hud.set_darkness_visible(true)
-	var t: float = clamp(signed_depth / DARKNESS_DEPTH_FALLOFF, 0.0, 1.0)
-	hud.set_darkness_radius(lerp(DARKNESS_VISION_AT_EDGE, DARKNESS_VISION_MIN, t))
+	var vis_radius: float
+	if signed_depth <= 0.0:
+		var t: float = (signed_depth + VISION_BUBBLE_RADIUS) / VISION_BUBBLE_RADIUS
+		vis_radius = lerp(1.0, DARKNESS_VISION_AT_EDGE, t)
+	else:
+		var t2: float = clamp(signed_depth / DARKNESS_DEPTH_FALLOFF, 0.0, 1.0)
+		vis_radius = lerp(DARKNESS_VISION_AT_EDGE, DARKNESS_VISION_MIN, t2)
+	hud.set_darkness_radius(vis_radius)
 
 # Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
 # attuale, che sia ancora in restringimento o già fermo al minimo dato dalla
