@@ -852,12 +852,13 @@ func _process(delta: float) -> void:
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
 
-const STORM_WALL_HEIGHT := 500.0
+const STORM_WALL_HEIGHT := 3.0
 
-# Cilindro (non una sfera): una vera circonferenza sul terreno, non un
-# volume che si restringe anche in verticale — l'altezza enorme fa sì che
-# resti "un muro" a qualunque quota si trovi player/telecamera, invece di
-# comportarsi come una cupola con un soffitto.
+# Cilindro basso e piatto (non una sfera, non un muro alto): un vero
+# cerchio piatto che aderisce al terreno, la cui circonferenza si
+# restringe nel tempo. Tutte le distanze contano solo sul piano
+# orizzontale (_horizontal_distance_to_house), mai sulla quota di
+# player/telecamera.
 func _make_dark_cylinder() -> MeshInstance3D:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = 1.0
