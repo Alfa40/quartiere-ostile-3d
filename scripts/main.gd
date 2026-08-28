@@ -852,12 +852,19 @@ func _process(delta: float) -> void:
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
 
-func _make_dark_sphere() -> MeshInstance3D:
-	var mesh := SphereMesh.new()
-	mesh.radius = 1.0
-	mesh.height = 2.0
-	mesh.radial_segments = 24
-	mesh.rings = 12
+const STORM_WALL_HEIGHT := 500.0
+
+# Cilindro (non una sfera): una vera circonferenza sul terreno, non un
+# volume che si restringe anche in verticale — l'altezza enorme fa sì che
+# resti "un muro" a qualunque quota si trovi player/telecamera, invece di
+# comportarsi come una cupola con un soffitto.
+func _make_dark_cylinder() -> MeshInstance3D:
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = 1.0
+	mesh.bottom_radius = 1.0
+	mesh.height = STORM_WALL_HEIGHT
+	mesh.radial_segments = 32
+	mesh.rings = 1
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	# Semi-trasparente (non nera opaca): serve a far VEDERE l'anello
@@ -876,14 +883,24 @@ func _make_dark_sphere() -> MeshInstance3D:
 	inst.visible = false
 	return inst
 
-# Sfera nera vista dall'interno (cull_mode Front), ancorata alla casa: è il
-# "muro" della tempesta che si restringe nel tempo. La bolla di visuale
-# ridotta nel buio invece NON è un effetto nel mondo 3D (vedi
-# _update_darkness): è una vignetta a schermo intero, gestita da hud.gd.
+# Cilindro nero visto dall'interno (cull_mode Front), ancorato alla casa: è
+# il "muro" della tempesta che si restringe nel tempo, una vera
+# circonferenza sul terreno (non una sfera: vedi _make_dark_cylinder e
+# _horizontal_distance_to_house, tutte le distanze contano solo sul piano
+# orizzontale). La bolla di visuale ridotta nel buio invece NON è un
+# effetto nel mondo 3D (vedi _update_darkness_vignette): è una vignetta a
+# schermo intero, gestita da hud.gd.
 func _setup_storm() -> void:
-	_storm_mesh = _make_dark_sphere()
+	_storm_mesh = _make_dark_cylinder()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
+
+# Distanza sul solo piano orizzontale (XZ) dalla casa: la tempesta è una
+# circonferenza sul terreno, non una sfera, quindi l'altezza di player o
+# telecamera non deve mai contare nel determinare se si è "fuori".
+func _horizontal_distance_to_house(pos: Vector3) -> float:
+	var house_pos: Vector3 = _storm_mesh.global_position
+	return Vector2(pos.x - house_pos.x, pos.z - house_pos.z).length()
 
 func _random_night_god_interval() -> float:
 	var steps: int = int(round((NIGHT_GOD_SPAWN_INTERVAL_MAX - NIGHT_GOD_SPAWN_INTERVAL_MIN) / NIGHT_GOD_SPAWN_INTERVAL_STEP))
@@ -912,14 +929,18 @@ func _update_storm(delta: float) -> void:
 
 	storm_elapsed += delta
 	var radius: float = _current_storm_radius()
-	_storm_mesh.scale = Vector3.ONE * radius
+	# Scala solo X/Z (il raggio della circonferenza): l'altezza (Y) resta
+	# sempre STORM_WALL_HEIGHT invariata, altrimenti il muro si
+	# accorcerebbe insieme al raggio fino quasi a sparire proprio quando
+	# conta di più (raggio piccolo o nullo senza luce della casa).
+	_storm_mesh.scale = Vector3(radius, 1.0, radius)
 	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
 		storm_full_closed = true
 		_on_storm_fully_closed()
 
 	_update_darkness_vignette(radius)
 
-	var now_in_darkness: bool = player.global_position.distance_to(_storm_mesh.global_position) > radius
+	var now_in_darkness: bool = _horizontal_distance_to_house(player.global_position) > radius
 	if now_in_darkness and not in_darkness:
 		_enter_darkness()
 	elif not now_in_darkness and in_darkness:
@@ -932,7 +953,7 @@ func _start_storm() -> void:
 		return
 	storm_active = true
 	storm_elapsed = 0.0
-	_storm_mesh.scale = Vector3.ONE * STORM_START_RADIUS
+	_storm_mesh.scale = Vector3(STORM_START_RADIUS, 1.0, STORM_START_RADIUS)
 	# _storm_mesh torna visibile (foschia semi-trasparente, non un muro
 	# opaco): serve a far vedere l'anello chiudersi da lontano. Non blocca
 	# del tutto la vista (evita lo stacco netto di prima): quello resta
@@ -962,7 +983,7 @@ func _update_darkness_vignette(safe_radius: float) -> void:
 	# il player stesso lo attraversi — non un salto istantaneo, ma la
 	# stessa geometria a farlo emergere gradualmente. Gli dei della notte
 	# restano legati solo al vero attraversamento (in_darkness), più avanti.
-	var dist_from_house: float = player.global_position.distance_to(_storm_mesh.global_position)
+	var dist_from_house: float = _horizontal_distance_to_house(player.global_position)
 	var signed_depth: float = dist_from_house - safe_radius
 	if signed_depth <= -VISION_BUBBLE_RADIUS:
 		hud.set_darkness_visible(false)
