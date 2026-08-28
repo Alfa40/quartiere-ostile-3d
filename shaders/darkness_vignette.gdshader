@@ -15,7 +15,7 @@ shader_type canvas_item;
 // cerchio (non un'ellisse) a qualunque proporzione di schermo.
 
 uniform vec2 viewport_size = vec2(1280.0, 720.0);
-uniform float visible_radius : hint_range(0.0, 1.0) = 0.30;
+uniform float visible_radius : hint_range(0.0, 1.0) = 0.60;
 uniform float edge_softness : hint_range(0.0, 0.5) = 0.05;
 
 void fragment() {

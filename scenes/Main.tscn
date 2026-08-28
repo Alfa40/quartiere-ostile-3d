@@ -47,7 +47,7 @@ shader_parameter/edge_start = 0.25
 
 [sub_resource type="ShaderMaterial" id="DarknessVignetteMat"]
 shader = ExtResource("11_darkness_vignette")
-shader_parameter/visible_radius = 0.30
+shader_parameter/visible_radius = 0.60
 shader_parameter/edge_softness = 0.05
 
 [sub_resource type="StyleBoxFlat" id="HealthBarBG"]

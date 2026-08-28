@@ -79,7 +79,7 @@ const VISION_BUBBLE_RADIUS := 6.0
 # mano che ci si allontana oltre il confine del raggio sicuro, fino a
 # DARKNESS_DEPTH_FALLOFF unità di distanza.
 const DARKNESS_VISION_MAX := 1.0
-const DARKNESS_VISION_MIN := 0.30
+const DARKNESS_VISION_MIN := 0.60
 const DARKNESS_DEPTH_FALLOFF := 8.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
