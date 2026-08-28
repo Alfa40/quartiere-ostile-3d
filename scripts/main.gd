@@ -868,10 +868,11 @@ func _make_dark_cylinder() -> MeshInstance3D:
 	mesh.rings = 1
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	# Semi-trasparente (non nera opaca): serve a far VEDERE l'anello
-	# avvicinarsi da lontano come una foschia densa e scura, senza bloccare
-	# del tutto la vista di chi ci sta ancora dentro guardando fuori — quel
-	# compito resta solo alla vignetta personale (_update_darkness_vignette),
+	# Resta sempre invisibile (vedi _start_storm): serve solo come confine
+	# logico posizionabile/scalabile (global_position, scale). Tutta la
+	# rappresentazione visiva del buio è la vignetta personale
+	# (_update_darkness_vignette), non un oggetto nel mondo 3D — mesh e
+	# materiale restano solo per comodità di posizionamento.
 	# separata, che evita lo stacco netto quando lo si attraversa davvero.
 	mat.albedo_color = Color(0.0, 0.0, 0.0, 0.97)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -955,12 +956,14 @@ func _start_storm() -> void:
 	storm_active = true
 	storm_elapsed = 0.0
 	_storm_mesh.scale = Vector3(STORM_START_RADIUS, 1.0, STORM_START_RADIUS)
-	# _storm_mesh torna visibile (foschia semi-trasparente, non un muro
-	# opaco): serve a far vedere l'anello chiudersi da lontano. Non blocca
-	# del tutto la vista (evita lo stacco netto di prima): quello resta
-	# compito della vignetta personale (_update_darkness_vignette), libera
-	# finché si è dentro l'anello, si restringe solo attraversandolo.
-	_storm_mesh.visible = true
+	# _storm_mesh resta invisibile: solo confine logico (is_in_darkness,
+	# chiusura completa, nemici, posizione degli dei della notte). Tutta la
+	# rappresentazione visiva del buio, sia l'avvicinamento che l'ingresso
+	# vero e proprio, è la vignetta personale (_update_darkness_vignette):
+	# libera dentro l'anello, comincia a farsi notare quando il confine
+	# tocca la bolla di visuale del player, si restringe con continuità
+	# attraversandolo e andando più a fondo nel buio — nessun oggetto nel
+	# mondo 3D separato.
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
