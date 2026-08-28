@@ -961,19 +961,33 @@ func _on_storm_fully_closed() -> void:
 # confine, positivo = già nel buio) evita qualunque stacco netto tra le due
 # fasi.
 func _update_darkness_vignette(safe_radius: float) -> void:
+	# Due componenti, si prende sempre la più restrittiva (raggio più
+	# piccolo = più buio):
+	# - "col tempo": si infittisce da sola nei 30s della tempesta, uguale
+	#   per tutta l'arena — così il buio si vede arrivare col passare del
+	#   tempo anche restando lontani dal confine (come "il sole che si
+	#   spegne pian piano"), non solo avvicinandosi fisicamente.
+	# - "con la posizione": più si è vicini al bordo dell'anello (o già
+	#   oltre) più la visuale si restringe, fino al minimo bene dentro il
+	#   buio — nessuno stacco tra le due fasi, un'unica funzione continua
+	#   della distanza col segno dal confine.
+	var time_t: float = clamp(storm_elapsed / STORM_DURATION, 0.0, 1.0)
+	var time_radius: float = lerp(DARKNESS_VISION_FAR, DARKNESS_VISION_AT_EDGE, time_t)
+
 	var dist_from_house: float = player.global_position.distance_to(_storm_mesh.global_position)
 	var signed_depth: float = dist_from_house - safe_radius
+	var position_radius: float
 	if signed_depth <= -DARKNESS_APPROACH_RANGE:
-		hud.set_darkness_visible(false)
-		return
-	hud.set_darkness_visible(true)
-	var vis_radius: float
-	if signed_depth <= 0.0:
+		position_radius = DARKNESS_VISION_FAR
+	elif signed_depth <= 0.0:
 		var t: float = (signed_depth + DARKNESS_APPROACH_RANGE) / DARKNESS_APPROACH_RANGE
-		vis_radius = lerp(DARKNESS_VISION_FAR, DARKNESS_VISION_AT_EDGE, t)
+		position_radius = lerp(DARKNESS_VISION_FAR, DARKNESS_VISION_AT_EDGE, t)
 	else:
 		var t2: float = clamp(signed_depth / DARKNESS_DEPTH_FALLOFF, 0.0, 1.0)
-		vis_radius = lerp(DARKNESS_VISION_AT_EDGE, DARKNESS_VISION_MIN, t2)
+		position_radius = lerp(DARKNESS_VISION_AT_EDGE, DARKNESS_VISION_MIN, t2)
+
+	var vis_radius: float = min(time_radius, position_radius)
+	hud.set_darkness_visible(vis_radius < DARKNESS_VISION_FAR)
 	hud.set_darkness_radius(vis_radius)
 
 # Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
