@@ -73,13 +73,6 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 # l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
 # subito: il buio, da quel momento, torna innocuo.
 const VISION_BUBBLE_RADIUS := 6.0
-# Dentro l'anello (raggio sicuro) la visuale resta libera, nessuna
-# vignetta: la restrizione inizia esattamente al bordo (DARKNESS_VISION_
-# AT_EDGE) e cresce andando verso l'esterno, fino al minimo assoluto bene
-# dentro il buio (DARKNESS_VISION_MIN) dopo DARKNESS_DEPTH_FALLOFF unità.
-const DARKNESS_VISION_AT_EDGE := 0.85
-const DARKNESS_VISION_MIN := 0.60
-const DARKNESS_DEPTH_FALLOFF := 8.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
@@ -200,7 +193,7 @@ var storm_active := false
 var storm_full_closed := false
 var storm_elapsed := 0.0
 var _time_outside := 0.0
-var _storm_mesh: MeshInstance3D = null
+var _storm_mesh: Node3D = null
 
 var in_darkness := false
 var _night_god_spawn_timer := 0.0
@@ -852,50 +845,16 @@ func _process(delta: float) -> void:
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
 
-const STORM_WALL_HEIGHT := 8.0
-
-# Cilindro basso e piatto (non una sfera, non un muro alto): un vero
-# cerchio piatto che aderisce al terreno, la cui circonferenza si
-# restringe nel tempo. Tutte le distanze contano solo sul piano
+# Nessuna rappresentazione grafica per ora (da ridisegnare da zero): questo
+# nodo esiste solo come ancora logica per posizione (casa) e raggio attuale
+# (scale.x/z), usata da is_in_darkness, chiusura completa, nemici e
+# posizione degli dei della notte. Tutte le distanze contano solo sul piano
 # orizzontale (_horizontal_distance_to_house), mai sulla quota di
 # player/telecamera.
-const STORM_HAZE_SHADER := preload("res://shaders/storm_haze.gdshader")
-
-func _make_dark_cylinder() -> MeshInstance3D:
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = 1.0
-	mesh.bottom_radius = 1.0
-	mesh.height = STORM_WALL_HEIGHT
-	mesh.radial_segments = 32
-	mesh.rings = 1
-	# Foschia nera (non un muro): shader con rumore procedurale e dissolvenza
-	# morbida ai bordi (vedi storm_haze.gdshader), niente superficie piatta
-	# dai contorni netti. cull_disabled è nel render_mode dello shader, quindi
-	# visibile sia da fuori (mentre si avvicina) sia da dentro il buio.
-	var mat := ShaderMaterial.new()
-	mat.shader = STORM_HAZE_SHADER
-	var inst := MeshInstance3D.new()
-	inst.mesh = mesh
-	inst.material_override = mat
-	inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	inst.visible = false
-	return inst
-
-# Foschia nera ancorata alla casa: si restringe nel tempo insieme al raggio
-# sicuro, una vera circonferenza sul terreno (non una sfera: vedi
-# _make_dark_cylinder e _horizontal_distance_to_house, tutte le distanze
-# contano solo sul piano orizzontale). Alzata di metà della propria altezza
-# rispetto alla casa: la mesh è centrata sulla propria origine, quindi senza
-# questo spostamento verso l'alto metà finirebbe sottoterra, dimezzando
-# l'altezza utile a schermo (e la copertura sopra gli alberi più alti). La
-# bolla di visuale ridotta nel buio invece NON è un effetto nel mondo 3D
-# (vedi _update_darkness_vignette): è una vignetta a schermo intero, gestita
-# da hud.gd — le due cose restano indipendenti.
 func _setup_storm() -> void:
-	_storm_mesh = _make_dark_cylinder()
+	_storm_mesh = Node3D.new()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
-	_storm_mesh.global_position.y += STORM_WALL_HEIGHT / 2.0
 
 # Distanza sul solo piano orizzontale (XZ) dalla casa: la tempesta è una
 # circonferenza sul terreno, non una sfera, quindi l'altezza di player o
@@ -931,16 +890,10 @@ func _update_storm(delta: float) -> void:
 
 	storm_elapsed += delta
 	var radius: float = _current_storm_radius()
-	# Scala solo X/Z (il raggio della circonferenza): l'altezza (Y) resta
-	# sempre STORM_WALL_HEIGHT invariata, altrimenti il muro si
-	# accorcerebbe insieme al raggio fino quasi a sparire proprio quando
-	# conta di più (raggio piccolo o nullo senza luce della casa).
 	_storm_mesh.scale = Vector3(radius, 1.0, radius)
 	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
 		storm_full_closed = true
 		_on_storm_fully_closed()
-
-	_update_darkness_vignette(radius)
 
 	var now_in_darkness: bool = _horizontal_distance_to_house(player.global_position) > radius
 	if now_in_darkness and not in_darkness:
@@ -956,7 +909,6 @@ func _start_storm() -> void:
 	storm_active = true
 	storm_elapsed = 0.0
 	_storm_mesh.scale = Vector3(STORM_START_RADIUS, 1.0, STORM_START_RADIUS)
-	_storm_mesh.visible = true
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
@@ -971,35 +923,11 @@ func _on_storm_fully_closed() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
 
-func _update_darkness_vignette(safe_radius: float) -> void:
-	# L'anello visivo personale (raggio VISION_BUBBLE_RADIUS) esiste sempre
-	# attorno al player, ma non si nota in piena luce perché tutto è
-	# comunque visibile. Non appare dal nulla: comincia a "entrare" nel buio
-	# (e quindi a diventare visibile) proprio quando il confine della
-	# tempesta arriva a toccarlo, cioè VISION_BUBBLE_RADIUS unità prima che
-	# il player stesso lo attraversi — non un salto istantaneo, ma la
-	# stessa geometria a farlo emergere gradualmente. Gli dei della notte
-	# restano legati solo al vero attraversamento (in_darkness), più avanti.
-	var dist_from_house: float = _horizontal_distance_to_house(player.global_position)
-	var signed_depth: float = dist_from_house - safe_radius
-	if signed_depth <= -VISION_BUBBLE_RADIUS:
-		hud.set_darkness_visible(false)
-		return
-	hud.set_darkness_visible(true)
-	var vis_radius: float
-	if signed_depth <= 0.0:
-		var t: float = (signed_depth + VISION_BUBBLE_RADIUS) / VISION_BUBBLE_RADIUS
-		vis_radius = lerp(1.0, DARKNESS_VISION_AT_EDGE, t)
-	else:
-		var t2: float = clamp(signed_depth / DARKNESS_DEPTH_FALLOFF, 0.0, 1.0)
-		vis_radius = lerp(DARKNESS_VISION_AT_EDGE, DARKNESS_VISION_MIN, t2)
-	hud.set_darkness_radius(vis_radius)
-
 # Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
 # attuale, che sia ancora in restringimento o già fermo al minimo dato dalla
 # luce della casa): niente morte istantanea, solo la minaccia degli dei
-# della notte (vedi _update_night_gods/_spawn_night_god). La vignetta è già
-# gestita da _update_darkness_vignette, sempre attiva.
+# della notte (vedi _update_night_gods/_spawn_night_god). Nessuna grafica per
+# ora: da ridisegnare da zero.
 func _enter_darkness() -> void:
 	in_darkness = true
 	_night_god_spawn_timer = _random_night_god_interval()
