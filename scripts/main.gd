@@ -73,12 +73,16 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 # l'unica strategia è scappare). Rientrare nel raggio sicuro li dissolve
 # subito: il buio, da quel momento, torna innocuo.
 const VISION_BUBBLE_RADIUS := 6.0
-# La vignetta del buio non scatta di colpo alla dimensione finale: appena si
-# mette piede nel buio si vede quasi tutto (DARKNESS_VISION_MAX), e ci si
-# restringe verso il piccolo cerchio finale (DARKNESS_VISION_MIN) solo man
-# mano che ci si allontana oltre il confine del raggio sicuro, fino a
-# DARKNESS_DEPTH_FALLOFF unità di distanza.
-const DARKNESS_VISION_MAX := 1.0
+# La vignetta ("nebbia" nera a schermo intero) è una singola funzione
+# continua della distanza col segno dal confine del raggio sicuro (negativo
+# = ancora dentro, 0 = esattamente al confine, positivo = già nel buio), così
+# l'arrivo del buio si vede avvicinare invece di comparire di colpo:
+#   -DARKNESS_APPROACH_RANGE (ancora lontani dal confine): nessun effetto.
+#   0 (esattamente al confine):                            DARKNESS_VISION_AT_EDGE.
+#   +DARKNESS_DEPTH_FALLOFF (bene dentro il buio):          DARKNESS_VISION_MIN.
+const DARKNESS_APPROACH_RANGE := 15.0
+const DARKNESS_VISION_FAR := 1.0
+const DARKNESS_VISION_AT_EDGE := 0.85
 const DARKNESS_VISION_MIN := 0.60
 const DARKNESS_DEPTH_FALLOFF := 8.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
@@ -912,13 +916,15 @@ func _update_storm(delta: float) -> void:
 		storm_full_closed = true
 		_on_storm_fully_closed()
 
+	_update_darkness_vignette(radius)
+
 	var now_in_darkness: bool = player.global_position.distance_to(_storm_mesh.global_position) > radius
 	if now_in_darkness and not in_darkness:
 		_enter_darkness()
 	elif not now_in_darkness and in_darkness:
 		_exit_darkness()
 	if in_darkness:
-		_update_darkness(delta, radius)
+		_update_night_gods(delta)
 
 func _start_storm() -> void:
 	if storm_active:
@@ -946,36 +952,53 @@ func _on_storm_fully_closed() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
 
+# La "nebbia nera" (vignetta a schermo intero) è sempre attiva mentre la
+# tempesta è attiva, non solo quando il player è già nel buio: comincia a
+# chiudersi da lontano, appena ci si avvicina al confine del raggio sicuro
+# (DARKNESS_APPROACH_RANGE unità prima), così l'arrivo del buio si vede
+# arrivare invece di comparire di colpo. Una singola funzione continua di
+# "quanto oltre il confine" si è (negativo = ancora al sicuro, 0 = esatto
+# confine, positivo = già nel buio) evita qualunque stacco netto tra le due
+# fasi.
+func _update_darkness_vignette(safe_radius: float) -> void:
+	var dist_from_house: float = player.global_position.distance_to(_storm_mesh.global_position)
+	var signed_depth: float = dist_from_house - safe_radius
+	if signed_depth <= -DARKNESS_APPROACH_RANGE:
+		hud.set_darkness_visible(false)
+		return
+	hud.set_darkness_visible(true)
+	var vis_radius: float
+	if signed_depth <= 0.0:
+		var t: float = (signed_depth + DARKNESS_APPROACH_RANGE) / DARKNESS_APPROACH_RANGE
+		vis_radius = lerp(DARKNESS_VISION_FAR, DARKNESS_VISION_AT_EDGE, t)
+	else:
+		var t2: float = clamp(signed_depth / DARKNESS_DEPTH_FALLOFF, 0.0, 1.0)
+		vis_radius = lerp(DARKNESS_VISION_AT_EDGE, DARKNESS_VISION_MIN, t2)
+	hud.set_darkness_radius(vis_radius)
+
 # Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
 # attuale, che sia ancora in restringimento o già fermo al minimo dato dalla
-# luce della casa): niente morte istantanea, solo vista ridotta a una
-# bolla che lo segue e la minaccia degli dei della notte (vedi
-# _update_darkness/_spawn_night_god).
+# luce della casa): niente morte istantanea, solo la minaccia degli dei
+# della notte (vedi _update_night_gods/_spawn_night_god). La vignetta è già
+# gestita da _update_darkness_vignette, sempre attiva.
 func _enter_darkness() -> void:
 	in_darkness = true
-	hud.set_darkness_visible(true)
-	hud.set_darkness_radius(DARKNESS_VISION_MAX)
 	_night_god_spawn_timer = _random_night_god_interval()
 
 # Rientrati nel raggio sicuro (o in casa): il buio torna innocuo, gli dei
 # della notte che stavano inseguendo il player si dissolvono subito.
 func _exit_darkness() -> void:
 	in_darkness = false
-	hud.set_darkness_visible(false)
 	for god in _night_gods:
 		if is_instance_valid(god):
 			god.queue_free()
 	_night_gods.clear()
 
-# Appena il player mette piede nel buio la visuale resta quasi del tutto
-# aperta (DARKNESS_VISION_MAX): si restringe gradualmente verso il piccolo
-# cerchio finale (DARKNESS_VISION_MIN) man mano che si allontana oltre il
-# confine del raggio sicuro, non di colpo.
-func _update_darkness(delta: float, safe_radius: float) -> void:
-	var dist_from_house: float = player.global_position.distance_to(_storm_mesh.global_position)
-	var depth: float = clamp(dist_from_house - safe_radius, 0.0, DARKNESS_DEPTH_FALLOFF)
-	var t: float = depth / DARKNESS_DEPTH_FALLOFF
-	hud.set_darkness_radius(lerp(DARKNESS_VISION_MAX, DARKNESS_VISION_MIN, t))
+func _update_night_gods(delta: float) -> void:
+	_night_god_spawn_timer -= delta
+	if _night_god_spawn_timer <= 0.0:
+		_night_god_spawn_timer = _random_night_god_interval()
+		_spawn_night_god()
 
 	_night_god_spawn_timer -= delta
 	if _night_god_spawn_timer <= 0.0:
