@@ -926,7 +926,12 @@ func _start_storm() -> void:
 	storm_active = true
 	storm_elapsed = 0.0
 	_storm_mesh.scale = Vector3.ONE * STORM_START_RADIUS
-	_storm_mesh.visible = true
+	# _storm_mesh resta invisibile (solo confine logico, per is_in_darkness/
+	# is_full_closed/nemici): un secondo muro pieno e opaco nel mondo 3D,
+	# oltre alla vignetta, dava uno stacco netto nell'istante in cui il
+	# player lo attraversava. Solo la vignetta (già graduale, da quasi
+	# tutto aperto a stretta) rappresenta il buio: appena si entra si vede
+	# ancora bene dove si sta andando, si restringe piano man mano.
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
