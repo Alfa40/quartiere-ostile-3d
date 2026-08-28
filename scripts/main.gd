@@ -852,7 +852,7 @@ func _process(delta: float) -> void:
 		if spawn_timer <= 0.0 and zone_enemies_alive < MAX_CONCURRENT:
 			_spawn_enemy()
 
-const STORM_WALL_HEIGHT := 3.0
+const STORM_WALL_HEIGHT := 8.0
 
 # Cilindro basso e piatto (non una sfera, non un muro alto): un vero
 # cerchio piatto che aderisce al terreno, la cui circonferenza si
