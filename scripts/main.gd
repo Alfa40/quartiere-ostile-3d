@@ -859,6 +859,8 @@ const STORM_WALL_HEIGHT := 8.0
 # restringe nel tempo. Tutte le distanze contano solo sul piano
 # orizzontale (_horizontal_distance_to_house), mai sulla quota di
 # player/telecamera.
+const STORM_HAZE_SHADER := preload("res://shaders/storm_haze.gdshader")
+
 func _make_dark_cylinder() -> MeshInstance3D:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = 1.0
@@ -866,18 +868,12 @@ func _make_dark_cylinder() -> MeshInstance3D:
 	mesh.height = STORM_WALL_HEIGHT
 	mesh.radial_segments = 32
 	mesh.rings = 1
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	# Resta sempre invisibile (vedi _start_storm): serve solo come confine
-	# logico posizionabile/scalabile (global_position, scale). Tutta la
-	# rappresentazione visiva del buio è la vignetta personale
-	# (_update_darkness_vignette), non un oggetto nel mondo 3D — mesh e
-	# materiale restano solo per comodità di posizionamento.
-	# separata, che evita lo stacco netto quando lo si attraversa davvero.
-	mat.albedo_color = Color(0.0, 0.0, 0.0, 0.97)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.cull_mode = BaseMaterial3D.CULL_FRONT
-	mat.disable_receive_shadows = true
+	# Foschia nera (non un muro): shader con rumore procedurale e dissolvenza
+	# morbida ai bordi (vedi storm_haze.gdshader), niente superficie piatta
+	# dai contorni netti. cull_disabled è nel render_mode dello shader, quindi
+	# visibile sia da fuori (mentre si avvicina) sia da dentro il buio.
+	var mat := ShaderMaterial.new()
+	mat.shader = STORM_HAZE_SHADER
 	var inst := MeshInstance3D.new()
 	inst.mesh = mesh
 	inst.material_override = mat
@@ -885,17 +881,21 @@ func _make_dark_cylinder() -> MeshInstance3D:
 	inst.visible = false
 	return inst
 
-# Cilindro nero visto dall'interno (cull_mode Front), ancorato alla casa: è
-# il "muro" della tempesta che si restringe nel tempo, una vera
-# circonferenza sul terreno (non una sfera: vedi _make_dark_cylinder e
-# _horizontal_distance_to_house, tutte le distanze contano solo sul piano
-# orizzontale). La bolla di visuale ridotta nel buio invece NON è un
-# effetto nel mondo 3D (vedi _update_darkness_vignette): è una vignetta a
-# schermo intero, gestita da hud.gd.
+# Foschia nera ancorata alla casa: si restringe nel tempo insieme al raggio
+# sicuro, una vera circonferenza sul terreno (non una sfera: vedi
+# _make_dark_cylinder e _horizontal_distance_to_house, tutte le distanze
+# contano solo sul piano orizzontale). Alzata di metà della propria altezza
+# rispetto alla casa: la mesh è centrata sulla propria origine, quindi senza
+# questo spostamento verso l'alto metà finirebbe sottoterra, dimezzando
+# l'altezza utile a schermo (e la copertura sopra gli alberi più alti). La
+# bolla di visuale ridotta nel buio invece NON è un effetto nel mondo 3D
+# (vedi _update_darkness_vignette): è una vignetta a schermo intero, gestita
+# da hud.gd — le due cose restano indipendenti.
 func _setup_storm() -> void:
 	_storm_mesh = _make_dark_cylinder()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
+	_storm_mesh.global_position.y += STORM_WALL_HEIGHT / 2.0
 
 # Distanza sul solo piano orizzontale (XZ) dalla casa: la tempesta è una
 # circonferenza sul terreno, non una sfera, quindi l'altezza di player o
@@ -956,14 +956,7 @@ func _start_storm() -> void:
 	storm_active = true
 	storm_elapsed = 0.0
 	_storm_mesh.scale = Vector3(STORM_START_RADIUS, 1.0, STORM_START_RADIUS)
-	# _storm_mesh resta invisibile: solo confine logico (is_in_darkness,
-	# chiusura completa, nemici, posizione degli dei della notte). Tutta la
-	# rappresentazione visiva del buio, sia l'avvicinamento che l'ingresso
-	# vero e proprio, è la vignetta personale (_update_darkness_vignette):
-	# libera dentro l'anello, comincia a farsi notare quando il confine
-	# tocca la bolla di visuale del player, si restringe con continuità
-	# attraversandolo e andando più a fondo nel buio — nessun oggetto nel
-	# mondo 3D separato.
+	_storm_mesh.visible = true
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
