@@ -24,10 +24,15 @@ const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 # (idle/walk/attack-melee-left/right) e la stessa scala/rotazione del player.
 const CHARACTER_MODELS := {
 	"character-male-b": preload("res://assets/models/characters/character-male-b.glb"),
+	"character-male-c": preload("res://assets/models/characters/character-male-c.glb"),
+	"character-male-d": preload("res://assets/models/characters/character-male-d.glb"),
+	"character-male-e": preload("res://assets/models/characters/character-male-e.glb"),
 	"character-male-f": preload("res://assets/models/characters/character-male-f.glb"),
 	"character-female-a": preload("res://assets/models/characters/character-female-a.glb"),
 	"character-female-b": preload("res://assets/models/characters/character-female-b.glb"),
 	"character-female-c": preload("res://assets/models/characters/character-female-c.glb"),
+	"character-female-d": preload("res://assets/models/characters/character-female-d.glb"),
+	"character-female-f": preload("res://assets/models/characters/character-female-f.glb"),
 }
 const ARCHETYPE_MODEL := {
 	"balordo": "character-male-f",
@@ -35,6 +40,19 @@ const ARCHETYPE_MODEL := {
 	"imprevedibile": "character-female-a",
 	"bruto": "character-male-b",
 	"tiratore": "character-female-c",
+}
+# Nello scenario indicato, l'archetipo "balordo" (il più comune, sempre
+# presente) usa un altro personaggio dello stesso pacchetto Mini
+# Characters invece di quello di default, per dare un colpo d'occhio
+# diverso zona per zona oltre al semplice ricolorare (vedi
+# apply_scenario_model, chiamata da main.gd dopo configure()). Gli altri
+# archetipi restano invariati in ogni scenario.
+const SCENARIO_MODEL_OVERRIDE := {
+	1: {"balordo": "character-male-d"},
+	2: {"balordo": "character-female-d"},
+	3: {"balordo": "character-male-e"},
+	4: {"balordo": "character-female-f"},
+	5: {"balordo": "character-male-c"},
 }
 const MODEL_ROTATION_Y := 180.0
 const MODEL_SCALE := 1.8
@@ -182,6 +200,18 @@ func _instantiate_model(model_name: String) -> void:
 # dell'archetipo: va chiamata dopo configure(), che la sovrascriverebbe.
 func apply_color_override(color: Color) -> void:
 	_apply_color(color)
+
+# Usata da main.gd subito dopo configure(): se lo scenario indicato
+# sostituisce il modello di questo archetipo, ri-istanzia col personaggio
+# giusto (altrimenti non tocca nulla, resta quello di configure()). Va
+# chiamata PRIMA di apply_color_override(), perché ri-istanziare cambia
+# body_mesh: applicare il colore prima colorerebbe il modello vecchio,
+# appena sostituito.
+func apply_scenario_model(scenario_idx: int, archetype_id: String) -> void:
+	var override_model: String = SCENARIO_MODEL_OVERRIDE.get(scenario_idx, {}).get(archetype_id, "")
+	if override_model == "":
+		return
+	_instantiate_model(override_model)
 
 # Solo il mesh del corpo (non della testa, che condivide la stessa texture
 # "colormap" del modello Kenney): un duplicato del materiale originale così

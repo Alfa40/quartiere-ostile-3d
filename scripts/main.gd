@@ -1143,6 +1143,7 @@ func _spawn_enemy() -> void:
 	enemy.configure(hp_mult, dmg_mult, speed_mult, cooldown, archetype_id)
 	if storm_full_closed:
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
+	enemy.apply_scenario_model(_scenario_index_for_spawn(), archetype_id)
 	var sdata := _scenario_data_for_spawn()
 	enemy.apply_color_override(sdata.enemy_colors.get(archetype_id, EnemyArchetypes.DATA[archetype_id].color))
 	enemy.died.connect(_on_enemy_died.bind(enemy))
@@ -1291,7 +1292,7 @@ func _regenerate_objects() -> void:
 		# @onready: serve che l'oggetto sia già nella scena, quindi dopo add_child().
 		if type_id == "albero":
 			var tree_sdata: Dictionary = Scenarios.scenario_data(scenario_idx)
-			obj.apply_scenario_appearance(tree_sdata.tree_trunk_color, tree_sdata.tree_foliage_color, tree_sdata.tree_shape)
+			obj.apply_scenario_appearance(tree_sdata.tree_trunk_color, tree_sdata.tree_foliage_color, tree_sdata.tree_shape, scenario_idx)
 		elif obj.has_method("apply_scenario_visual"):
 			obj.apply_scenario_visual(scenario_idx)
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
