@@ -1973,7 +1973,7 @@ func _refresh_cucina_forno_menu() -> void:
 		var btn: Button = row.get_node("CookButton")
 		var mat_name: String = MATERIAL_LABELS.get(dish.cost_material, dish.cost_material)
 		var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
-		info.text = "%s — rigenera %d vita\nCosta %d€ + %d %s (in dispensa: %d)" % [dish.label, int(dish.heal_amount), dish.cost_money, dish.cost_amount, mat_name, stored]
+		info.text = "%s — rigenera %d vita e %d fame\nCosta %d€ + %d %s (in dispensa: %d)" % [dish.label, int(dish.heal_amount), int(dish.heal_amount), dish.cost_money, dish.cost_amount, mat_name, stored]
 		var afford: bool = CheckpointData.money >= dish.cost_money and CheckpointData.materials.get(dish.cost_material, 0) >= dish.cost_amount
 		btn.disabled = not afford
 
@@ -2002,8 +2002,12 @@ func _refresh_cucina_tavolo_menu() -> void:
 		var info: Label = row.get_node("InfoLabel")
 		var btn: Button = row.get_node("EatButton")
 		var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
-		info.text = "%s — rigenera %d vita\nIn dispensa: %d" % [dish.label, int(dish.heal_amount), stored]
+		info.text = "%s — rigenera %d vita e %d fame\nIn dispensa: %d" % [dish.label, int(dish.heal_amount), int(dish.heal_amount), stored]
 		btn.disabled = stored <= 0
+
+# Deve combaciare con HUNGER_MAX in main.gd: la fame non dipende da alcun
+# potenziamento (a differenza della vita), quindi qui basta la costante.
+const HUNGER_MAX := 100.0
 
 func _on_eat_pressed(dish_id: String) -> void:
 	var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
@@ -2013,6 +2017,7 @@ func _on_eat_pressed(dish_id: String) -> void:
 	var dish: Dictionary = Recipes.DISHES[dish_id]
 	var max_hp: float = _player_max_hp()
 	CheckpointData.hp = clamp(CheckpointData.hp + dish.heal_amount, 0.0, max_hp)
+	CheckpointData.hunger = clamp(CheckpointData.hunger + dish.heal_amount, 0.0, HUNGER_MAX)
 	_refresh_cucina_tavolo_menu()
 
 func _open_color_pick(target: String, title: String) -> void:

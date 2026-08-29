@@ -61,6 +61,11 @@ var upgrades := DEFAULT_UPGRADES.duplicate()
 # ripristina più al massimo, resta quella con cui si è arrivati (vedi
 # main.gd:_apply_upgrade_effects). 100.0 di default per una partita nuova.
 var hp := 100.0
+# Fame del player, persistita come la vita: cala col tempo di gioco attivo
+# (solo con la cucina acquistata, vedi main.gd:_update_hunger) e si
+# ricarica mangiando al tavolo della cucina. 100.0 = piena, nessuna penalità
+# di velocità.
+var hunger := 100.0
 var placed_benches := []
 var owned_weapons := {}
 var weapon_upgrades := {}
@@ -199,6 +204,7 @@ func _reset_to_defaults() -> void:
 	materials = {"legno": 0, "metallo": 0, "cablaggi": 0}
 	upgrades = DEFAULT_UPGRADES.duplicate()
 	hp = 100.0
+	hunger = 100.0
 	placed_benches = []
 	owned_weapons = {}
 	weapon_upgrades = {}
@@ -270,6 +276,7 @@ func _apply_state(data: Dictionary) -> void:
 	zone = int(data.get("zone", 1))
 	money = int(data.get("money", 0))
 	hp = float(data.get("hp", 100.0))
+	hunger = float(data.get("hunger", 100.0))
 	var mats = data.get("materials", {})
 	if typeof(mats) == TYPE_DICTIONARY:
 		for k in materials.keys():
@@ -328,19 +335,22 @@ func _apply_state(data: Dictionary) -> void:
 	stats_enemies_defeated = int(data.get("stats_enemies_defeated", 0))
 	stats_playtime_sec = float(data.get("stats_playtime_sec", 0.0))
 
-func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary, current_hp: float = -1.0) -> void:
+func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary, current_hp: float = -1.0, current_hunger: float = -1.0) -> void:
 	zone = current_zone
 	money = current_money
 	materials = current_materials.duplicate()
 	upgrades = current_upgrades.duplicate()
 	if current_hp >= 0.0:
 		hp = current_hp
+	if current_hunger >= 0.0:
+		hunger = current_hunger
 
 func _state_dict() -> Dictionary:
 	return {
 		"zone": zone,
 		"money": money,
 		"hp": hp,
+		"hunger": hunger,
 		"materials": materials,
 		"upgrades": upgrades,
 		"placed_benches": placed_benches,
@@ -386,7 +396,9 @@ func _write_json(path: String, payload: Dictionary) -> void:
 # player.max_hp): un checkpoint deve sempre far ripartire a vita piena dopo
 # una morte, non con la vita residua di quando fu salvato.
 func save_checkpoint(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary, current_hp: float) -> void:
-	set_live_state(current_zone, current_money, current_materials, current_upgrades, current_hp)
+	# Vita E fame sempre piene: un checkpoint deve far ripartire "puliti"
+	# dopo una morte, non con la fame residua di quando fu salvato.
+	set_live_state(current_zone, current_money, current_materials, current_upgrades, current_hp, 100.0)
 	_write_json(_slot_checkpoint_path(current_slot), _state_dict())
 
 # Salvataggio "riprendi partita": scritto da home.gd ogni volta che il

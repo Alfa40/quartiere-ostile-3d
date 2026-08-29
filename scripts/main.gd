@@ -25,6 +25,17 @@ const KILL_REWARD_MAX := 36.0
 const STEAL_BASE_MONEY_MIN := KILL_REWARD_MIN / 5.0
 const STEAL_BASE_MONEY_MAX := KILL_REWARD_MAX / 5.0
 const BASE_PLAYER_MAX_HP := 100.0
+# Fame: attiva solo se la cucina è stata acquistata (vedi has_kitchen/
+# _update_hunger). Cala col tempo di gioco attivo, da piena a zero in
+# HUNGER_DECAY_DURATION secondi; a zero il player è al 40% più lento in
+# tutto (movimento, cooldown, tempo di estrazione delle armi — vedi
+# player.hunger_speed_mult/hunger_time_mult). Colpire con un'arma pesante
+# (mazze/martelli in mischia, lanciagranate/lanciarazzi da fuoco) consuma
+# un pizzico di fame in più, oltre al calo passivo.
+const HUNGER_MAX := 100.0
+const HUNGER_DECAY_DURATION := 360.0
+const HUNGER_MAX_SPEED_PENALTY := 0.40
+const HUNGER_HEAVY_HIT_COST := 1.0
 
 const OBJECT_SCENES := {
 	"albero": preload("res://scenes/Albero.tscn"),
@@ -199,6 +210,8 @@ var money := 0.0
 var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
 var upgrades := {}
 var weapon_name := "Pugni"
+var hunger := 100.0
+var has_kitchen := false
 
 var zone_enemies_total := 0
 var zone_enemies_spawned := 0
@@ -237,7 +250,15 @@ func _ready() -> void:
 	else:
 		money = float(CheckpointData.money)
 		materials = CheckpointData.materials.duplicate()
+	hunger = CheckpointData.hunger
+	has_kitchen = false
+	for b in CheckpointData.placed_benches:
+		if String(b.get("type", "")) == "cucina":
+			has_kitchen = true
+			break
+	hud.set_hunger_bar_visible(has_kitchen)
 	player.hp_changed.connect(hud.on_player_hp_changed)
+	player.heavy_hit_landed.connect(_on_heavy_hit_landed)
 	player.died.connect(_on_player_died)
 	hud.go_home_chosen.connect(_go_home)
 	hud.skip_home_chosen.connect(_skip_home)
@@ -630,6 +651,31 @@ func _apply_upgrade_effects() -> void:
 	player.hp = player.max_hp if DevMode.enabled else clamp(CheckpointData.hp, 0.0, player.max_hp)
 	player.hp_changed.emit(player.hp, player.max_hp)
 
+# Fame: attiva solo con la cucina acquistata (has_kitchen, letto in _ready
+# da CheckpointData.placed_benches). Cala col tempo di gioco attivo; a zero
+# il player è HUNGER_MAX_SPEED_PENALTY più lento in tutto — velocità di
+# movimento diretta, e reciproco applicato ai cooldown/tempi di estrazione
+# quando vengono avviati (vedi player.gd).
+func _update_hunger(delta: float) -> void:
+	if not has_kitchen or player.dead:
+		return
+	hunger = clamp(hunger - (HUNGER_MAX / HUNGER_DECAY_DURATION) * delta, 0.0, HUNGER_MAX)
+	var t: float = 1.0 - (hunger / HUNGER_MAX)
+	player.hunger_speed_mult = 1.0 - HUNGER_MAX_SPEED_PENALTY * t
+	player.hunger_time_mult = 1.0 / player.hunger_speed_mult
+	hud.update_hunger(hunger, HUNGER_MAX)
+
+# Le armi pesanti (mazze/martelli in mischia, lanciagranate/lanciarazzi da
+# fuoco — vedi player.is_melee_heavy/is_firearm_heavy) consumano un pizzico
+# di fame in più a ogni colpo/sparo, oltre al calo passivo.
+func _on_heavy_hit_landed() -> void:
+	if not has_kitchen:
+		return
+	hunger = clamp(hunger - HUNGER_HEAVY_HIT_COST, 0.0, HUNGER_MAX)
+
+const HUNGER_HEAVY_MELEE_CATEGORIES := ["mazze", "martelli"]
+const HUNGER_HEAVY_FIREARM_CATEGORIES := ["lanciagranate", "lanciarazzi"]
+
 func _apply_weapon_stats() -> void:
 	var wid: String = CheckpointData.equipped_weapon
 	if wid == "pugni" or not MeleeWeapons.WEAPONS.has(wid):
@@ -638,6 +684,7 @@ func _apply_weapon_stats() -> void:
 		player.attack_cooldown = player.BASE_ATTACK_COOLDOWN
 		player.attack_reach_mult = 1.0
 		player.attack_knockback = 0.0
+		player.is_melee_heavy = false
 		return
 	var wups: Dictionary = CheckpointData.weapon_upgrades.get(wid, {})
 	var def: Dictionary = MeleeWeapons.WEAPONS[wid]
@@ -646,6 +693,7 @@ func _apply_weapon_stats() -> void:
 	player.attack_cooldown = MeleeWeapons.final_cooldown(wid, wups)
 	player.attack_reach_mult = MeleeWeapons.final_reach_mult(wid, wups)
 	player.attack_knockback = MeleeWeapons.final_knockback(wid, wups)
+	player.is_melee_heavy = String(def.category) in HUNGER_HEAVY_MELEE_CATEGORIES
 	player.apply_draw_delay(MeleeWeapons.final_draw_time(wid, wups))
 
 func _apply_firearm_stats() -> void:
@@ -659,9 +707,11 @@ func _apply_firearm_stats() -> void:
 	touch_controls.aim_enabled = not CheckpointData.owned_firearms.is_empty() or not CheckpointData.owned_throwables.is_empty()
 	if fid == "" or not Firearms.WEAPONS.has(fid):
 		player.unequip_firearm()
+		player.is_firearm_heavy = false
 		return
 	var fups: Dictionary = CheckpointData.firearm_upgrades.get(fid, {})
 	var def: Dictionary = Firearms.WEAPONS[fid]
+	player.is_firearm_heavy = String(def.category) in HUNGER_HEAVY_FIREARM_CATEGORIES
 	player.equip_firearm(
 		fid,
 		Firearms.final_damage(fid, fups),
@@ -841,6 +891,7 @@ func _process(delta: float) -> void:
 
 	_update_occlusion_fade(delta)
 	_update_storm(delta)
+	_update_hunger(delta)
 
 	if zone_transitioning or player.dead:
 		if zone_transitioning and not player.dead:
@@ -1150,7 +1201,7 @@ func _complete_zone() -> void:
 	hud.show_zone_complete_choice()
 
 func _go_home() -> void:
-	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades, player.hp)
+	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades, player.hp, hunger)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _skip_home() -> void:
@@ -1163,7 +1214,7 @@ func _enter_house_anytime() -> void:
 	if not zone_transitioning and storm_full_closed:
 		_force_home_after_storm()
 		return
-	CheckpointData.set_live_state(zone, int(money), materials, upgrades, player.hp)
+	CheckpointData.set_live_state(zone, int(money), materials, upgrades, player.hp, hunger)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 # Rifugio forzato: il buio ha chiuso del tutto e la zona non era stata

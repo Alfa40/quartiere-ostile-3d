@@ -12,6 +12,11 @@ const DAMAGE_VIBRATE_MS := 60
 
 signal hp_changed(current: float, max_hp: float)
 signal died
+# Emesso quando un'arma "pesante" (mazze/martelli in mischia, lanciagranate/
+# lanciarazzi da fuoco — vedi is_melee_heavy/is_firearm_heavy, impostati da
+# main.gd in base all'arma equipaggiata) colpisce o spara: main.gd lo
+# ascolta per consumare un po' più fame (vedi HUNGER_HEAVY_HIT_COST).
+signal heavy_hit_landed
 
 @onready var facing_pivot: Node3D = $FacingPivot
 @onready var attack_area: Area3D = $FacingPivot/AttackArea
@@ -46,6 +51,21 @@ var facing := Vector3(0, 0, -1)
 var attack_cooldown_timer := 0.0
 var flash_timer := 0.0
 var dead := false
+
+# Fame (vedi main.gd, _update_hunger): moltiplicatori ricalcolati ogni
+# frame in base al livello attuale di fame, 1.0 a fame piena. hunger_
+# speed_mult moltiplica direttamente la velocità di movimento (0.6 a fame
+# zero = -40%); hunger_time_mult è il reciproco (fino a ~1.667) e va
+# applicato quando un cooldown/tempo di estrazione viene AVVIATO, non
+# mentre è già in conto alla rovescia — così un'azione già iniziata non
+# rallenta o accelera a metà per un cambio di fame nel frattempo.
+var hunger_speed_mult := 1.0
+var hunger_time_mult := 1.0
+# Impostati da main.gd in base alla categoria dell'arma mischia/da fuoco
+# attualmente equipaggiata (vedi _apply_weapon_stats/_apply_firearm_stats):
+# mazze/martelli in mischia, lanciagranate/lanciarazzi da fuoco.
+var is_melee_heavy := false
+var is_firearm_heavy := false
 
 const AIM_CONE_DEGREES := 32.0
 const FIREARM_FLASH_TIME := 0.08
@@ -213,7 +233,7 @@ func _throw_weapon(direction: Vector3, magnitude: float = 1.0) -> void:
 		return
 	if main != null and main.has_method("consume_throwable_reserve_ammo"):
 		main.consume_throwable_reserve_ammo(throwable_id, 1)
-	throw_cooldown_timer = throwable_cooldown
+	throw_cooldown_timer = throwable_cooldown * hunger_time_mult
 	var proj: Area3D
 	if throwable_grenade_type != "":
 		# Le granate lanciate a mano seguono la stessa logica a parabola dei
@@ -308,11 +328,11 @@ func _handle_movement(_delta: float) -> void:
 		input_dir = input_dir.normalized()
 		facing = input_dir
 		facing_pivot.look_at(facing_pivot.global_position + facing, Vector3.UP)
-		velocity.x = facing.x * BASE_SPEED * speed_mult
-		velocity.z = facing.z * BASE_SPEED * speed_mult
+		velocity.x = facing.x * BASE_SPEED * speed_mult * hunger_speed_mult
+		velocity.z = facing.z * BASE_SPEED * speed_mult * hunger_speed_mult
 	else:
-		velocity.x = move_toward(velocity.x, 0.0, BASE_SPEED * speed_mult * 8.0 * _delta)
-		velocity.z = move_toward(velocity.z, 0.0, BASE_SPEED * speed_mult * 8.0 * _delta)
+		velocity.x = move_toward(velocity.x, 0.0, BASE_SPEED * speed_mult * hunger_speed_mult * 8.0 * _delta)
+		velocity.z = move_toward(velocity.z, 0.0, BASE_SPEED * speed_mult * hunger_speed_mult * 8.0 * _delta)
 
 func _handle_attack(delta: float) -> void:
 	attack_cooldown_timer -= delta
@@ -322,16 +342,20 @@ func _handle_attack(delta: float) -> void:
 
 	var attack_pressed: bool = Input.is_physical_key_pressed(KEY_SPACE) or (touch != null and touch.attack_held)
 	if attack_pressed and attack_cooldown_timer <= 0.0:
-		attack_cooldown_timer = attack_cooldown
+		attack_cooldown_timer = attack_cooldown * hunger_time_mult
 		flash_timer = FLASH_TIME
 		attack_flash.visible = true
 		_play_attack_swing()
+		var landed_hit := false
 		for body in attack_area.get_overlapping_bodies():
 			if (body.is_in_group("enemies") or body.is_in_group("park_objects") or body.is_in_group("night_gods")) and body.has_method("take_damage"):
 				body.take_damage(attack_damage, self)
+				landed_hit = true
 				if attack_knockback > 0.0 and body.is_in_group("enemies") and body.has_method("apply_knockback"):
 					var push_dir: Vector3 = body.global_position - global_position
 					body.apply_knockback(push_dir, attack_knockback)
+		if landed_hit and is_melee_heavy:
+			heavy_hit_landed.emit()
 
 func _handle_firearm(delta: float) -> void:
 	firearm_flash_timer -= delta
@@ -348,8 +372,8 @@ func _handle_firearm(delta: float) -> void:
 	if firearm_id != "" or throwable_id != "":
 		if aiming:
 			if weapon_holstered:
-				firearm_fire_timer = max(firearm_fire_timer, firearm_draw_time)
-				throw_cooldown_timer = max(throw_cooldown_timer, throwable_draw_time)
+				firearm_fire_timer = max(firearm_fire_timer, firearm_draw_time * hunger_time_mult)
+				throw_cooldown_timer = max(throw_cooldown_timer, throwable_draw_time * hunger_time_mult)
 			weapon_holstered = false
 			holster_timer = HOLSTER_TIMEOUT
 		elif not weapon_holstered:
@@ -475,8 +499,10 @@ func _find_enemy_in_aim_cone(aim_dir: Vector3) -> Node3D:
 
 func _fire_firearm(aim_dir: Vector3, aim_magnitude: float = 1.0) -> void:
 	firearm_ammo_in_mag -= 1
-	firearm_fire_timer = firearm_cooldown
+	firearm_fire_timer = firearm_cooldown * hunger_time_mult
 	firearm_flash_timer = FIREARM_FLASH_TIME
+	if is_firearm_heavy:
+		heavy_hit_landed.emit()
 	match firearm_projectile_type:
 		"grenade_straight":
 			_fire_grenade_straight(aim_dir)
@@ -589,7 +615,7 @@ func _start_reload() -> void:
 	if firearm_reloading:
 		return
 	firearm_reloading = true
-	firearm_reload_timer = firearm_reload_time
+	firearm_reload_timer = firearm_reload_time * hunger_time_mult
 
 func _finish_reload() -> void:
 	firearm_reloading = false
@@ -649,7 +675,7 @@ func take_damage(amount: float, _source = null) -> void:
 		died.emit()
 
 func apply_draw_delay(delay: float) -> void:
-	attack_cooldown_timer = max(attack_cooldown_timer, delay)
+	attack_cooldown_timer = max(attack_cooldown_timer, delay * hunger_time_mult)
 
 func heal(fraction: float) -> void:
 	if dead:

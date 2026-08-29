@@ -5,6 +5,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var damage_flash: ColorRect = $DamageFlash
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var hp_text: Label = $HealthBar/HPText
+@onready var hunger_bar: ProgressBar = $HungerBar
 @onready var zone_label: Label = $ZoneLabel
 @onready var money_label: Label = $MoneyLabel
 @onready var ammo_label: Label = $AmmoLabel
@@ -58,6 +59,9 @@ const HEALTH_BAR_HEIGHT_LANDSCAPE := 30.0
 const HEALTH_BAR_LEFT_PORTRAIT := 24.0
 const HEALTH_BAR_LEFT_LANDSCAPE := 74.0
 const HEALTH_BAR_WIDTH := 520.0
+const HUNGER_BAR_HEIGHT_PORTRAIT := 26.0
+const HUNGER_BAR_HEIGHT_LANDSCAPE := 14.0
+const HUNGER_BAR_GAP := 6.0
 
 const HP_TEXT_FONT_PORTRAIT := 42
 const HP_TEXT_FONT_LANDSCAPE := 24
@@ -333,6 +337,19 @@ func _update_top_hud_layout() -> void:
 	health_bar.offset_left = left
 	health_bar.offset_right = left + HEALTH_BAR_WIDTH
 
+	# Sottile e lunga come la vita, subito sotto: visibile solo con la
+	# cucina acquistata (vedi set_hunger_bar_visible), quindi tutto quello
+	# che normalmente sta sotto la barra della vita deve spostarsi più in
+	# basso solo quando c'è davvero spazio da riservarle.
+	var hunger_extra := 0.0
+	if hunger_bar.visible:
+		var hunger_height := HUNGER_BAR_HEIGHT_LANDSCAPE if is_landscape else HUNGER_BAR_HEIGHT_PORTRAIT
+		hunger_bar.offset_left = health_bar.offset_left
+		hunger_bar.offset_right = health_bar.offset_right
+		hunger_bar.offset_top = health_bar.offset_bottom + HUNGER_BAR_GAP
+		hunger_bar.offset_bottom = hunger_bar.offset_top + hunger_height
+		hunger_extra = hunger_height + HUNGER_BAR_GAP
+
 	hp_text.add_theme_font_size_override("font_size", HP_TEXT_FONT_PORTRAIT if is_portrait else HP_TEXT_FONT_LANDSCAPE)
 	var top_label_font := TOP_LABEL_FONT_PORTRAIT if is_portrait else TOP_LABEL_FONT_LANDSCAPE
 	zone_label.add_theme_font_size_override("font_size", top_label_font)
@@ -382,29 +399,29 @@ func _update_top_hud_layout() -> void:
 		ammo_label.offset_bottom = health_bar.offset_bottom + 6.0
 		ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
-		message_label.offset_top = health_bar.offset_bottom + 6.0
+		message_label.offset_top = health_bar.offset_bottom + hunger_extra + 6.0
 		message_label.offset_bottom = message_label.offset_top + 34.0
 	else:
 		zone_label.offset_left = 24.0
 		zone_label.offset_right = 460.0
-		zone_label.offset_top = 80.0
-		zone_label.offset_bottom = 124.0
+		zone_label.offset_top = 80.0 + hunger_extra
+		zone_label.offset_bottom = 124.0 + hunger_extra
 		zone_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 		money_label.offset_left = 24.0
 		money_label.offset_right = 360.0
-		money_label.offset_top = 128.0
-		money_label.offset_bottom = 172.0
+		money_label.offset_top = 128.0 + hunger_extra
+		money_label.offset_bottom = 172.0 + hunger_extra
 		money_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 		ammo_label.offset_left = 24.0
 		ammo_label.offset_right = 500.0
-		ammo_label.offset_top = 176.0
-		ammo_label.offset_bottom = 230.0
+		ammo_label.offset_top = 176.0 + hunger_extra
+		ammo_label.offset_bottom = 230.0 + hunger_extra
 		ammo_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
-		message_label.offset_top = 234.0
-		message_label.offset_bottom = 274.0
+		message_label.offset_top = 234.0 + hunger_extra
+		message_label.offset_bottom = 274.0 + hunger_extra
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -547,6 +564,18 @@ func on_player_hp_changed(current: float, max_hp: float) -> void:
 	# Zero sopra la soglia critica (lì il bagliore è solo il flash istantaneo
 	# del colpo); piena e permanente non appena la vita scende a/sotto di essa.
 	_damage_flash_baseline = 1.0 if hp_frac <= DAMAGE_FLASH_LOW_HP_FRAC else 0.0
+
+# Va chiamata una sola volta, appena entrati in una zona (main.gd la
+# imposta in base a CheckpointData.placed_benches): visibile solo se la
+# cucina è già stata acquistata. Aggiorna anche il layout, perché tutto
+# quello che sta sotto la barra della vita deve spostarsi per farle spazio.
+func set_hunger_bar_visible(value: bool) -> void:
+	hunger_bar.visible = value
+	_update_top_hud_layout()
+
+func update_hunger(current: float, max_value: float) -> void:
+	hunger_bar.max_value = max_value
+	hunger_bar.value = current
 
 func show_message(text: String) -> void:
 	message_label.text = text

@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3]
+[gd_scene load_steps=56 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -70,6 +70,25 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="HungerBarBG"]
+bg_color = Color(0.08, 0.08, 0.08, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.07, 0.08, 0.11, 0.88)
+
+[sub_resource type="StyleBoxFlat" id="HungerBarFill"]
+bg_color = Color(0.85, 0.55, 0.1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.15, 0.18, 0.35, 1)
@@ -1166,6 +1185,19 @@ theme_override_constants/outline_size = 6
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "100 / 100"
+
+[node name="HungerBar" type="ProgressBar" parent="HUD"]
+offset_left = 24.0
+offset_top = 80.0
+offset_right = 544.0
+offset_bottom = 106.0
+theme_override_styles/background = SubResource("HungerBarBG")
+theme_override_styles/fill = SubResource("HungerBarFill")
+min_value = 0.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+visible = false
 
 [node name="ZoneLabel" type="Label" parent="HUD"]
 offset_left = 24.0
