@@ -49,7 +49,7 @@ shader_parameter/edge_start = 0.25
 shader = ExtResource("11_darkness_vignette")
 shader_parameter/house_center_px = Vector2(640, 360)
 shader_parameter/house_visible_radius = 2.0
-shader_parameter/player_visible_radius = 0.14
+shader_parameter/player_visible_radius = 0.56
 shader_parameter/edge_softness = 0.05
 
 [sub_resource type="StyleBoxFlat" id="HealthBarBG"]

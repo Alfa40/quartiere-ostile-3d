@@ -55,7 +55,13 @@ const HOUSE_EXIT_SPAWN_POS := Vector3(0, 0, 21)
 # livello massimo), un margine che il player può ampliare potenziandola.
 const STORM_DELAY := 90.0
 const STORM_DURATION := 30.0
-const STORM_START_RADIUS := 90.0
+# Deve partire esattamente dai bordi del campo da gioco, non da un valore
+# arbitrario più grande: il punto dell'arena (ARENA_HALF=38) più lontano
+# dalla casa è uno degli angoli opposti, a ~64.4 unità (casa a z=14, angolo
+# a x=∓38/z=-38) — 65 lo supera appena, così la tempesta è già visibile fin
+# dal primo istante invece di restringersi per un bel po' senza alcun
+# effetto percepibile.
+const STORM_START_RADIUS := 65.0
 # Quando il buio si chiude del tutto senza che la zona sia stata ripulita, i
 # nemici ancora vivi devono "sentire" il player ovunque nell'arena (vedi
 # Enemy.detect_range_override, già usato per gli incontri scriptati del

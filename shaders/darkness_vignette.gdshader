@@ -19,7 +19,7 @@ shader_type canvas_item;
 uniform vec2 viewport_size = vec2(1280.0, 720.0);
 uniform vec2 house_center_px = vec2(640.0, 360.0);
 uniform float house_visible_radius : hint_range(0.0, 4.0) = 2.0;
-uniform float player_visible_radius : hint_range(0.0, 1.0) = 0.14;
+uniform float player_visible_radius : hint_range(0.0, 1.0) = 0.56;
 uniform float edge_softness : hint_range(0.0, 0.5) = 0.05;
 
 void fragment() {
