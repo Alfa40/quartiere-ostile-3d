@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3]
+[gd_scene load_steps=54 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/throw_cooldown_overlay.gd" id="8_throwcooldown"]
 [ext_resource type="Shader" path="res://shaders/damage_vignette.gdshader" id="9_damage_vignette"]
 [ext_resource type="PackedScene" path="res://scenes/SettingsPanel.tscn" id="10_settings"]
+[ext_resource type="Shader" path="res://shaders/darkness_vignette.gdshader" id="11_darkness_vignette"]
 
 [sub_resource type="PrismMesh" id="TentMesh"]
 size = Vector3(4, 2.2, 6)
@@ -43,6 +44,13 @@ shader = ExtResource("9_damage_vignette")
 shader_parameter/vignette_color = Color(1, 0.05, 0.05, 0.85)
 shader_parameter/intensity = 0.0
 shader_parameter/edge_start = 0.25
+
+[sub_resource type="ShaderMaterial" id="DarknessVignetteMat"]
+shader = ExtResource("11_darkness_vignette")
+shader_parameter/house_center_px = Vector2(640, 360)
+shader_parameter/house_visible_radius = 2.0
+shader_parameter/player_visible_radius = 0.14
+shader_parameter/edge_softness = 0.05
 
 [sub_resource type="StyleBoxFlat" id="HealthBarBG"]
 bg_color = Color(0.08, 0.08, 0.08, 0.85)
@@ -313,16 +321,6 @@ position = Vector3(0, 1.5, -2)
 light_color = Color(1.0, 0.85, 0.55, 1)
 light_energy = 1.0
 omni_range = 5.0
-
-[node name="StormLight" type="SpotLight3D" parent="HouseExterior"]
-position = Vector3(0, 40, 0)
-rotation_degrees = Vector3(-90, 0, 0)
-light_color = Color(1.0, 0.92, 0.75, 1)
-light_energy = 0.0
-spot_range = 60.0
-spot_angle = 0.0
-spot_angle_attenuation = 0.5
-shadow_enabled = false
 
 [node name="Albero1" type="StaticBody3D" parent="."]
 position = Vector3(-28, 0, -28)
@@ -1229,6 +1227,14 @@ theme_override_constants/outline_size = 14
 horizontal_alignment = 1
 autowrap_mode = 2
 text = ""
+visible = false
+
+[node name="DarknessVignette" type="ColorRect" parent="HUD"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+material = SubResource("DarknessVignetteMat")
+color = Color(1, 1, 1, 1)
 visible = false
 
 [node name="TouchControls" type="Control" parent="HUD"]

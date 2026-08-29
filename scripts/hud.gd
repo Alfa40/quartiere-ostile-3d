@@ -10,6 +10,7 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var ammo_label: Label = $AmmoLabel
 @onready var message_label: Label = $MessageLabel
 @onready var storm_warning_label: Label = $StormWarningLabel
+@onready var darkness_vignette: ColorRect = $DarknessVignette
 @onready var pause_panel: Control = $PausePanel
 @onready var pause_stats_label: Label = $PausePanel/Scroll/Box/StatsLabel
 @onready var pause_inventory_label: Label = $PausePanel/Scroll/Box/InventoryLabel
@@ -334,6 +335,7 @@ func _update_top_hud_layout() -> void:
 	var vp := get_viewport().get_visible_rect().size
 	var is_landscape := vp.x > vp.y
 	var is_portrait := not is_landscape
+	darkness_vignette.material.set_shader_parameter("viewport_size", vp)
 	var height := HEALTH_BAR_HEIGHT_LANDSCAPE if is_landscape else HEALTH_BAR_HEIGHT_PORTRAIT
 	health_bar.offset_bottom = health_bar.offset_top + height
 	var left := HEALTH_BAR_LEFT_LANDSCAPE if is_landscape else HEALTH_BAR_LEFT_PORTRAIT
@@ -562,6 +564,13 @@ func show_storm_warning() -> void:
 	storm_warning_label.text = "Non restare nel buio"
 	storm_warning_label.visible = true
 	_storm_warning_time_left = STORM_WARNING_DURATION
+
+func set_house_vignette_visible(value: bool) -> void:
+	darkness_vignette.visible = value
+
+func set_house_vignette(screen_pos: Vector2, radius: float) -> void:
+	darkness_vignette.material.set_shader_parameter("house_center_px", screen_pos)
+	darkness_vignette.material.set_shader_parameter("house_visible_radius", radius)
 
 func update_zone(zone: int, zone_name: String) -> void:
 	zone_label.text = "Zona %d — %s" % [zone, zone_name]

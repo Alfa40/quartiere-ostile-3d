@@ -63,45 +63,21 @@ const STORM_START_RADIUS := 90.0
 const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 
 # Buio personale: appena il player esce dal raggio sicuro (sopra) non muore
-# sul colpo — vede solo pochi passi attorno a sé (una luce reale agganciata
-# al player, vedi _update_player_light/_player_light, non un effetto a
-# schermo) e a intervalli casuali tra NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX
-# nasce ai bordi di quella bolla di visuale, dal lato rivolto verso casa, un
-# "dio della notte": lento (una frazione della velocità attuale del player,
-# aggiornamenti/potenziamenti compresi) ma letale al contatto e con vita
-# spropositata (in pratica infondabile, l'unica strategia è scappare).
-# Rientrare nel raggio sicuro li dissolve subito: il buio, da quel momento,
-# torna innocuo.
-const PLAYER_LIGHT_RADIUS_SAFE := 6.0
-const PLAYER_LIGHT_RADIUS_DARK := 4.0
-const PLAYER_LIGHT_ENERGY := 1.2
+# sul colpo — vede solo pochi passi attorno a sé (una piccola vignetta a
+# schermo sempre centrata sul player, vedi shaders/darkness_vignette e
+# hud.set_house_vignette) e a intervalli casuali tra
+# NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX nasce a NIGHT_GOD_SPAWN_DISTANCE dal
+# player, dal lato rivolto verso casa, un "dio della notte": lento (una
+# frazione della velocità attuale del player, aggiornamenti/potenziamenti
+# compresi) ma letale al contatto e con vita spropositata (in pratica
+# infondabile, l'unica strategia è scappare). Rientrare nel raggio sicuro li
+# dissolve subito: il buio, da quel momento, torna innocuo.
+const NIGHT_GOD_SPAWN_DISTANCE := 6.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
 const NIGHT_GOD_SPEED_FACTOR := 0.5
 const NIGHT_GOD_HP_MULTIPLIER := 100.0
-# Luce "sopra la casa" che sostituisce sole/ambiente durante la tempesta: non
-# cala mai di intensità, solo di raggio d'azione (vedi _current_storm_radius,
-# STORM_START_RADIUS -> _storm_safe_radius in STORM_DURATION secondi). Come
-# un'eclissi che si allarga: dentro il cerchio resta sempre piena luce,
-# fuori dal cerchio è già del tutto nero, nessun calo intermedio.
-#
-# È un faro (SpotLight3D) puntato dritto verso il basso, non una lampadina
-# (OmniLight3D): un cono di luce vero, con un cerchio a terra dai bordi
-# netti che si allarga o restringe cambiando l'angolo del cono — come lo
-# zoom del flash di un iPhone, non una sfera di luce che si espande in ogni
-# direzione. STORM_LIGHT_HEIGHT deve combaciare con la posizione Y del nodo
-# StormLight in Main.tscn: raggio-a-terra = altezza * tan(angolo), quindi
-# l'angolo per un dato raggio è atan(raggio / altezza) — vedi
-# _spot_angle_for_radius.
-const STORM_LIGHT_ENERGY := 2.0
-const STORM_LIGHT_HEIGHT := 40.0
-const STORM_LIGHT_SPOT_RANGE := 60.0
-# Deve combaciare col valore impostato su Env_1 in Main.tscn: usato per
-# ripristinare l'ambiente su questa istanza (vedi _setup_storm), non letto
-# dalla risorsa a runtime per non ereditare un valore già azzerato da una
-# partita precedente nello stesso processo.
-const AMBIENT_BASE_ENERGY := 0.6
 
 const MATERIAL_LABELS := {
 	"legno": "Legno",
@@ -171,8 +147,6 @@ const CLOSE_SPAWN_RADIUS := 30.0
 @onready var hud = $HUD
 @onready var player: Node3D = $Player
 @onready var touch_controls = $HUD/TouchControls
-@onready var _sun: DirectionalLight3D = $Sun
-@onready var _storm_light: SpotLight3D = $HouseExterior/StormLight
 
 const OCCLUDER_FADE_TRANSPARENCY := 0.85
 # Gli oggetti distruttibili (alberi, panchine, ecc.) restano ben visibili
@@ -220,7 +194,6 @@ var storm_full_closed := false
 var storm_elapsed := 0.0
 var _time_outside := 0.0
 var _storm_mesh: Node3D = null
-var _player_light: OmniLight3D = null
 
 var in_darkness := false
 var _night_god_spawn_timer := 0.0
@@ -876,29 +849,10 @@ func _process(delta: float) -> void:
 # is_in_darkness, chiusura completa, nemici e posizione degli dei della
 # notte. Tutte le distanze contano solo sul piano orizzontale
 # (_horizontal_distance_to_house), mai sulla quota di player/telecamera.
-# Duplica anche la risorsa Environment (le sotto-risorse incorporate in un
-# .tscn sono condivise dal resource loader tra istanze diverse della stessa
-# scena: senza duplicarla, spegnere l'ambiente in _start_storm() rischierebbe
-# di "restare acceso" anche per la prossima partita nello stesso processo) e
-# crea la piccola luce personale che segue il player: garantisce sempre un
-# raggio minimo visibile anche a sole/ambiente ormai spenti (vedi
-# _update_player_light).
 func _setup_storm() -> void:
 	_storm_mesh = Node3D.new()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
-
-	var env: Environment = $Environment.environment.duplicate()
-	env.ambient_light_energy = AMBIENT_BASE_ENERGY
-	$Environment.environment = env
-
-	_player_light = OmniLight3D.new()
-	_player_light.light_color = Color(0.9, 0.85, 0.75, 1.0)
-	_player_light.light_energy = PLAYER_LIGHT_ENERGY
-	_player_light.omni_range = PLAYER_LIGHT_RADIUS_SAFE
-	_player_light.shadow_enabled = false
-	_player_light.position = Vector3(0, 1.2, 0)
-	player.add_child(_player_light)
 
 # Distanza sul solo piano orizzontale (XZ) dalla casa: la tempesta è una
 # circonferenza sul terreno, non una sfera, quindi l'altezza di player o
@@ -920,12 +874,30 @@ func _storm_progress() -> float:
 func _current_storm_radius() -> float:
 	return lerp(STORM_START_RADIUS, _storm_safe_radius(), _storm_progress())
 
-# Converte un raggio a terra nell'angolo del cono del faro sopra la casa:
-# raggio = altezza * tan(angolo), quindi angolo = atan(raggio / altezza).
-# Zero raggio -> zero angolo (cono chiuso, nessuna luce a terra); clampato
-# sotto i 90° perché a 90° il cono diventerebbe un piano infinito.
-func _spot_angle_for_radius(radius: float) -> float:
-	return clamp(rad_to_deg(atan(radius / STORM_LIGHT_HEIGHT)), 0.0, 89.0)
+# Vignetta a schermo centrata sulla casa (non sul player): proietta solo la
+# casa sulla telecamera attiva per la posizione, e ricava il raggio a
+# schermo dalla distanza telecamera-casa e dal FOV verticale, non
+# proiettando un punto sul vero bordo del cerchio — a raggio 90 quel punto
+# finirebbe spesso dietro la telecamera (la direzione casa->player punta
+# all'indietro rispetto a dove guarda la telecamera), rendendo la proiezione
+# inaffidabile. metà_altezza_mondo_a_quella_distanza = distanza *
+# tan(fov/2): dividere il raggio per questo valore dà una frazione
+# direttamente comparabile al raggio normalizzato che lo shader si aspetta
+# (1.0 = arriva al bordo corto dello schermo), coerente con qualunque
+# prospettiva senza mai proiettare punti lontanissimi.
+func _update_house_vignette(radius: float) -> void:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return
+	var house_pos: Vector3 = _storm_mesh.global_position
+	var cam_to_house_dist: float = cam.global_position.distance_to(house_pos)
+	if cam_to_house_dist < 0.01:
+		return
+	var half_world_size: float = cam_to_house_dist * tan(deg_to_rad(cam.fov) * 0.5)
+	if half_world_size <= 0.0:
+		return
+	var house_screen: Vector2 = cam.unproject_position(house_pos)
+	hud.set_house_vignette(house_screen, radius / half_world_size)
 
 func _update_storm(delta: float) -> void:
 	# Deve funzionare (e potersi testare) anche in Modalità Creator: l'unico
@@ -943,13 +915,12 @@ func _update_storm(delta: float) -> void:
 
 	storm_elapsed += delta
 	var radius: float = _current_storm_radius()
-	_storm_light.spot_angle = _spot_angle_for_radius(radius)
+	_update_house_vignette(radius)
 	if not storm_full_closed and storm_elapsed >= STORM_DURATION:
 		storm_full_closed = true
 		_on_storm_fully_closed()
 
 	var now_in_darkness: bool = _horizontal_distance_to_house(player.global_position) > radius
-	_update_player_light(now_in_darkness)
 	if now_in_darkness and not in_darkness:
 		_enter_darkness()
 	elif not now_in_darkness and in_darkness:
@@ -962,18 +933,7 @@ func _start_storm() -> void:
 		return
 	storm_active = true
 	storm_elapsed = 0.0
-	# Nessun calo graduale: il sole/l'ambiente sparisce e la luce sopra la
-	# casa prende il suo posto da subito, alla massima intensità e con
-	# raggio pari a STORM_START_RADIUS (copre già tutta la mappa) — un
-	# cambio impercettibile, perché a quel raggio non c'è ancora nulla fuori
-	# dal cerchio. Da qui in avanti è solo il raggio a restringersi
-	# (_current_storm_radius), mai l'intensità: un'eclissi che avanza, non
-	# un tramonto uniforme.
-	_sun.light_energy = 0.0
-	$Environment.environment.ambient_light_energy = 0.0
-	_storm_light.light_energy = STORM_LIGHT_ENERGY
-	_storm_light.spot_range = STORM_LIGHT_SPOT_RANGE
-	_storm_light.spot_angle = _spot_angle_for_radius(STORM_START_RADIUS)
+	hud.set_house_vignette_visible(true)
 	hud.show_storm_warning()
 
 # Il buio ha chiuso del tutto senza che la zona sia stata ripulita: i nemici
@@ -987,15 +947,6 @@ func _on_storm_fully_closed() -> void:
 		return
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.detect_range_override = STORM_ENEMY_DETECT_OVERRIDE
-
-# Raggio di visibilità del player, tramite una luce vera agganciata a lui
-# (non un effetto a schermo): dentro il raggio sicuro resta ampio (comunque
-# irrilevante, il resto della scena è ben illuminato), fuori diventa
-# improvvisamente stretto — pochi passi, niente sfumatura intermedia, in
-# coerenza con l'eclissi che avanza (vedi _start_storm/_update_storm: fuori
-# dal cerchio è già del tutto nero).
-func _update_player_light(in_darkness_now: bool) -> void:
-	_player_light.omni_range = PLAYER_LIGHT_RADIUS_DARK if in_darkness_now else PLAYER_LIGHT_RADIUS_SAFE
 
 # Il player è appena finito nel buio vero e proprio (oltre il raggio sicuro
 # attuale, che sia ancora in restringimento o già fermo al minimo dato dalla
@@ -1033,7 +984,7 @@ func _spawn_night_god() -> void:
 
 	var god := NightGodScene.instantiate()
 	add_child(god)
-	god.global_position = player.global_position + dir_to_house * _player_light.omni_range
+	god.global_position = player.global_position + dir_to_house * NIGHT_GOD_SPAWN_DISTANCE
 	god.target = player
 	god.speed = player.BASE_SPEED * player.speed_mult * NIGHT_GOD_SPEED_FACTOR
 	god.max_hp = player.max_hp * NIGHT_GOD_HP_MULTIPLIER
