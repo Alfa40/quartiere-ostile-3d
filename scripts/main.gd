@@ -50,6 +50,9 @@ const ARENA_HALF := 38.0
 const OBJECT_CLEAR_RADIUS := 6.0
 const OBJECT_COUNT_MIN := 30
 const OBJECT_COUNT_MAX := 45
+const FungoScene := preload("res://scenes/Fungo.tscn")
+const MUSHROOM_COUNT_MIN := 6
+const MUSHROOM_COUNT_MAX := 10
 
 const HOUSE_DOOR_POS := Vector3(0, 0, 17.5)
 const HOUSE_INTERACT_RANGE := 2.5
@@ -211,6 +214,7 @@ var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
 var upgrades := {}
 var weapon_name := "Pugni"
 var hunger := 100.0
+var mushrooms := {}
 
 var zone_enemies_total := 0
 var zone_enemies_spawned := 0
@@ -246,9 +250,13 @@ func _ready() -> void:
 	if DevMode.enabled:
 		money = 999999.0
 		materials = {"legno": 999999, "metallo": 999999, "cablaggi": 999999}
+		mushrooms = {}
+		for id in Mushrooms.ORDER:
+			mushrooms[id] = 999999
 	else:
 		money = float(CheckpointData.money)
 		materials = CheckpointData.materials.duplicate()
+		mushrooms = CheckpointData.mushrooms.duplicate()
 	hunger = CheckpointData.hunger
 	hud.set_hunger_bar_visible(true)
 	player.hp_changed.connect(hud.on_player_hp_changed)
@@ -860,6 +868,7 @@ func _start_zone() -> void:
 	_apply_scenario_visuals()
 	if zone > 1:
 		_regenerate_objects()
+	_spawn_mushrooms()
 	zone_enemies_total = min(BASE_ENEMIES + PER_ZONE * (zone - 1), MAX_ENEMIES_PER_ZONE)
 	zone_enemies_spawned = 0
 	zone_enemies_alive = 0
@@ -1184,7 +1193,7 @@ func _complete_zone() -> void:
 			# Un checkpoint deve sempre far ripartire a vita piena dopo una
 			# morte, non con la vita residua del momento in cui fu salvato:
 			# vedi save_checkpoint in checkpoint_data.gd.
-			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades, player.max_hp)
+			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades, player.max_hp, mushrooms)
 		# La classifica riflette l'ultima zona davvero completata, non quella
 		# in corso: qui "zone" è ancora il numero appena superato (l'incremento
 		# avviene solo dopo, in _go_home()/_skip_home()).
@@ -1192,7 +1201,7 @@ func _complete_zone() -> void:
 	hud.show_zone_complete_choice()
 
 func _go_home() -> void:
-	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades, player.hp, hunger)
+	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades, player.hp, hunger, mushrooms)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _skip_home() -> void:
@@ -1205,7 +1214,7 @@ func _enter_house_anytime() -> void:
 	if not zone_transitioning and storm_full_closed:
 		_force_home_after_storm()
 		return
-	CheckpointData.set_live_state(zone, int(money), materials, upgrades, player.hp, hunger)
+	CheckpointData.set_live_state(zone, int(money), materials, upgrades, player.hp, hunger, mushrooms)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 # Rifugio forzato: il buio ha chiuso del tutto e la zona non era stata
@@ -1218,9 +1227,32 @@ func _force_home_after_storm() -> void:
 	zone_transitioning = true
 	if not DevMode.enabled:
 		if CheckpointData.is_checkpoint_zone(zone):
-			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades, player.max_hp)
+			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades, player.max_hp, mushrooms)
 		Leaderboard.submit(zone, int(money))
 	_go_home()
+
+# Chiamata (vedi fungo.gd) quando il player raccoglie un fungo: si
+# aggiunge alla dispensa, pronto per essere usato al forno della cucina
+# (vedi recipes.gd/home.gd:_on_cook_pressed). Nessun limite di zona: tutte
+# le varietà possono comparire fin dalla prima (vedi Mushrooms.random_id),
+# solo con probabilità molto diverse.
+func collect_mushroom(id: String) -> void:
+	mushrooms[id] = int(mushrooms.get(id, 0)) + 1
+
+# Sparsi per il campo come gli altri oggetti (vedi _regenerate_objects),
+# ma ricreati a OGNI zona compresa la prima, non solo dalla seconda in poi:
+# a differenza degli alberi/panchine ecc. non fanno già parte della scena
+# iniziale.
+func _spawn_mushrooms() -> void:
+	for m in get_tree().get_nodes_in_group("mushrooms"):
+		m.queue_free()
+	var count := randi_range(MUSHROOM_COUNT_MIN, MUSHROOM_COUNT_MAX)
+	for i in range(count):
+		var fungo := FungoScene.instantiate()
+		fungo.mushroom_id = Mushrooms.random_id()
+		fungo.add_to_group("mushrooms")
+		add_child(fungo)
+		fungo.position = _random_object_position()
 
 func _regenerate_objects() -> void:
 	for obj in get_tree().get_nodes_in_group("park_objects"):

@@ -9939,6 +9939,36 @@ custom_minimum_size = Vector2(160, 68)
 theme_override_font_sizes/font_size = 26
 text = "Cucina"
 
+[node name="Row_manicaretto_reale" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_manicaretto_reale"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_manicaretto_reale"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
+[node name="Row_elisir_del_bosco" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_elisir_del_bosco"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_elisir_del_bosco"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
 [node name="CloseButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 35
@@ -10055,6 +10085,36 @@ autowrap_mode = 2
 text = ""
 
 [node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_banchetto"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="Row_manicaretto_reale" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_manicaretto_reale"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_manicaretto_reale"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="Row_elisir_del_bosco" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_elisir_del_bosco"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_elisir_del_bosco"]
 custom_minimum_size = Vector2(160, 68)
 theme_override_font_sizes/font_size = 26
 text = "Mangia"

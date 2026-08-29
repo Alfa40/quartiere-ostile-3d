@@ -1954,17 +1954,24 @@ func _refresh_cucina_forno_menu() -> void:
 		var info: Label = row.get_node("InfoLabel")
 		var btn: Button = row.get_node("CookButton")
 		var mat_name: String = MATERIAL_LABELS.get(dish.cost_material, dish.cost_material)
+		var mush_label: String = String(Mushrooms.DATA.get(dish.mushroom_id, {}).get("label", dish.mushroom_id))
+		var mush_owned: int = int(CheckpointData.mushrooms.get(dish.mushroom_id, 0))
 		var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
-		info.text = "%s — rigenera %d vita e %d fame\nCosta %d€ + %d %s (in dispensa: %d)" % [dish.label, int(dish.heal_amount), int(dish.heal_amount), dish.cost_money, dish.cost_amount, mat_name, stored]
-		var afford: bool = CheckpointData.money >= dish.cost_money and CheckpointData.materials.get(dish.cost_material, 0) >= dish.cost_amount
+		info.text = "%s — rigenera %d vita e %d fame\nCosta %d€ + %d %s + %d %s (hai: %d) (in dispensa: %d)" % [
+			dish.label, int(dish.heal_amount), int(dish.heal_amount), dish.cost_money, dish.cost_amount, mat_name,
+			dish.mushroom_amount, mush_label, mush_owned, stored,
+		]
+		var afford: bool = CheckpointData.money >= dish.cost_money and CheckpointData.materials.get(dish.cost_material, 0) >= dish.cost_amount and mush_owned >= int(dish.mushroom_amount)
 		btn.disabled = not afford
 
 func _on_cook_pressed(dish_id: String) -> void:
 	var dish: Dictionary = Recipes.DISHES[dish_id]
-	if CheckpointData.money < dish.cost_money or CheckpointData.materials.get(dish.cost_material, 0) < dish.cost_amount:
+	var mush_owned: int = int(CheckpointData.mushrooms.get(dish.mushroom_id, 0))
+	if CheckpointData.money < dish.cost_money or CheckpointData.materials.get(dish.cost_material, 0) < dish.cost_amount or mush_owned < int(dish.mushroom_amount):
 		return
 	CheckpointData.money -= dish.cost_money
 	CheckpointData.materials[dish.cost_material] = CheckpointData.materials.get(dish.cost_material, 0) - dish.cost_amount
+	CheckpointData.mushrooms[dish.mushroom_id] = mush_owned - int(dish.mushroom_amount)
 	CheckpointData.kitchen_stored_food[dish_id] = int(CheckpointData.kitchen_stored_food.get(dish_id, 0)) + 1
 	_refresh_cucina_forno_menu()
 
