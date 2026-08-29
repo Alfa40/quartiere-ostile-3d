@@ -1,0 +1,94 @@
+[gd_scene load_steps=13 format=3]
+
+[sub_resource type="BoxMesh" id="TableMesh"]
+size = Vector3(1.6, 0.75, 0.9)
+
+[sub_resource type="BoxShape3D" id="TableShape"]
+size = Vector3(1.6, 0.75, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="TableMaterial"]
+albedo_color = Color(0.45, 0.3, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="ChairSeatMesh"]
+size = Vector3(0.5, 0.08, 0.5)
+
+[sub_resource type="BoxMesh" id="ChairBackMesh"]
+size = Vector3(0.5, 0.6, 0.08)
+
+[sub_resource type="StandardMaterial3D" id="ChairMaterial"]
+albedo_color = Color(0.35, 0.22, 0.13, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="OvenBodyMesh"]
+size = Vector3(1.0, 1.4, 0.9)
+
+[sub_resource type="BoxShape3D" id="OvenBodyShape"]
+size = Vector3(1.0, 1.4, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="OvenBodyMaterial"]
+albedo_color = Color(0.22, 0.22, 0.25, 1)
+metallic = 0.3
+roughness = 0.55
+
+[sub_resource type="BoxMesh" id="OvenDoorMesh"]
+size = Vector3(0.7, 0.7, 0.06)
+
+[sub_resource type="StandardMaterial3D" id="OvenDoorMaterial"]
+albedo_color = Color(0.08, 0.08, 0.09, 1)
+roughness = 0.4
+
+[sub_resource type="CylinderMesh" id="BurnerMesh"]
+top_radius = 0.14
+bottom_radius = 0.14
+height = 0.04
+
+[node name="WorkbenchCucina" type="StaticBody3D"]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("TableShape")
+position = Vector3(0, 0.375, 0)
+
+[node name="Table" type="MeshInstance3D" parent="."]
+mesh = SubResource("TableMesh")
+surface_material_override/0 = SubResource("TableMaterial")
+position = Vector3(0, 0.375, 0)
+
+[node name="ChairSeat" type="MeshInstance3D" parent="."]
+mesh = SubResource("ChairSeatMesh")
+surface_material_override/0 = SubResource("ChairMaterial")
+position = Vector3(0, 0.42, 0.75)
+
+[node name="ChairBack" type="MeshInstance3D" parent="."]
+mesh = SubResource("ChairBackMesh")
+surface_material_override/0 = SubResource("ChairMaterial")
+position = Vector3(0, 0.7, 0.98)
+
+[node name="Forno" type="StaticBody3D" parent="."]
+collision_layer = 1
+position = Vector3(0, 0, -2.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Forno"]
+shape = SubResource("OvenBodyShape")
+position = Vector3(0, 0.7, 0)
+
+[node name="OvenBody" type="MeshInstance3D" parent="Forno"]
+mesh = SubResource("OvenBodyMesh")
+surface_material_override/0 = SubResource("OvenBodyMaterial")
+position = Vector3(0, 0.7, 0)
+
+[node name="OvenDoor" type="MeshInstance3D" parent="Forno"]
+mesh = SubResource("OvenDoorMesh")
+surface_material_override/0 = SubResource("OvenDoorMaterial")
+position = Vector3(0, 0.55, 0.46)
+
+[node name="Burner1" type="MeshInstance3D" parent="Forno"]
+mesh = SubResource("BurnerMesh")
+surface_material_override/0 = SubResource("OvenDoorMaterial")
+position = Vector3(-0.25, 1.42, 0)
+
+[node name="Burner2" type="MeshInstance3D" parent="Forno"]
+mesh = SubResource("BurnerMesh")
+surface_material_override/0 = SubResource("OvenDoorMaterial")
+position = Vector3(0.25, 1.42, 0)

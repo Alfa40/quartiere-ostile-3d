@@ -498,6 +498,21 @@ custom_minimum_size = Vector2(180, 68)
 theme_override_font_sizes/font_size = 30
 text = "Compra"
 
+[node name="Row_cucina" type="HBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_cucina"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="BuyButton" type="Button" parent="HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_cucina"]
+custom_minimum_size = Vector2(180, 68)
+theme_override_font_sizes/font_size = 30
+text = "Compra"
+
 [node name="CasaTab" type="VBoxContainer" parent="HUD/WorkbenchMenu/Scroll/Box"]
 visible = false
 theme_override_constants/separation = 22
@@ -9806,6 +9821,245 @@ theme_override_font_sizes/font_size = 24
 text = "Cambia"
 
 [node name="CloseButton" type="Button" parent="HUD/WardrobeMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 35
+text = "Chiudi"
+
+[node name="CucinaFornoMenu" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/CucinaFornoMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.92)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/CucinaFornoMenu"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/CucinaFornoMenu/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Forno"
+
+[node name="MoneyMaterialsLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="Row_panino" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_panino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_panino"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
+[node name="Row_zuppa" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_zuppa"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_zuppa"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
+[node name="Row_pasta" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_pasta"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_pasta"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
+[node name="Row_arrosto" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_arrosto"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_arrosto"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
+[node name="Row_banchetto" type="HBoxContainer" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_banchetto"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="CookButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box/Row_banchetto"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Cucina"
+
+[node name="CloseButton" type="Button" parent="HUD/CucinaFornoMenu/Scroll/Box"]
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 35
+text = "Chiudi"
+
+[node name="CucinaTavoloMenu" type="Control" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="HUD/CucinaTavoloMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.08, 0.11, 0.92)
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/CucinaTavoloMenu"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="Title" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+horizontal_alignment = 1
+text = "Tavolo"
+
+[node name="Note" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "I piatti cucinati restano qui finché non li mangi"
+
+[node name="Row_panino" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_panino"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_panino"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="Row_zuppa" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_zuppa"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_zuppa"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="Row_pasta" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_pasta"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_pasta"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="Row_arrosto" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_arrosto"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_arrosto"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="Row_banchetto" type="HBoxContainer" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
+theme_override_constants/separation = 20
+
+[node name="InfoLabel" type="Label" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_banchetto"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+autowrap_mode = 2
+text = ""
+
+[node name="EatButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box/Row_banchetto"]
+custom_minimum_size = Vector2(160, 68)
+theme_override_font_sizes/font_size = 26
+text = "Mangia"
+
+[node name="CloseButton" type="Button" parent="HUD/CucinaTavoloMenu/Scroll/Box"]
 custom_minimum_size = Vector2(0, 76)
 theme_override_font_sizes/font_size = 35
 text = "Chiudi"

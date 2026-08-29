@@ -79,6 +79,9 @@ var equipped_throwables := {}
 # e lanciabile sul campo tramite i tasti arma/lancio).
 var equipped_throwable := ""
 var house_tier := 0
+# Piatti cucinati al forno della cucina ma non ancora mangiati: {id_piatto:
+# quantità}. Il tavolo funziona da magazzino, vedi recipes.gd.
+var kitchen_stored_food := {}
 # Livello della luce della casa (0 = non acquistata): vedi house_light.gd.
 # Determina il raggio del cerchio di luce che il buio della "tempesta" non
 # può sovrastare attorno alla casa.
@@ -210,6 +213,7 @@ func _reset_to_defaults() -> void:
 	equipped_throwables = {}
 	equipped_throwable = ""
 	house_tier = 0
+	kitchen_stored_food = {}
 	house_light_level = 0
 	house_bench_orientation = "h"
 	house_bench_col_idx = 0
@@ -306,6 +310,8 @@ func _apply_state(data: Dictionary) -> void:
 	else:
 		equipped_throwables = {}
 	house_tier = int(data.get("house_tier", 0))
+	var food = data.get("kitchen_stored_food", {})
+	kitchen_stored_food = food.duplicate() if typeof(food) == TYPE_DICTIONARY else {}
 	house_light_level = int(data.get("house_light_level", 0))
 	house_bench_orientation = String(data.get("house_bench_orientation", "h"))
 	house_bench_col_idx = int(data.get("house_bench_col_idx", 0))
@@ -351,6 +357,7 @@ func _state_dict() -> Dictionary:
 		"equipped_throwable": equipped_throwable,
 		"equipped_throwables": equipped_throwables,
 		"house_tier": house_tier,
+		"kitchen_stored_food": kitchen_stored_food,
 		"house_light_level": house_light_level,
 		"house_bench_orientation": house_bench_orientation,
 		"house_bench_col_idx": house_bench_col_idx,

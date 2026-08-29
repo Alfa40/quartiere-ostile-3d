@@ -62,6 +62,7 @@ const BENCH_SCENES := {
 	"armi_da_lancio": preload("res://scenes/WorkbenchArmiDaLancio.tscn"),
 	"armi_esplosive": preload("res://scenes/WorkbenchArmiEsplosive.tscn"),
 	"armadio": preload("res://scenes/WorkbenchArmadio.tscn"),
+	"cucina": preload("res://scenes/WorkbenchCucina.tscn"),
 	# Usato solo per l'anteprima "fantasma" durante lo spostamento: il banco
 	# della casa vero e proprio resta sempre il nodo $Workbench già presente
 	# in scena, mai duplicato.
@@ -73,6 +74,7 @@ const BENCH_COSTS := {
 	"armi_da_lancio": {"money": 900, "material": "metallo", "amount": 60},
 	"armi_esplosive": {"money": 1400, "material": "metallo", "amount": 90},
 	"armadio": {"money": 200, "material": "legno", "amount": 15},
+	"cucina": {"money": 700, "material": "metallo", "amount": 50},
 }
 const BENCH_LABELS := {
 	"armi_bianche": "Banco delle armi bianche",
@@ -80,6 +82,7 @@ const BENCH_LABELS := {
 	"armi_da_lancio": "Banco delle armi da lancio",
 	"armi_esplosive": "Banco delle armi esplosive e speciali",
 	"armadio": "Armadio",
+	"cucina": "Cucina",
 	"casa": "Banco della casa",
 }
 const BENCH_UNLOCK_DESC := {
@@ -88,6 +91,7 @@ const BENCH_UNLOCK_DESC := {
 	"armi_da_lancio": "Sblocca armi bianche da lancio, granate esplosive e granate speciali",
 	"armi_esplosive": "Sblocca lanciagranate, lanciarazzi e armi speciali",
 	"armadio": "Personalizza il colore del tuo corpo e i colori della casa",
+	"cucina": "Il forno cucina piatti che rigenerano vita, il tavolo li conserva finché non li mangi",
 }
 
 @onready var player: Node3D = $Player
@@ -111,6 +115,9 @@ const BENCH_UNLOCK_DESC := {
 @onready var roof_color_button: Button = $HUD/WardrobeMenu/Scroll/Box/RoofRow/ColorButton
 @onready var door_color_button: Button = $HUD/WardrobeMenu/Scroll/Box/DoorRow/ColorButton
 @onready var color_pick_screen: Control = $HUD/ColorPickScreen
+@onready var cucina_forno_menu: Control = $HUD/CucinaFornoMenu
+@onready var cucina_forno_money_label: Label = $HUD/CucinaFornoMenu/Scroll/Box/MoneyMaterialsLabel
+@onready var cucina_tavolo_menu: Control = $HUD/CucinaTavoloMenu
 @onready var color_pick_title: Label = $HUD/ColorPickScreen/Box/Title
 @onready var color_picker_widget: ColorPicker = $HUD/ColorPickScreen/Box/Picker
 @onready var workbench_scroll: ScrollContainer = $HUD/WorkbenchMenu/Scroll
@@ -228,6 +235,11 @@ func _ready() -> void:
 	$HUD/ThrowableMenu/Scroll/Box/CloseButton.pressed.connect(_close_throwable_menu)
 	$HUD/ExplosiveMenu/Scroll/Box/CloseButton.pressed.connect(_close_explosive_menu)
 	$HUD/WardrobeMenu/Scroll/Box/CloseButton.pressed.connect(_close_wardrobe_menu)
+	$HUD/CucinaFornoMenu/Scroll/Box/CloseButton.pressed.connect(_close_cucina_forno_menu)
+	$HUD/CucinaTavoloMenu/Scroll/Box/CloseButton.pressed.connect(_close_cucina_tavolo_menu)
+	for dish_id in Recipes.ORDER:
+		$HUD/CucinaFornoMenu/Scroll/Box.get_node("Row_%s/CookButton" % dish_id).pressed.connect(_on_cook_pressed.bind(dish_id))
+		$HUD/CucinaTavoloMenu/Scroll/Box.get_node("Row_%s/EatButton" % dish_id).pressed.connect(_on_eat_pressed.bind(dish_id))
 	body_color_button.pressed.connect(_open_color_pick.bind("body", "Colore del corpo"))
 	wall_color_button.pressed.connect(_open_color_pick.bind("wall", "Colore delle pareti"))
 	roof_color_button.pressed.connect(_open_color_pick.bind("roof", "Colore del tetto"))
@@ -248,6 +260,7 @@ func _ready() -> void:
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_da_lancio/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_da_lancio"))
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armi_esplosive/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armi_esplosive"))
 	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_armadio/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("armadio"))
+	$HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_cucina/BuyButton.pressed.connect(_on_buy_bench_pressed.bind("cucina"))
 
 	for tcat_id in THROWABLE_CATEGORY_BOXES.keys():
 		var tcat_btn: Button = get_node("HUD/ThrowableMenu/Scroll/Box/CategoryRow/Btn_%s" % tcat_id)
@@ -400,7 +413,7 @@ func _update_menu_layout() -> void:
 func _process(delta: float) -> void:
 	if stairs_cooldown_timer > 0.0:
 		stairs_cooldown_timer = maxf(0.0, stairs_cooldown_timer - delta)
-	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible or color_pick_screen.visible:
+	if placing_bench_type != "" or workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible or color_pick_screen.visible or cucina_forno_menu.visible or cucina_tavolo_menu.visible:
 		_current_interact = ""
 		interact_indicator.visible = false
 		return
@@ -447,7 +460,7 @@ func _interact_target_node(type_id: String) -> Node3D:
 func _try_claim_bench_touch(pos: Vector2) -> bool:
 	if placing_bench_type != "" or _current_interact == "":
 		return false
-	if workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible or color_pick_screen.visible:
+	if workbench_menu.visible or weapon_menu.visible or firearm_menu.visible or throwable_menu.visible or explosive_menu.visible or wardrobe_menu.visible or color_pick_screen.visible or cucina_forno_menu.visible or cucina_tavolo_menu.visible:
 		return false
 	var node := _interact_target_node(_current_interact)
 	if node == null:
@@ -585,8 +598,18 @@ func _on_interact_pressed() -> void:
 		_open_explosive_menu()
 	elif _current_interact == "armadio":
 		_open_wardrobe_menu()
+	elif _current_interact == "cucina_forno":
+		_open_cucina_forno_menu()
+	elif _current_interact == "cucina_tavolo":
+		_open_cucina_tavolo_menu()
 
 func _start_bench_move(type_id: String) -> void:
+	# "cucina_forno"/"cucina_tavolo" sono due punti di interazione dello
+	# stesso oggetto fisico: tenendo premuto su uno qualunque dei due si
+	# sposta sempre l'intera cucina, salvata in CheckpointData con type
+	# "cucina", non con la chiave di interazione.
+	if type_id == "cucina_forno" or type_id == "cucina_tavolo":
+		type_id = "cucina"
 	if type_id == "casa":
 		moving_house_bench = true
 		_start_bench_placement(type_id)
@@ -666,6 +689,7 @@ func _refresh_benches_tab() -> void:
 	_refresh_bench_row("armi_da_lancio")
 	_refresh_bench_row("armi_esplosive")
 	_refresh_bench_row("armadio")
+	_refresh_bench_row("cucina")
 
 func _refresh_bench_row(type_id: String) -> void:
 	var row := get_node("HUD/WorkbenchMenu/Scroll/Box/BenchesTab/Row_%s" % type_id)
@@ -809,15 +833,16 @@ func _relocate_benches_for_shrunk_floors() -> void:
 		var orientation: String = String(b.get("orientation", "h"))
 		var col_idx: int = int(b.get("col_idx", 0))
 		var row_idx: int = int(b.get("row_idx", 0))
+		var type_id: String = String(b.get("type", ""))
 		var occ: Dictionary = occupied_by_floor.get(floor_idx, {})
-		var needs_new_slot: bool = not _fits_floor_grid(orientation, col_idx, row_idx, floor_idx)
+		var needs_new_slot: bool = not _fits_floor_grid(orientation, col_idx, row_idx, floor_idx, type_id)
 		if not needs_new_slot:
-			for key in _footprint_cells(orientation, col_idx, row_idx):
+			for key in _footprint_cells(orientation, col_idx, row_idx, type_id):
 				if occ.has(key):
 					needs_new_slot = true
 					break
 		if needs_new_slot:
-			var slot = _find_free_cell_in_floor_grid(orientation, floor_idx, occ)
+			var slot = _find_free_cell_in_floor_grid(orientation, floor_idx, occ, type_id)
 			if slot == null:
 				slot = {"col_idx": 0, "row_idx": 0}
 			col_idx = slot.col_idx
@@ -825,7 +850,7 @@ func _relocate_benches_for_shrunk_floors() -> void:
 			b["col_idx"] = col_idx
 			b["row_idx"] = row_idx
 			CheckpointData.placed_benches[i] = b
-		for key in _footprint_cells(orientation, col_idx, row_idx):
+		for key in _footprint_cells(orientation, col_idx, row_idx, type_id):
 			occ[key] = true
 		occupied_by_floor[floor_idx] = occ
 
@@ -834,20 +859,24 @@ func _relocate_benches_for_shrunk_floors() -> void:
 # ridimensionamento della casa, dove la griglia della NUOVA tier va
 # ricalcolata per ogni banco prima ancora che _set_current_floor() la
 # aggiorni nei membri col_values/row_values.
-func _find_free_cell_in_floor_grid(orientation: String, floor_idx: int, occupied: Dictionary):
+func _find_free_cell_in_floor_grid(orientation: String, floor_idx: int, occupied: Dictionary, type_id: String = ""):
 	var cols: int = HouseTiers.col_values(CheckpointData.house_tier, floor_idx).size()
 	var rows: int = HouseTiers.row_values(CheckpointData.house_tier, floor_idx).size()
 	if _orientation_axis(orientation) == "h":
 		for r in range(rows):
 			for c in range(cols - 1):
-				var cells := _footprint_cells(orientation, c, r)
-				if not occupied.has(cells[0]) and not occupied.has(cells[1]):
+				if type_id == "cucina" and not _cucina_oven_in_bounds(orientation, c, r, floor_idx):
+					continue
+				var cells := _footprint_cells(orientation, c, r, type_id)
+				if not occupied.has(cells[0]) and not occupied.has(cells[1]) and (cells.size() < 3 or not occupied.has(cells[2])):
 					return {"col_idx": c, "row_idx": r}
 	else:
 		for c in range(cols):
 			for r in range(rows - 1):
-				var cells := _footprint_cells(orientation, c, r)
-				if not occupied.has(cells[0]) and not occupied.has(cells[1]):
+				if type_id == "cucina" and not _cucina_oven_in_bounds(orientation, c, r, floor_idx):
+					continue
+				var cells := _footprint_cells(orientation, c, r, type_id)
+				if not occupied.has(cells[0]) and not occupied.has(cells[1]) and (cells.size() < 3 or not occupied.has(cells[2])):
 					return {"col_idx": c, "row_idx": r}
 	return null
 
@@ -860,13 +889,17 @@ func _find_free_cell_in_floor_grid(orientation: String, floor_idx: int, occupied
 func _orientation_axis(orientation: String) -> String:
 	return "h" if orientation.begins_with("h") else "v"
 
-func _fits_floor_grid(orientation: String, col_idx: int, row_idx: int, floor_idx: int) -> bool:
+func _fits_floor_grid(orientation: String, col_idx: int, row_idx: int, floor_idx: int, type_id: String = "") -> bool:
 	var cols: int = HouseTiers.col_values(CheckpointData.house_tier, floor_idx).size()
 	var rows: int = HouseTiers.row_values(CheckpointData.house_tier, floor_idx).size()
 	var is_h := _orientation_axis(orientation) == "h"
 	var max_col: int = cols - (2 if is_h else 1)
 	var max_row: int = rows - (1 if is_h else 2)
-	return col_idx >= 0 and row_idx >= 0 and col_idx <= max_col and row_idx <= max_row
+	if not (col_idx >= 0 and row_idx >= 0 and col_idx <= max_col and row_idx <= max_row):
+		return false
+	if type_id == "cucina" and not _cucina_oven_in_bounds(orientation, col_idx, row_idx, floor_idx):
+		return false
+	return true
 
 func _interior_spawn_position() -> Vector3:
 	var depth: float = float(HouseTiers.floor_data(CheckpointData.house_tier, 0).rows) * 2.0
@@ -1207,9 +1240,9 @@ func _start_bench_placement(type_id: String) -> void:
 	bench_ghost_holder.add_child(placing_ghost)
 
 	placing_orientation = "h"
-	var slot = _first_free_slot("h")
+	var slot = _first_free_slot("h", type_id)
 	if slot == null:
-		slot = _first_free_slot("v")
+		slot = _first_free_slot("v", type_id)
 		if slot != null:
 			placing_orientation = "v"
 	if slot == null:
@@ -1227,10 +1260,51 @@ func _start_bench_placement(type_id: String) -> void:
 func _cell_key(col_idx: int, row_idx: int) -> String:
 	return "%d:%d" % [col_idx, row_idx]
 
-func _footprint_cells(orientation: String, col_idx: int, row_idx: int) -> Array:
+# La cucina è l'unico banco a forma di L: il tavolo occupa le solite 2 celle
+# in linea (come qualunque altro banco), il forno una cella singola in più,
+# attaccata perpendicolarmente sul lato verso cui l'oggetto guarda (vedi
+# _bench_rotation_y) — così la L resta coerente con la rotazione scelta in
+# fase di posizionamento, invece di finire sempre dallo stesso lato.
+func _cucina_oven_indices(orientation: String, col_idx: int, row_idx: int) -> Vector2i:
+	match orientation:
+		"h":
+			return Vector2i(col_idx, row_idx - 1)
+		"h180":
+			return Vector2i(col_idx, row_idx + 1)
+		"v":
+			return Vector2i(col_idx - 1, row_idx)
+		_:
+			return Vector2i(col_idx + 1, row_idx)
+
+func _cucina_oven_in_bounds(orientation: String, col_idx: int, row_idx: int, floor_idx: int = -1) -> bool:
+	var f: int = current_floor if floor_idx < 0 else floor_idx
+	var cvals: Array = col_values if f == current_floor else HouseTiers.col_values(CheckpointData.house_tier, f)
+	var rvals: Array = row_values if f == current_floor else HouseTiers.row_values(CheckpointData.house_tier, f)
+	var oc := _cucina_oven_indices(orientation, col_idx, row_idx)
+	return oc.x >= 0 and oc.x < cvals.size() and oc.y >= 0 and oc.y < rvals.size()
+
+# Posizione nel mondo della singola cella del forno: a differenza di
+# _bench_world_position (centro tra due celle adiacenti, per il tavolo),
+# qui la cella è unica quindi la posizione coincide esattamente col punto
+# della griglia, senza media.
+func _cucina_oven_world_position(orientation: String, col_idx: int, row_idx: int, floor_idx: int = -1) -> Vector3:
+	var f: int = current_floor if floor_idx < 0 else floor_idx
+	var cvals: Array = col_values if f == current_floor else HouseTiers.col_values(CheckpointData.house_tier, f)
+	var rvals: Array = row_values if f == current_floor else HouseTiers.row_values(CheckpointData.house_tier, f)
+	var y: float = HouseTiers.floor_y(CheckpointData.house_tier, f)
+	var oc := _cucina_oven_indices(orientation, col_idx, row_idx)
+	return Vector3(cvals[oc.x], y, rvals[oc.y])
+
+func _footprint_cells(orientation: String, col_idx: int, row_idx: int, type_id: String = "") -> Array:
+	var cells: Array
 	if _orientation_axis(orientation) == "h":
-		return [_cell_key(col_idx, row_idx), _cell_key(col_idx + 1, row_idx)]
-	return [_cell_key(col_idx, row_idx), _cell_key(col_idx, row_idx + 1)]
+		cells = [_cell_key(col_idx, row_idx), _cell_key(col_idx + 1, row_idx)]
+	else:
+		cells = [_cell_key(col_idx, row_idx), _cell_key(col_idx, row_idx + 1)]
+	if type_id == "cucina":
+		var oc := _cucina_oven_indices(orientation, col_idx, row_idx)
+		cells.append(_cell_key(oc.x, oc.y))
+	return cells
 
 func _occupied_cells() -> Dictionary:
 	var occ := {}
@@ -1246,23 +1320,28 @@ func _occupied_cells() -> Dictionary:
 		var orientation: String = String(b.get("orientation", "h"))
 		var col_idx: int = int(b.get("col_idx", 0))
 		var row_idx: int = int(b.get("row_idx", 0))
-		for key in _footprint_cells(orientation, col_idx, row_idx):
+		var type_id: String = String(b.get("type", ""))
+		for key in _footprint_cells(orientation, col_idx, row_idx, type_id):
 			occ[key] = true
 	return occ
 
-func _first_free_slot(orientation: String):
+func _first_free_slot(orientation: String, type_id: String = ""):
 	var occ := _occupied_cells()
 	if orientation == "h":
 		for r in range(row_values.size()):
 			for c in range(col_values.size() - 1):
-				var cells := _footprint_cells("h", c, r)
-				if not occ.has(cells[0]) and not occ.has(cells[1]):
+				if type_id == "cucina" and not _cucina_oven_in_bounds("h", c, r):
+					continue
+				var cells := _footprint_cells("h", c, r, type_id)
+				if not occ.has(cells[0]) and not occ.has(cells[1]) and (cells.size() < 3 or not occ.has(cells[2])):
 					return {"row_idx": r, "col_idx": c}
 	else:
 		for c in range(col_values.size()):
 			for r in range(row_values.size() - 1):
-				var cells := _footprint_cells("v", c, r)
-				if not occ.has(cells[0]) and not occ.has(cells[1]):
+				if type_id == "cucina" and not _cucina_oven_in_bounds("v", c, r):
+					continue
+				var cells := _footprint_cells("v", c, r, type_id)
+				if not occ.has(cells[0]) and not occ.has(cells[1]) and (cells.size() < 3 or not occ.has(cells[2])):
 					return {"row_idx": r, "col_idx": c}
 	return null
 
@@ -1321,6 +1400,12 @@ func _nearest_anchor(orientation: String, world_point: Vector3) -> Dictionary:
 func _apply_ghost_transform() -> void:
 	placing_ghost.position = _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
 	placing_ghost.rotation_degrees.y = _bench_rotation_y(placing_orientation)
+	if placing_bench_type == "cucina":
+		var forno: Node3D = placing_ghost.get_node("Forno")
+		var in_bounds := _cucina_oven_in_bounds(placing_orientation, placing_col_idx, placing_row_idx)
+		forno.visible = in_bounds
+		if in_bounds:
+			forno.global_position = _cucina_oven_world_position(placing_orientation, placing_col_idx, placing_row_idx)
 
 const ORIENTATION_CYCLE := ["h", "v", "h180", "v180"]
 
@@ -1377,9 +1462,11 @@ func _update_floor_buttons() -> void:
 	floor_up_button.disabled = current_floor + 1 >= HouseTiers.floor_count(CheckpointData.house_tier)
 
 func _update_placement_validity() -> void:
-	var cells := _footprint_cells(placing_orientation, placing_col_idx, placing_row_idx)
+	var cells := _footprint_cells(placing_orientation, placing_col_idx, placing_row_idx, placing_bench_type)
 	var occ := _occupied_cells()
 	placing_valid = not occ.has(cells[0]) and not occ.has(cells[1])
+	if placing_bench_type == "cucina":
+		placing_valid = placing_valid and not occ.has(cells[2]) and _cucina_oven_in_bounds(placing_orientation, placing_col_idx, placing_row_idx)
 	var pos := _bench_world_position(placing_orientation, placing_col_idx, placing_row_idx)
 	placement_highlight.position = pos + Vector3(0, 0.02, 0)
 	placement_highlight.rotation_degrees.y = _bench_rotation_y(placing_orientation)
@@ -1465,7 +1552,15 @@ func _on_confirm_placement_pressed() -> void:
 			"type": type_id, "orientation": placing_orientation,
 			"col_idx": placing_col_idx, "row_idx": placing_row_idx, "floor": current_floor,
 		})
-	if _placed_bench_nodes.has(type_id):
+	if type_id == "cucina":
+		# "cucina_forno" è un figlio di "cucina_tavolo" (il nodo radice):
+		# liberare solo la radice basta, liberarli entrambi libererebbe due
+		# volte lo stesso nodo figlio.
+		if _placed_bench_nodes.has("cucina_tavolo"):
+			_placed_bench_nodes["cucina_tavolo"].queue_free()
+		_placed_bench_nodes.erase("cucina_tavolo")
+		_placed_bench_nodes.erase("cucina_forno")
+	elif _placed_bench_nodes.has(type_id):
 		_placed_bench_nodes[type_id].queue_free()
 		_placed_bench_nodes.erase(type_id)
 	_instantiate_placed_bench(type_id, placing_orientation, placing_col_idx, placing_row_idx, current_floor)
@@ -1493,7 +1588,13 @@ func _instantiate_placed_bench(type_id: String, orientation: String, col_idx: in
 	node.position = _bench_world_position(orientation, col_idx, row_idx, floor_idx)
 	node.rotation_degrees.y = _bench_rotation_y(orientation)
 	placed_benches_root.add_child(node)
-	_placed_bench_nodes[type_id] = node
+	if type_id == "cucina":
+		var forno: Node3D = node.get_node("Forno")
+		forno.global_position = _cucina_oven_world_position(orientation, col_idx, row_idx, floor_idx)
+		_placed_bench_nodes["cucina_forno"] = forno
+		_placed_bench_nodes["cucina_tavolo"] = node
+	else:
+		_placed_bench_nodes[type_id] = node
 
 func _open_weapon_menu() -> void:
 	weapon_menu.visible = true
@@ -1844,6 +1945,75 @@ func _open_wardrobe_menu() -> void:
 func _close_wardrobe_menu() -> void:
 	wardrobe_menu.visible = false
 	touch_controls.input_enabled = true
+
+# Deve combaciare con BASE_PLAYER_MAX_HP in main.gd: qui serve solo per
+# calcolare quanta vita rigenera in percentuale un piatto (vedi
+# _on_eat_pressed), dentro casa non esiste un player.max_hp già calcolato
+# a runtime come in una zona vera e propria.
+const BASE_PLAYER_MAX_HP := 100.0
+
+func _player_max_hp() -> float:
+	return BASE_PLAYER_MAX_HP + PlayerUpgrades.effect("salute", CheckpointData.upgrades.get("salute", 0))
+
+func _open_cucina_forno_menu() -> void:
+	cucina_forno_menu.visible = true
+	touch_controls.input_enabled = false
+	_refresh_cucina_forno_menu()
+
+func _close_cucina_forno_menu() -> void:
+	cucina_forno_menu.visible = false
+	touch_controls.input_enabled = true
+
+func _refresh_cucina_forno_menu() -> void:
+	cucina_forno_money_label.text = "Soldi: %d€   Legno: %d" % [CheckpointData.money, CheckpointData.materials.get("legno", 0)]
+	for dish_id in Recipes.ORDER:
+		var dish: Dictionary = Recipes.DISHES[dish_id]
+		var row := $HUD/CucinaFornoMenu/Scroll/Box.get_node("Row_%s" % dish_id)
+		var info: Label = row.get_node("InfoLabel")
+		var btn: Button = row.get_node("CookButton")
+		var mat_name: String = MATERIAL_LABELS.get(dish.cost_material, dish.cost_material)
+		var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
+		info.text = "%s — rigenera %d vita\nCosta %d€ + %d %s (in dispensa: %d)" % [dish.label, int(dish.heal_amount), dish.cost_money, dish.cost_amount, mat_name, stored]
+		var afford: bool = CheckpointData.money >= dish.cost_money and CheckpointData.materials.get(dish.cost_material, 0) >= dish.cost_amount
+		btn.disabled = not afford
+
+func _on_cook_pressed(dish_id: String) -> void:
+	var dish: Dictionary = Recipes.DISHES[dish_id]
+	if CheckpointData.money < dish.cost_money or CheckpointData.materials.get(dish.cost_material, 0) < dish.cost_amount:
+		return
+	CheckpointData.money -= dish.cost_money
+	CheckpointData.materials[dish.cost_material] = CheckpointData.materials.get(dish.cost_material, 0) - dish.cost_amount
+	CheckpointData.kitchen_stored_food[dish_id] = int(CheckpointData.kitchen_stored_food.get(dish_id, 0)) + 1
+	_refresh_cucina_forno_menu()
+
+func _open_cucina_tavolo_menu() -> void:
+	cucina_tavolo_menu.visible = true
+	touch_controls.input_enabled = false
+	_refresh_cucina_tavolo_menu()
+
+func _close_cucina_tavolo_menu() -> void:
+	cucina_tavolo_menu.visible = false
+	touch_controls.input_enabled = true
+
+func _refresh_cucina_tavolo_menu() -> void:
+	for dish_id in Recipes.ORDER:
+		var dish: Dictionary = Recipes.DISHES[dish_id]
+		var row := $HUD/CucinaTavoloMenu/Scroll/Box.get_node("Row_%s" % dish_id)
+		var info: Label = row.get_node("InfoLabel")
+		var btn: Button = row.get_node("EatButton")
+		var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
+		info.text = "%s — rigenera %d vita\nIn dispensa: %d" % [dish.label, int(dish.heal_amount), stored]
+		btn.disabled = stored <= 0
+
+func _on_eat_pressed(dish_id: String) -> void:
+	var stored: int = int(CheckpointData.kitchen_stored_food.get(dish_id, 0))
+	if stored <= 0:
+		return
+	CheckpointData.kitchen_stored_food[dish_id] = stored - 1
+	var dish: Dictionary = Recipes.DISHES[dish_id]
+	var max_hp: float = _player_max_hp()
+	CheckpointData.hp = clamp(CheckpointData.hp + dish.heal_amount, 0.0, max_hp)
+	_refresh_cucina_tavolo_menu()
 
 func _open_color_pick(target: String, title: String) -> void:
 	_color_pick_target = target
