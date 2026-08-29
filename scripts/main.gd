@@ -70,15 +70,27 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 
 # Buio personale: appena il player esce dal raggio sicuro (sopra) non muore
 # sul colpo — vede solo pochi passi attorno a sé (una piccola vignetta a
-# schermo sempre centrata sul player, vedi shaders/darkness_vignette e
-# hud.set_house_vignette) e a intervalli casuali tra
-# NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX nasce a NIGHT_GOD_SPAWN_DISTANCE dal
-# player, dal lato rivolto verso casa, un "dio della notte": lento (una
-# frazione della velocità attuale del player, aggiornamenti/potenziamenti
-# compresi) ma letale al contatto e con vita spropositata (in pratica
-# infondabile, l'unica strategia è scappare). Rientrare nel raggio sicuro li
-# dissolve subito: il buio, da quel momento, torna innocuo.
-const NIGHT_GOD_SPAWN_DISTANCE := 6.0
+# schermo sempre centrata sul player, raggio PLAYER_VISIBLE_RADIUS_FRACTION,
+# vedi shaders/darkness_vignette e _setup_storm) e a intervalli casuali tra
+# NIGHT_GOD_SPAWN_INTERVAL_MIN e MAX nasce sul bordo di quella visuale, a un
+# angolo casuale entro NIGHT_GOD_SPAWN_ARC_DEGREES centrato sul lato rivolto
+# verso casa (mai un punto fisso, così il player non può imparare a
+# scartare sempre uguale): lento (una frazione della velocità attuale del
+# player, aggiornamenti/potenziamenti compresi) ma letale al contatto e con
+# vita spropositata (in pratica infondabile, l'unica strategia è scappare).
+# Rientrare nel raggio sicuro li dissolve subito: il buio, da quel momento,
+# torna innocuo.
+#
+# PLAYER_VISIBLE_RADIUS_FRACTION deve combaciare col valore di
+# player_visible_radius impostato su DarknessVignetteMat in Main.tscn (è lo
+# stesso raggio, letto qui solo per convertirlo in unità di mondo — vedi
+# _player_vision_world_radius): non è normalizzato sullo schermo intero ma
+# su min(viewport)/2, quindi va scalato con la stessa geometria della
+# telecamera (distanza fissa dal player, FOV verticale) usata per proiettare
+# il mondo sullo schermo.
+const PLAYER_VISIBLE_RADIUS_FRACTION := 0.56
+const NIGHT_GOD_SPAWN_FALLBACK_DISTANCE := 6.0
+const NIGHT_GOD_SPAWN_ARC_DEGREES := 45.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
@@ -859,6 +871,7 @@ func _setup_storm() -> void:
 	_storm_mesh = Node3D.new()
 	add_child(_storm_mesh)
 	_storm_mesh.global_position = $HouseExterior.global_position
+	hud.set_player_vignette_radius(PLAYER_VISIBLE_RADIUS_FRACTION)
 
 # Distanza sul solo piano orizzontale (XZ) dalla casa: la tempesta è una
 # circonferenza sul terreno, non una sfera, quindi l'altezza di player o
@@ -980,9 +993,25 @@ func _update_night_gods(delta: float) -> void:
 		_night_god_spawn_timer = _random_night_god_interval()
 		_spawn_night_god()
 
-# Nasce sempre sul bordo della bolla di visuale del player, dal lato rivolto
-# verso casa: si troverà così sempre di fronte al player, che dovrà scartare
-# di lato invece di poter semplicemente correre in linea retta verso casa.
+# Raggio della bolla di visuale del player in unità di mondo, alla sua
+# stessa distanza dalla telecamera (fissa, l'offset della telecamera dal
+# player non cambia mai): stessa geometria già usata per il raycast del
+# cerchio della casa, ma qui applicata alla distanza telecamera-player
+# invece che telecamera-casa, perché è proprio quella la profondità a cui
+# vive la bolla di visuale personale.
+func _player_vision_world_radius() -> float:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return NIGHT_GOD_SPAWN_FALLBACK_DISTANCE
+	var cam_to_player_dist: float = cam.global_position.distance_to(player.global_position)
+	var half_world_size: float = cam_to_player_dist * tan(deg_to_rad(cam.fov) * 0.5)
+	return PLAYER_VISIBLE_RADIUS_FRACTION * half_world_size
+
+# Nasce sempre sul bordo della bolla di visuale del player, a un angolo
+# casuale entro NIGHT_GOD_SPAWN_ARC_DEGREES centrato sul lato rivolto verso
+# casa: si troverà così sempre più o meno di fronte al player (mai in un
+# punto esatto e prevedibile), che dovrà scartare di lato invece di poter
+# semplicemente correre in linea retta verso casa.
 func _spawn_night_god() -> void:
 	var house_pos: Vector3 = _storm_mesh.global_position
 	var dir_to_house: Vector3 = house_pos - player.global_position
@@ -990,10 +1019,12 @@ func _spawn_night_god() -> void:
 	if dir_to_house.length() < 0.01:
 		dir_to_house = Vector3(0, 0, 1)
 	dir_to_house = dir_to_house.normalized()
+	var half_arc: float = deg_to_rad(NIGHT_GOD_SPAWN_ARC_DEGREES) * 0.5
+	var spawn_dir: Vector3 = dir_to_house.rotated(Vector3.UP, randf_range(-half_arc, half_arc))
 
 	var god := NightGodScene.instantiate()
 	add_child(god)
-	god.global_position = player.global_position + dir_to_house * NIGHT_GOD_SPAWN_DISTANCE
+	god.global_position = player.global_position + spawn_dir * _player_vision_world_radius()
 	god.target = player
 	god.speed = player.BASE_SPEED * player.speed_mult * NIGHT_GOD_SPEED_FACTOR
 	god.max_hp = player.max_hp * NIGHT_GOD_HP_MULTIPLIER

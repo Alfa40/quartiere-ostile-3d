@@ -568,6 +568,9 @@ func show_storm_warning() -> void:
 func set_house_vignette_visible(value: bool) -> void:
 	darkness_vignette.visible = value
 
+func set_player_vignette_radius(value: float) -> void:
+	darkness_vignette.material.set_shader_parameter("player_visible_radius", value)
+
 func set_house_vignette(cam_origin: Vector3, ray_tl: Vector3, ray_tr: Vector3, ray_bl: Vector3, ray_br: Vector3, house_xz: Vector2, ground_y: float, radius: float) -> void:
 	var mat := darkness_vignette.material
 	mat.set_shader_parameter("cam_origin", cam_origin)
