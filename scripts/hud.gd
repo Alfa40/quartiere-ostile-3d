@@ -18,7 +18,6 @@ const UIScale := preload("res://scripts/ui_scale.gd")
 @onready var gameover_stats_label: Label = $GameOverPanel/Scroll/Box/StatsLabel
 @onready var pause_button: Button = $PauseButton
 @onready var zone_complete_panel: Control = $ZoneCompletePanel
-@onready var zone_complete_timer_label: Label = $ZoneCompletePanel/Panel/Box/TimerLabel
 @onready var house_enter_button: Button = $HouseEnterButton
 @onready var throw_type_button: Button = $ThrowTypeButton
 @onready var throw_arm_button: Button = $ThrowArmButton

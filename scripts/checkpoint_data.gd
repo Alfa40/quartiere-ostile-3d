@@ -57,6 +57,10 @@ var zone := 1
 var money := 0
 var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
 var upgrades := DEFAULT_UPGRADES.duplicate()
+# Vita del player persistita tra una zona e l'altra: entrare in casa non la
+# ripristina più al massimo, resta quella con cui si è arrivati (vedi
+# main.gd:_apply_upgrade_effects). 100.0 di default per una partita nuova.
+var hp := 100.0
 var placed_benches := []
 var owned_weapons := {}
 var weapon_upgrades := {}
@@ -191,6 +195,7 @@ func _reset_to_defaults() -> void:
 	money = 0
 	materials = {"legno": 0, "metallo": 0, "cablaggi": 0}
 	upgrades = DEFAULT_UPGRADES.duplicate()
+	hp = 100.0
 	placed_benches = []
 	owned_weapons = {}
 	weapon_upgrades = {}
@@ -260,6 +265,7 @@ func _read_json(path: String):
 func _apply_state(data: Dictionary) -> void:
 	zone = int(data.get("zone", 1))
 	money = int(data.get("money", 0))
+	hp = float(data.get("hp", 100.0))
 	var mats = data.get("materials", {})
 	if typeof(mats) == TYPE_DICTIONARY:
 		for k in materials.keys():
@@ -316,16 +322,19 @@ func _apply_state(data: Dictionary) -> void:
 	stats_enemies_defeated = int(data.get("stats_enemies_defeated", 0))
 	stats_playtime_sec = float(data.get("stats_playtime_sec", 0.0))
 
-func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
+func set_live_state(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary, current_hp: float = -1.0) -> void:
 	zone = current_zone
 	money = current_money
 	materials = current_materials.duplicate()
 	upgrades = current_upgrades.duplicate()
+	if current_hp >= 0.0:
+		hp = current_hp
 
 func _state_dict() -> Dictionary:
 	return {
 		"zone": zone,
 		"money": money,
+		"hp": hp,
 		"materials": materials,
 		"upgrades": upgrades,
 		"placed_benches": placed_benches,
@@ -365,9 +374,12 @@ func _write_json(path: String, payload: Dictionary) -> void:
 	f.close()
 
 # Checkpoint ogni 50 zone: resta l'unico fallback usato in caso di morte
-# (vedi _on_player_died in main.gd), invariato, solo ora per-slot.
-func save_checkpoint(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary) -> void:
-	set_live_state(current_zone, current_money, current_materials, current_upgrades)
+# (vedi _on_player_died in main.gd), invariato, solo ora per-slot. La vita
+# salvata qui è sempre quella piena (vedi il chiamante in main.gd, passa
+# player.max_hp): un checkpoint deve sempre far ripartire a vita piena dopo
+# una morte, non con la vita residua di quando fu salvato.
+func save_checkpoint(current_zone: int, current_money: int, current_materials: Dictionary, current_upgrades: Dictionary, current_hp: float) -> void:
+	set_live_state(current_zone, current_money, current_materials, current_upgrades, current_hp)
 	_write_json(_slot_checkpoint_path(current_slot), _state_dict())
 
 # Salvataggio "riprendi partita": scritto da home.gd ogni volta che il

@@ -623,7 +623,11 @@ func _apply_upgrade_effects() -> void:
 	player.speed_mult = 1.0 + speed_bonus
 	var hp_bonus: float = PlayerUpgrades.effect("salute", upgrades.get("salute", 0))
 	player.max_hp = BASE_PLAYER_MAX_HP + hp_bonus
-	player.hp = player.max_hp
+	# La vita non si ripristina più entrando in casa: resta quella con cui il
+	# player è arrivato (persistita in CheckpointData.hp), solo limitata al
+	# nuovo massimo — in Modalità Creator invece sempre piena, coerente con
+	# l'invincibilità già garantita lì (vedi Player.take_damage).
+	player.hp = player.max_hp if DevMode.enabled else clamp(CheckpointData.hp, 0.0, player.max_hp)
 	player.hp_changed.emit(player.hp, player.max_hp)
 
 func _apply_weapon_stats() -> void:
@@ -1135,7 +1139,10 @@ func _complete_zone() -> void:
 	_start_storm()
 	if not DevMode.enabled:
 		if CheckpointData.is_checkpoint_zone(zone):
-			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
+			# Un checkpoint deve sempre far ripartire a vita piena dopo una
+			# morte, non con la vita residua del momento in cui fu salvato:
+			# vedi save_checkpoint in checkpoint_data.gd.
+			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades, player.max_hp)
 		# La classifica riflette l'ultima zona davvero completata, non quella
 		# in corso: qui "zone" è ancora il numero appena superato (l'incremento
 		# avviene solo dopo, in _go_home()/_skip_home()).
@@ -1143,7 +1150,7 @@ func _complete_zone() -> void:
 	hud.show_zone_complete_choice()
 
 func _go_home() -> void:
-	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades)
+	CheckpointData.set_live_state(zone + 1, int(money), materials, upgrades, player.hp)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _skip_home() -> void:
@@ -1156,7 +1163,7 @@ func _enter_house_anytime() -> void:
 	if not zone_transitioning and storm_full_closed:
 		_force_home_after_storm()
 		return
-	CheckpointData.set_live_state(zone, int(money), materials, upgrades)
+	CheckpointData.set_live_state(zone, int(money), materials, upgrades, player.hp)
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 # Rifugio forzato: il buio ha chiuso del tutto e la zona non era stata
@@ -1169,7 +1176,7 @@ func _force_home_after_storm() -> void:
 	zone_transitioning = true
 	if not DevMode.enabled:
 		if CheckpointData.is_checkpoint_zone(zone):
-			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades)
+			CheckpointData.save_checkpoint(zone, int(money), materials, upgrades, player.max_hp)
 		Leaderboard.submit(zone, int(money))
 	_go_home()
 

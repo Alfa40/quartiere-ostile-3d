@@ -25,5 +25,5 @@ func _on_door_entered(body: Node3D) -> void:
 	CheckpointData.firearm_upgrades = {}
 	CheckpointData.firearm_ammo = {}
 	CheckpointData.equipped_firearm = ""
-	CheckpointData.save_checkpoint(CheckpointData.zone, 0, CheckpointData.materials, CheckpointData.upgrades)
+	CheckpointData.save_checkpoint(CheckpointData.zone, 0, CheckpointData.materials, CheckpointData.upgrades, 100.0)
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

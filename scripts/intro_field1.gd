@@ -86,6 +86,6 @@ func _on_door_entered(body: Node3D) -> void:
 	CheckpointData.materials = {"legno": HOUSE_MATERIAL_GRANT, "metallo": HOUSE_MATERIAL_GRANT, "cablaggi": HOUSE_MATERIAL_GRANT}
 	# Salvato subito: se il gioco viene chiuso proprio qui e riaperto, si deve
 	# ritrovare i soldi/materiali appena donati, non ripartire da zero.
-	CheckpointData.save_checkpoint(1, int(CheckpointData.money), CheckpointData.materials, CheckpointData.upgrades)
+	CheckpointData.save_checkpoint(1, int(CheckpointData.money), CheckpointData.materials, CheckpointData.upgrades, 100.0)
 	TutorialProgress.set_stage("house1")
 	get_tree().change_scene_to_file("res://scenes/IntroHouse1.tscn")

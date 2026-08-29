@@ -69,7 +69,7 @@ func _on_buy_pressed() -> void:
 	CheckpointData.firearm_upgrades[FIREARM_ID] = {}
 	CheckpointData.firearm_ammo[FIREARM_ID] = int(def.magazine_size)
 	CheckpointData.equipped_firearm = FIREARM_ID
-	CheckpointData.save_checkpoint(1, int(CheckpointData.money), CheckpointData.materials, CheckpointData.upgrades)
+	CheckpointData.save_checkpoint(1, int(CheckpointData.money), CheckpointData.materials, CheckpointData.upgrades, 100.0)
 	_refresh_buy_panel()
 
 func _on_door_entered(body: Node3D) -> void:
