@@ -41,8 +41,6 @@ signal throw_arm_pressed
 
 var main: Node = null
 var zone_complete_active := false
-var zone_complete_time_left := 0.0
-const ZONE_COMPLETE_WAIT := 30.0
 
 var _storm_warning_time_left := 0.0
 const STORM_WARNING_DURATION := 12.0
@@ -223,11 +221,6 @@ func _process(delta: float) -> void:
 		_storm_warning_time_left -= delta
 		if _storm_warning_time_left <= 0.0:
 			storm_warning_label.visible = false
-	if zone_complete_active:
-		zone_complete_time_left -= delta
-		zone_complete_timer_label.text = "Ritorno automatico a casa tra %d s" % int(ceil(zone_complete_time_left))
-		if zone_complete_time_left <= 0.0:
-			_resolve_zone_choice(true)
 	_update_throw_button_positions()
 	_update_ammo_label()
 	_update_throw_type_cooldown()
@@ -318,7 +311,6 @@ func _apply_control_offset_override(btn: Button, key: String, diameter: float) -
 
 func show_zone_complete_choice() -> void:
 	zone_complete_active = true
-	zone_complete_time_left = ZONE_COMPLETE_WAIT
 	zone_complete_panel.visible = true
 
 func _resolve_zone_choice(go_home: bool) -> void:
