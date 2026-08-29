@@ -25,7 +25,7 @@ const KILL_REWARD_MAX := 36.0
 const STEAL_BASE_MONEY_MIN := KILL_REWARD_MIN / 5.0
 const STEAL_BASE_MONEY_MAX := KILL_REWARD_MAX / 5.0
 const BASE_PLAYER_MAX_HP := 100.0
-# Fame: attiva solo se la cucina è stata acquistata (vedi has_kitchen/
+# Fame: attiva fin da subito, prima ancora di comprare la cucina (vedi
 # _update_hunger). Cala col tempo di gioco attivo, da piena a zero in
 # HUNGER_DECAY_DURATION secondi; a zero il player è al 40% più lento in
 # tutto (movimento, cooldown, tempo di estrazione delle armi — vedi
@@ -211,7 +211,6 @@ var materials := {"legno": 0, "metallo": 0, "cablaggi": 0}
 var upgrades := {}
 var weapon_name := "Pugni"
 var hunger := 100.0
-var has_kitchen := false
 
 var zone_enemies_total := 0
 var zone_enemies_spawned := 0
@@ -251,12 +250,7 @@ func _ready() -> void:
 		money = float(CheckpointData.money)
 		materials = CheckpointData.materials.duplicate()
 	hunger = CheckpointData.hunger
-	has_kitchen = false
-	for b in CheckpointData.placed_benches:
-		if String(b.get("type", "")) == "cucina":
-			has_kitchen = true
-			break
-	hud.set_hunger_bar_visible(has_kitchen)
+	hud.set_hunger_bar_visible(true)
 	player.hp_changed.connect(hud.on_player_hp_changed)
 	player.heavy_hit_landed.connect(_on_heavy_hit_landed)
 	player.died.connect(_on_player_died)
@@ -651,13 +645,12 @@ func _apply_upgrade_effects() -> void:
 	player.hp = player.max_hp if DevMode.enabled else clamp(CheckpointData.hp, 0.0, player.max_hp)
 	player.hp_changed.emit(player.hp, player.max_hp)
 
-# Fame: attiva solo con la cucina acquistata (has_kitchen, letto in _ready
-# da CheckpointData.placed_benches). Cala col tempo di gioco attivo; a zero
-# il player è HUNGER_MAX_SPEED_PENALTY più lento in tutto — velocità di
-# movimento diretta, e reciproco applicato ai cooldown/tempi di estrazione
-# quando vengono avviati (vedi player.gd).
+# Fame: attiva fin dalla prima zona, non serve possedere la cucina. Cala
+# col tempo di gioco attivo; a zero il player è HUNGER_MAX_SPEED_PENALTY più
+# lento in tutto — velocità di movimento diretta, e reciproco applicato ai
+# cooldown/tempi di estrazione quando vengono avviati (vedi player.gd).
 func _update_hunger(delta: float) -> void:
-	if not has_kitchen or player.dead:
+	if player.dead:
 		return
 	hunger = clamp(hunger - (HUNGER_MAX / HUNGER_DECAY_DURATION) * delta, 0.0, HUNGER_MAX)
 	var t: float = 1.0 - (hunger / HUNGER_MAX)
@@ -669,8 +662,6 @@ func _update_hunger(delta: float) -> void:
 # fuoco — vedi player.is_melee_heavy/is_firearm_heavy) consumano un pizzico
 # di fame in più a ogni colpo/sparo, oltre al calo passivo.
 func _on_heavy_hit_landed() -> void:
-	if not has_kitchen:
-		return
 	hunger = clamp(hunger - HUNGER_HEAVY_HIT_COST, 0.0, HUNGER_MAX)
 
 const HUNGER_HEAVY_MELEE_CATEGORIES := ["mazze", "martelli"]

@@ -7,11 +7,11 @@ extends RefCounted
 # aumenta il raggio del cerchio: costa parecchio, materiale cablaggi (è un
 # impianto elettrico), coerente con l'idea di essere un investimento serio.
 const LEVELS := {
-	1: {"radius": 8.0, "cost_money": 5000, "cost_material": "cablaggi", "cost_amount": 150, "zone_required": 20},
-	2: {"radius": 12.0, "cost_money": 12000, "cost_material": "cablaggi", "cost_amount": 300, "zone_required": 60},
-	3: {"radius": 16.0, "cost_money": 25000, "cost_material": "cablaggi", "cost_amount": 500, "zone_required": 100},
-	4: {"radius": 20.0, "cost_money": 45000, "cost_material": "cablaggi", "cost_amount": 750, "zone_required": 160},
-	5: {"radius": 24.0, "cost_money": 70000, "cost_material": "cablaggi", "cost_amount": 1000, "zone_required": 220},
+	1: {"radius": 8.0, "cost_money": 5000, "cost_material": "cablaggi", "cost_amount": 150},
+	2: {"radius": 12.0, "cost_money": 12000, "cost_material": "cablaggi", "cost_amount": 300},
+	3: {"radius": 16.0, "cost_money": 25000, "cost_material": "cablaggi", "cost_amount": 500},
+	4: {"radius": 20.0, "cost_money": 45000, "cost_material": "cablaggi", "cost_amount": 750},
+	5: {"radius": 24.0, "cost_money": 70000, "cost_material": "cablaggi", "cost_amount": 1000},
 }
 
 const MAX_LEVEL := 5

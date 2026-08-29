@@ -565,10 +565,10 @@ func on_player_hp_changed(current: float, max_hp: float) -> void:
 	# del colpo); piena e permanente non appena la vita scende a/sotto di essa.
 	_damage_flash_baseline = 1.0 if hp_frac <= DAMAGE_FLASH_LOW_HP_FRAC else 0.0
 
-# Va chiamata una sola volta, appena entrati in una zona (main.gd la
-# imposta in base a CheckpointData.placed_benches): visibile solo se la
-# cucina è già stata acquistata. Aggiorna anche il layout, perché tutto
-# quello che sta sotto la barra della vita deve spostarsi per farle spazio.
+# Chiamata una volta da main.gd appena entrati in una zona (sempre visibile
+# fin dalla prima zona, non serve possedere la cucina). Aggiorna anche il
+# layout, perché tutto quello che sta sotto la barra della vita deve
+# spostarsi per farle spazio.
 func set_hunger_bar_visible(value: bool) -> void:
 	hunger_bar.visible = value
 	_update_top_hud_layout()

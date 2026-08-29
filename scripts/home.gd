@@ -727,13 +727,6 @@ func _refresh_casa_tab() -> void:
 	var nxt: Dictionary = HouseTiers.tier_data(next_idx)
 	var nxt_space := HouseTiers.describe_space(next_idx)
 	var mat_name: String = MATERIAL_LABELS.get(nxt.cost_material, nxt.cost_material)
-	if CheckpointData.zone < int(nxt.zone_required):
-		info.text = "Abitazione attuale: %s (%s)\nProssima abitazione: %s (%s) — si sblocca alla zona %d" % [
-			cur.label, cur_space, nxt.label, nxt_space, nxt.zone_required,
-		]
-		btn.disabled = true
-		btn.text = "Bloccata"
-		return
 	info.text = "Abitazione attuale: %s (%s)\nProssima abitazione: %s (%s) — costa %d€ + %d %s" % [
 		cur.label, cur_space, nxt.label, nxt_space, nxt.cost_money, nxt.cost_amount, mat_name,
 	]
@@ -754,13 +747,6 @@ func _refresh_light_row() -> void:
 		return
 	var nxt: Dictionary = HouseLight.next_level_data(level)
 	var mat_name: String = MATERIAL_LABELS.get(String(nxt.cost_material), String(nxt.cost_material))
-	if CheckpointData.zone < int(nxt.zone_required):
-		info.text = "Luce della casa: livello %d/%d (raggio %d)\nProssimo livello (raggio %d) — si sblocca alla zona %d" % [
-			level, HouseLight.MAX_LEVEL, int(cur_radius), int(nxt.radius), nxt.zone_required,
-		]
-		btn.disabled = true
-		btn.text = "Bloccata"
-		return
 	info.text = "Luce della casa: livello %d/%d (raggio %d)\nProssimo livello (raggio %d) — costa %d€ + %d %s" % [
 		level, HouseLight.MAX_LEVEL, int(cur_radius), int(nxt.radius), int(nxt.cost_money), int(nxt.cost_amount), mat_name,
 	]
@@ -773,8 +759,6 @@ func _on_buy_light_pressed() -> void:
 		return
 	var next_level := CheckpointData.house_light_level + 1
 	var nxt: Dictionary = HouseLight.next_level_data(CheckpointData.house_light_level)
-	if CheckpointData.zone < int(nxt.zone_required):
-		return
 	if CheckpointData.money < int(nxt.cost_money) or CheckpointData.materials.get(String(nxt.cost_material), 0) < int(nxt.cost_amount):
 		return
 	CheckpointData.money -= int(nxt.cost_money)
@@ -787,8 +771,6 @@ func _on_buy_house_tier_pressed() -> void:
 		return
 	var next_idx := HouseTiers.next_tier_index(CheckpointData.house_tier)
 	var nxt: Dictionary = HouseTiers.tier_data(next_idx)
-	if CheckpointData.zone < int(nxt.zone_required):
-		return
 	if CheckpointData.money < int(nxt.cost_money) or CheckpointData.materials.get(String(nxt.cost_material), 0) < int(nxt.cost_amount):
 		return
 	CheckpointData.money -= int(nxt.cost_money)
