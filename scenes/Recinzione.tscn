@@ -1,8 +1,12 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
 [ext_resource type="PackedScene" path="res://assets/models/props/graveyard/fence.glb" id="2_realmodel"]
 [ext_resource type="PackedScene" path="res://assets/models/props/dungeon/recinzione-gate.glb" id="3_realmodel_palude"]
+[ext_resource type="PackedScene" path="res://assets/models/props/nature_bosco/recinzione-logstack.glb" id="4_realmodel_bosco"]
+[ext_resource type="PackedScene" path="res://assets/models/props/pirate/recinzione-fence.glb" id="5_realmodel_deserto"]
+[ext_resource type="PackedScene" path="res://assets/models/props/nature_giungla/recinzione-logstack.glb" id="6_realmodel_giungla"]
+[ext_resource type="PackedScene" path="res://assets/models/props/retro_urban/recinzione-barrier.glb" id="7_realmodel_citta"]
 
 [sub_resource type="BoxShape3D" id="RecinzioneShape"]
 size = Vector3(1.6, 1.0, 0.2)
@@ -38,3 +42,19 @@ scale = Vector3(1.6, 1.6, 1.6)
 [node name="RealModel_2" parent="." instance=ExtResource("3_realmodel_palude")]
 visible = false
 scale = Vector3(0.32, 0.32, 0.32)
+
+[node name="RealModel_1" parent="." instance=ExtResource("4_realmodel_bosco")]
+visible = false
+scale = Vector3(2.6, 2.6, 2.6)
+
+[node name="RealModel_3" parent="." instance=ExtResource("5_realmodel_deserto")]
+visible = false
+scale = Vector3(0.5, 0.5, 0.5)
+
+[node name="RealModel_4" parent="." instance=ExtResource("6_realmodel_giungla")]
+visible = false
+scale = Vector3(2.0, 2.0, 2.0)
+
+[node name="RealModel_5" parent="." instance=ExtResource("7_realmodel_citta")]
+visible = false
+scale = Vector3(2.42, 2.42, 2.42)

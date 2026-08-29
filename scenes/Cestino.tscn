@@ -1,7 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
 [ext_resource type="PackedScene" path="res://assets/models/props/dungeon/cestino-debris.glb" id="2_realmodel_palude"]
+[ext_resource type="PackedScene" path="res://assets/models/props/nature_bosco/cestino-mushrooms.glb" id="3_realmodel_bosco"]
+[ext_resource type="PackedScene" path="res://assets/models/props/pirate/cestino-bottles.glb" id="4_realmodel_deserto"]
+[ext_resource type="PackedScene" path="res://assets/models/props/nature_giungla/cestino-bush.glb" id="5_realmodel_giungla"]
+[ext_resource type="PackedScene" path="res://assets/models/props/retro_urban/cestino-pallet.glb" id="6_realmodel_citta"]
 
 [sub_resource type="CylinderShape3D" id="CestinoShape"]
 radius = 0.5
@@ -37,3 +41,19 @@ position = Vector3(0, 0.3, 0)
 [node name="RealModel_2" parent="." instance=ExtResource("2_realmodel_palude")]
 visible = false
 scale = Vector3(0.25, 0.25, 0.25)
+
+[node name="RealModel_1" parent="." instance=ExtResource("3_realmodel_bosco")]
+visible = false
+scale = Vector3(2.0, 2.0, 2.0)
+
+[node name="RealModel_3" parent="." instance=ExtResource("4_realmodel_deserto")]
+visible = false
+scale = Vector3(0.38, 0.38, 0.38)
+
+[node name="RealModel_4" parent="." instance=ExtResource("5_realmodel_giungla")]
+visible = false
+scale = Vector3(2.38, 2.38, 2.38)
+
+[node name="RealModel_5" parent="." instance=ExtResource("6_realmodel_citta")]
+visible = false
+scale = Vector3(0.6, 0.6, 0.6)
