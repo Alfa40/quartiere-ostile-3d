@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
 [ext_resource type="PackedScene" path="res://assets/models/props/graveyard/fence.glb" id="2_realmodel"]
+[ext_resource type="PackedScene" path="res://assets/models/props/dungeon/recinzione-gate.glb" id="3_realmodel_palude"]
 
 [sub_resource type="BoxShape3D" id="RecinzioneShape"]
 size = Vector3(1.6, 1.0, 0.2)
@@ -30,6 +31,10 @@ mesh = SubResource("RecinzioneMesh")
 surface_material_override/0 = SubResource("RecinzioneMaterial")
 position = Vector3(0, 0.5, 0)
 
-[node name="RealModel" parent="." instance=ExtResource("2_realmodel")]
+[node name="RealModel_0" parent="." instance=ExtResource("2_realmodel")]
 visible = false
 scale = Vector3(1.6, 1.6, 1.6)
+
+[node name="RealModel_2" parent="." instance=ExtResource("3_realmodel_palude")]
+visible = false
+scale = Vector3(0.32, 0.32, 0.32)

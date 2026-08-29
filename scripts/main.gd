@@ -1287,13 +1287,13 @@ func _regenerate_objects() -> void:
 		elif type_id == "recinzione":
 			obj.rotation_degrees.y = 90.0 if randf() < 0.5 else 0.0
 		add_child(obj)
-		# apply_scenario_appearance/set_parco_visual toccano nodi @onready:
-		# serve che l'oggetto sia già nella scena, quindi dopo add_child().
+		# apply_scenario_appearance/apply_scenario_visual toccano nodi
+		# @onready: serve che l'oggetto sia già nella scena, quindi dopo add_child().
 		if type_id == "albero":
 			var tree_sdata: Dictionary = Scenarios.scenario_data(scenario_idx)
 			obj.apply_scenario_appearance(tree_sdata.tree_trunk_color, tree_sdata.tree_foliage_color, tree_sdata.tree_shape)
-		elif obj.has_method("set_parco_visual"):
-			obj.set_parco_visual(scenario_idx == 0)
+		elif obj.has_method("apply_scenario_visual"):
+			obj.apply_scenario_visual(scenario_idx)
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
 
 const OBJECT_SPAWN_POINT_CLEARANCE := 3.5

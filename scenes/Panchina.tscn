@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
 [ext_resource type="PackedScene" path="res://assets/models/props/graveyard/bench.glb" id="2_realmodel"]
+[ext_resource type="PackedScene" path="res://assets/models/props/dungeon/panchina-wall.glb" id="3_realmodel_palude"]
 
 [sub_resource type="BoxShape3D" id="PanchinaShape"]
 size = Vector3(1.45, 0.95, 0.82)
@@ -29,6 +30,10 @@ mesh = SubResource("PanchinaMesh")
 surface_material_override/0 = SubResource("PanchinaMaterial")
 position = Vector3(0, 0.25, 0)
 
-[node name="RealModel" parent="." instance=ExtResource("2_realmodel")]
+[node name="RealModel_0" parent="." instance=ExtResource("2_realmodel")]
 visible = false
 scale = Vector3(1.8, 1.8, 1.8)
+
+[node name="RealModel_2" parent="." instance=ExtResource("3_realmodel_palude")]
+visible = false
+scale = Vector3(0.24, 0.24, 0.24)

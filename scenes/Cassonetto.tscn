@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
 [ext_resource type="PackedScene" path="res://assets/models/props/retro_urban/detail-dumpster-closed.glb" id="2_realmodel"]
+[ext_resource type="PackedScene" path="res://assets/models/props/dungeon/cassonetto-rubble.glb" id="3_realmodel_palude"]
 
 [sub_resource type="BoxShape3D" id="CassonettoShape"]
 size = Vector3(1.32, 1.2, 1.0)
@@ -30,6 +31,10 @@ mesh = SubResource("CassonettoMesh")
 surface_material_override/0 = SubResource("CassonettoMaterial")
 position = Vector3(0, 0.6, 0)
 
-[node name="RealModel" parent="." instance=ExtResource("2_realmodel")]
+[node name="RealModel_0" parent="." instance=ExtResource("2_realmodel")]
 visible = false
 scale = Vector3(2.2, 2.2, 2.2)
+
+[node name="RealModel_2" parent="." instance=ExtResource("3_realmodel_palude")]
+visible = false
+scale = Vector3(0.16, 0.16, 0.16)

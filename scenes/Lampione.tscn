@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
 [ext_resource type="PackedScene" path="res://assets/models/props/graveyard/lightpost-single.glb" id="2_realmodel"]
+[ext_resource type="PackedScene" path="res://assets/models/props/dungeon/lampione-pillar.glb" id="3_realmodel_palude"]
 
 [sub_resource type="CylinderShape3D" id="LampioneShape"]
 radius = 0.2
@@ -54,6 +55,10 @@ light_color = Color(1.0, 0.85, 0.55, 1)
 light_energy = 1.2
 omni_range = 6.0
 
-[node name="RealModel" parent="." instance=ExtResource("2_realmodel")]
+[node name="RealModel_0" parent="." instance=ExtResource("2_realmodel")]
 visible = false
 scale = Vector3(2.76, 2.76, 2.76)
+
+[node name="RealModel_2" parent="." instance=ExtResource("3_realmodel_palude")]
+visible = false
+scale = Vector3(0.62, 0.62, 0.62)

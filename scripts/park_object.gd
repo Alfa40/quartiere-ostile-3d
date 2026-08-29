@@ -9,34 +9,37 @@ signal destroyed
 var hp: float
 var base_scale: Vector3
 
-# Modello 3D vero (Kenney), mostrato solo nello scenario Parco: gli altri
-# scenari (Bosco/Palude) restano con le forme primitive di sempre, non
-# ancora rifatte. Un unico nodo "RealModel" (nascosto di default nella
-# scena) e le mesh primitive dirette sotto la radice bastano per gestire
-# il passaggio, senza bisogno di logica diversa per ogni tipo di oggetto.
-@onready var _real_model: Node3D = get_node_or_null("RealModel")
+# Modello 3D vero (Kenney), uno per ogni scenario che ne ha già uno dedicato:
+# gli scenari non ancora "vestiti" restano con le forme primitive di sempre.
+# Ogni variante è un figlio "RealModel_<indice scenario>" (nascosto di
+# default nella scena, vedi Scenarios.DATA per gli indici); le mesh
+# primitive dirette sotto la radice restano il fallback. Un'unica scansione
+# dei figli basta per gestire il passaggio, senza bisogno di logica diversa
+# per ogni tipo di oggetto o per quanti scenari sono già stati "vestiti".
+var _real_models := {}
 var _primitive_meshes: Array = []
 
 func _ready() -> void:
 	hp = max_hp
 	base_scale = scale
 	add_to_group("park_objects")
-	if _real_model:
-		_real_model.visible = false
 	for c in get_children():
 		if c is MeshInstance3D:
 			_primitive_meshes.append(c)
+		elif c.name.begins_with("RealModel_"):
+			var idx := int(c.name.trim_prefix("RealModel_"))
+			_real_models[idx] = c
+			c.visible = false
 
 # Chiamata da main.gd al momento dello spawn (o al passaggio di scenario):
-# mostra il modello vero solo se l'oggetto sta nascendo nello scenario
-# Parco, altrimenti resta con le mesh primitive di sempre. Nessun effetto
-# sugli oggetti senza un nodo "RealModel" (non ancora "vestiti" per il Parco).
-func set_parco_visual(is_parco: bool) -> void:
-	if _real_model == null:
-		return
-	_real_model.visible = is_parco
+# mostra il modello vero dello scenario attuale se questo tipo di oggetto ne
+# ha uno dedicato, altrimenti resta con le mesh primitive di sempre.
+func apply_scenario_visual(scenario_idx: int) -> void:
+	for idx in _real_models:
+		_real_models[idx].visible = (idx == scenario_idx)
+	var use_primitive: bool = not _real_models.has(scenario_idx)
 	for m in _primitive_meshes:
-		m.visible = not is_parco
+		m.visible = use_primitive
 
 func take_damage(amount: float, _source = null) -> void:
 	if hp <= 0.0:
