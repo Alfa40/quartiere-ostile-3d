@@ -77,11 +77,12 @@ const GrenadeScene := preload("res://scenes/Grenade.tscn")
 const LobbedGrenadeScene := preload("res://scenes/LobbedGrenade.tscn")
 const ARC_GRAVITY := 20.0
 # L'angolo di lancio delle granate (a mano o da lanciagranate) dipende da
-# quanto è spinto il joystick della mira: poco spinto = angolo basso, la
-# granata cade quasi subito; a metà corsa = 45° (angolo ottimale, gittata
-# massima); tutto spinto = angolo molto alto, la granata sale a mo' di
-# mortaio e ricade lenta ma vicino. La potenza di lancio resta fissa
-# (derivata dalla gittata potenziabile "Portata"), è solo l'angolo a variare.
+# quanto tempo si tiene ferma la mira senza interromperla (last_aim_hold_frac,
+# azzerato ogni volta che si smette di mirare): appena si comincia a mirare
+# l'angolo è basso e la granata cade quasi subito; tenendo la mira ferma
+# l'angolo sale fino a un massimo a mo' di mortaio, lenta ma vicina. La
+# potenza di lancio resta fissa (derivata dalla gittata potenziabile
+# "Portata"), è solo l'angolo a variare.
 const LOB_MIN_ANGLE_DEGREES := 8.0
 const LOB_MAX_ANGLE_DEGREES := 82.0
 const AIM_MAGNITUDE_DEADZONE := 0.15
@@ -127,11 +128,16 @@ var firearm_reload_timer := 0.0
 var firearm_reloading := false
 var firearm_flash_timer := 0.0
 var last_aim_dir := Vector3(0, 0, -1)
-var last_aim_magnitude := 0.0
+# Non è "quanto è spinto lo stick di mira" ma "da quanto tempo si sta
+# mirando ininterrottamente" (vedi _handle_firearm): l'angolo dei lanci a
+# parabola sale più si tiene ferma la mira, non più la si spinge a fondo.
+var last_aim_hold_frac := 0.0
+var _aim_hold_time := 0.0
+const AIM_HOLD_MAX_TIME := 1.2
 var _burst_shots_remaining := 0
 var _burst_timer := 0.0
 var _burst_aim_dir := Vector3(0, 0, -1)
-var _burst_aim_magnitude := 0.0
+var _burst_aim_hold_frac := 0.0
 var _arc_line_segments: Array = []
 var weapon_holstered := true
 var holster_timer := 0.0
@@ -366,8 +372,11 @@ func _handle_firearm(delta: float) -> void:
 	var aiming := aim.length() > AIM_MAGNITUDE_DEADZONE
 	if aiming:
 		last_aim_dir = Vector3(aim.x, 0, aim.y).normalized()
-		last_aim_magnitude = clampf((aim.length() - AIM_MAGNITUDE_DEADZONE) / (1.0 - AIM_MAGNITUDE_DEADZONE), 0.0, 1.0)
+		_aim_hold_time = min(_aim_hold_time + delta, AIM_HOLD_MAX_TIME)
+		last_aim_hold_frac = clampf(_aim_hold_time / AIM_HOLD_MAX_TIME, 0.0, 1.0)
 		facing_pivot.look_at(facing_pivot.global_position + last_aim_dir, Vector3.UP)
+	else:
+		_aim_hold_time = 0.0
 
 	if firearm_id != "" or throwable_id != "":
 		if aiming:
@@ -398,7 +407,7 @@ func _handle_firearm(delta: float) -> void:
 			lobbed_range = firearm_range
 		if use_arc:
 			aim_line.visible = false
-			var angle_rad := _lob_angle_from_magnitude(last_aim_magnitude)
+			var angle_rad := _lob_angle_from_magnitude(last_aim_hold_frac)
 			var speed: float = sqrt(max(lobbed_range, 1.0) * ARC_GRAVITY)
 			_update_arc_aim_line(angle_rad, speed)
 		else:
@@ -421,7 +430,7 @@ func _handle_firearm(delta: float) -> void:
 
 	# Il lancio armato ha priorità sull'arma da fuoco equipaggiata sullo stesso rilascio.
 	if release_pending and throw_armed:
-		_throw_weapon(last_aim_dir, last_aim_magnitude)
+		_throw_weapon(last_aim_dir, last_aim_hold_frac)
 		throw_armed = false
 		release_pending = false
 
@@ -455,7 +464,7 @@ func _handle_firearm(delta: float) -> void:
 	if _burst_shots_remaining > 0:
 		_burst_timer -= delta
 		if _burst_timer <= 0.0:
-			_fire_firearm(_burst_aim_dir, _burst_aim_magnitude)
+			_fire_firearm(_burst_aim_dir, _burst_aim_hold_frac)
 			_burst_shots_remaining -= 1
 			_burst_timer = firearm_burst_delay
 			if firearm_ammo_in_mag <= 0:
@@ -465,15 +474,15 @@ func _handle_firearm(delta: float) -> void:
 	if aiming and firearm_fire_mode == "auto" and firearm_fire_timer <= 0.0:
 		var target := _find_enemy_in_aim_cone(last_aim_dir)
 		if target != null:
-			_fire_firearm(last_aim_dir, last_aim_magnitude)
+			_fire_firearm(last_aim_dir, last_aim_hold_frac)
 
 	if release_pending and firearm_fire_timer <= 0.0:
 		if firearm_fire_mode == "single":
-			_fire_firearm(last_aim_dir, last_aim_magnitude)
+			_fire_firearm(last_aim_dir, last_aim_hold_frac)
 		elif firearm_fire_mode == "burst":
 			_burst_aim_dir = last_aim_dir
-			_burst_aim_magnitude = last_aim_magnitude
-			_fire_firearm(_burst_aim_dir, _burst_aim_magnitude)
+			_burst_aim_hold_frac = last_aim_hold_frac
+			_fire_firearm(_burst_aim_dir, _burst_aim_hold_frac)
 			_burst_shots_remaining = firearm_burst_count - 1
 			_burst_timer = firearm_burst_delay
 
@@ -497,7 +506,7 @@ func _find_enemy_in_aim_cone(aim_dir: Vector3) -> Node3D:
 			best = enemy
 	return best
 
-func _fire_firearm(aim_dir: Vector3, aim_magnitude: float = 1.0) -> void:
+func _fire_firearm(aim_dir: Vector3, aim_hold_frac: float = 1.0) -> void:
 	firearm_ammo_in_mag -= 1
 	firearm_fire_timer = firearm_cooldown * hunger_time_mult
 	firearm_flash_timer = FIREARM_FLASH_TIME
@@ -507,7 +516,7 @@ func _fire_firearm(aim_dir: Vector3, aim_magnitude: float = 1.0) -> void:
 		"grenade_straight":
 			_fire_grenade_straight(aim_dir)
 		"grenade_lobbed":
-			_fire_grenade_lobbed(aim_dir, aim_magnitude)
+			_fire_grenade_lobbed(aim_dir, aim_hold_frac)
 		_:
 			_fire_bullets(aim_dir)
 
@@ -545,18 +554,19 @@ func _fire_grenade_straight(aim_dir: Vector3) -> void:
 	proj.travel = aim_dir * firearm_bullet_speed
 	proj.max_distance = firearm_range
 
-func _fire_grenade_lobbed(aim_dir: Vector3, aim_magnitude: float = 1.0) -> void:
+func _fire_grenade_lobbed(aim_dir: Vector3, aim_hold_frac: float = 1.0) -> void:
 	var proj: Area3D = LobbedGrenadeScene.instantiate()
 	_configure_firearm_grenade(proj)
 	get_parent().add_child(proj)
 	proj.global_position = global_position + Vector3(0, 1.0, 0) + aim_dir * 0.8
 	# Potenza di lancio fissa, derivata dalla gittata potenziabile con
 	# "Portata" (v² = R_max·g, la gittata massima che si otterrebbe
-	# esattamente a 45°); l'angolo invece dipende da quanto è spinto il
-	# joystick della mira: R(θ) = R_max·sin(2θ) — poco spinto o tutto spinto
-	# danno entrambi poca gittata (rispettivamente un tiro basso e rapido, o
-	# un mortaio lento), a metà corsa (45°) la gittata è massima.
-	var angle_rad := _lob_angle_from_magnitude(aim_magnitude)
+	# esattamente a 45°); l'angolo invece dipende da quanto tempo si è tenuta
+	# ferma la mira (aim_hold_frac): R(θ) = R_max·sin(2θ) — mira appena
+	# iniziata o tenuta a lungo danno entrambe poca gittata (rispettivamente
+	# un tiro basso e rapido, o un mortaio lento), a metà tempo di carica
+	# (45°) la gittata è massima.
+	var angle_rad := _lob_angle_from_magnitude(aim_hold_frac)
 	var speed: float = sqrt(max(firearm_range, 1.0) * ARC_GRAVITY)
 	var horizontal_speed: float = speed * cos(angle_rad)
 	var vertical_speed: float = speed * sin(angle_rad)

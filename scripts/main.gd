@@ -267,6 +267,10 @@ func _ready() -> void:
 	hud.house_enter_pressed.connect(_enter_house_anytime)
 	hud.throw_type_pressed.connect(_on_throw_type_pressed)
 	hud.throw_arm_pressed.connect(_on_throw_arm_pressed)
+	# Stessi due gesti, ma dal controller (Y/X): riusano gli identici handler
+	# dei tasti HUD, touch_controls.gd si occupa solo di generare l'evento.
+	touch_controls.pad_throw_type_pressed.connect(_on_throw_type_pressed)
+	touch_controls.pad_throw_arm_pressed.connect(_on_throw_arm_pressed)
 	_apply_upgrade_effects()
 	_apply_weapon_stats()
 	_apply_firearm_stats()

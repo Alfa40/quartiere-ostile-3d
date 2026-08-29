@@ -13,6 +13,23 @@ const MAX_DRAG := 140.0
 # dal joystick di mira (lo stesso tipo di bug che c'era col movimento).
 const AIM_ZONE_RADIUS := JOY_RADIUS + 20.0
 
+# Supporto controller (vedi _poll_joypad): stick sinistro/destro scrivono
+# negli stessi move_vector/aim_vector già usati dal tocco, il grilletto
+# destro imposta fire_release_pending esattamente come il rilascio del
+# joystick di mira col dito — player.gd non deve sapere da dove arrivano
+# questi valori, li legge sempre da qui indipendentemente dalla fonte. Solo
+# il ciclo arma da lancio e l'armamento/disarmo restano segnali a parte
+# (pad_throw_type_pressed/pad_throw_arm_pressed) perché sul tocco sono due
+# pulsanti HUD distinti, non parte di questo nodo.
+signal pad_throw_type_pressed
+signal pad_throw_arm_pressed
+const JOY_DEVICE := 0
+const JOY_STICK_DEADZONE := 0.2
+const JOY_FIRE_THRESHOLD := 0.4
+var _joy_fire_was_pressed := false
+var _joy_throw_type_was_pressed := false
+var _joy_throw_arm_was_pressed := false
+
 var move_vector := Vector2.ZERO
 var attack_held := false
 var input_enabled := true
@@ -79,6 +96,51 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	queue_redraw()
+	_poll_joypad()
+
+# Scrive negli stessi campi usati dal tocco (move_vector/aim_vector/
+# attack_held/fire_release_pending), guardati dagli indici di tocco interni
+# (-2 = nessun tocco attivo su quel controllo) così un joypad connesso non
+# sovrascrive mai un dito che sta davvero controllando quello stesso input.
+func _poll_joypad() -> void:
+	if not input_enabled or edit_mode:
+		return
+	if Input.get_connected_joypads().is_empty():
+		return
+
+	var move := Vector2(Input.get_joy_axis(JOY_DEVICE, JOY_AXIS_LEFT_X), Input.get_joy_axis(JOY_DEVICE, JOY_AXIS_LEFT_Y))
+	if move.length() > JOY_STICK_DEADZONE:
+		move_vector = move.limit_length(1.0)
+	elif _joy_touch_index == -2:
+		move_vector = Vector2.ZERO
+
+	if aim_enabled:
+		var aim := Vector2(Input.get_joy_axis(JOY_DEVICE, JOY_AXIS_RIGHT_X), Input.get_joy_axis(JOY_DEVICE, JOY_AXIS_RIGHT_Y))
+		if aim.length() > JOY_STICK_DEADZONE:
+			aim_vector = aim.limit_length(1.0)
+		elif _aim_touch_index == -2:
+			aim_vector = Vector2.ZERO
+
+	var joy_attack := Input.is_joy_button_pressed(JOY_DEVICE, JOY_BUTTON_A)
+	if joy_attack:
+		attack_held = true
+	elif _attack_touch_index == -2:
+		attack_held = false
+
+	var joy_fire_pressed := Input.get_joy_axis(JOY_DEVICE, JOY_AXIS_TRIGGER_RIGHT) > JOY_FIRE_THRESHOLD or Input.is_joy_button_pressed(JOY_DEVICE, JOY_BUTTON_RIGHT_SHOULDER)
+	if joy_fire_pressed and not _joy_fire_was_pressed:
+		fire_release_pending = true
+	_joy_fire_was_pressed = joy_fire_pressed
+
+	var joy_throw_type_pressed := Input.is_joy_button_pressed(JOY_DEVICE, JOY_BUTTON_Y)
+	if joy_throw_type_pressed and not _joy_throw_type_was_pressed:
+		pad_throw_type_pressed.emit()
+	_joy_throw_type_was_pressed = joy_throw_type_pressed
+
+	var joy_throw_arm_pressed := Input.is_joy_button_pressed(JOY_DEVICE, JOY_BUTTON_X)
+	if joy_throw_arm_pressed and not _joy_throw_arm_was_pressed:
+		pad_throw_arm_pressed.emit()
+	_joy_throw_arm_was_pressed = joy_throw_arm_pressed
 
 func _update_layout() -> void:
 	var vp := get_viewport_rect().size

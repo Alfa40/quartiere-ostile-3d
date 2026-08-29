@@ -493,6 +493,13 @@ func _on_bench_touch_released(_pos: Vector2) -> void:
 	else:
 		_start_bench_move(target)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE or event.keycode == KEY_P:
+			toggle_pause()
+	elif event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_START:
+		toggle_pause()
+
 func toggle_pause() -> void:
 	set_paused(not get_tree().paused)
 

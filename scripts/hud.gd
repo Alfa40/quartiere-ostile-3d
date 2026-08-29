@@ -429,6 +429,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			if gameover_panel.visible:
 				return
 			toggle_pause()
+	elif event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_START:
+		if gameover_panel.visible:
+			return
+		toggle_pause()
 
 func toggle_pause() -> void:
 	if gameover_panel.visible:
