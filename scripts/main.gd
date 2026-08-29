@@ -90,7 +90,7 @@ const STORM_ENEMY_DETECT_OVERRIDE := 200.0
 # il mondo sullo schermo.
 const PLAYER_VISIBLE_RADIUS_FRACTION := 0.56
 const NIGHT_GOD_SPAWN_FALLBACK_DISTANCE := 6.0
-const NIGHT_GOD_SPAWN_ARC_DEGREES := 45.0
+const NIGHT_GOD_SPAWN_ARC_DEGREES := 35.0
 const NIGHT_GOD_SPAWN_INTERVAL_MIN := 0.5
 const NIGHT_GOD_SPAWN_INTERVAL_MAX := 3.0
 const NIGHT_GOD_SPAWN_INTERVAL_STEP := 0.5
@@ -1008,19 +1008,20 @@ func _player_vision_world_radius() -> float:
 	return PLAYER_VISIBLE_RADIUS_FRACTION * half_world_size
 
 # Nasce sempre sul bordo della bolla di visuale del player, a un angolo
-# casuale entro NIGHT_GOD_SPAWN_ARC_DEGREES centrato sul lato rivolto verso
-# casa: si troverà così sempre più o meno di fronte al player (mai in un
-# punto esatto e prevedibile), che dovrà scartare di lato invece di poter
-# semplicemente correre in linea retta verso casa.
+# casuale entro NIGHT_GOD_SPAWN_ARC_DEGREES centrato sulla direzione in cui
+# il player sta guardando (player.facing, la stessa che orienta il suo
+# personaggio a schermo — non la direzione verso casa): compare così sempre
+# più o meno di fronte a lui, mai alle sue spalle, e mai in un punto esatto
+# e prevedibile, costringendolo a scartare di lato invece di poter
+# semplicemente correre dritto per scappare.
 func _spawn_night_god() -> void:
-	var house_pos: Vector3 = _storm_mesh.global_position
-	var dir_to_house: Vector3 = house_pos - player.global_position
-	dir_to_house.y = 0.0
-	if dir_to_house.length() < 0.01:
-		dir_to_house = Vector3(0, 0, 1)
-	dir_to_house = dir_to_house.normalized()
+	var facing_dir: Vector3 = player.facing
+	facing_dir.y = 0.0
+	if facing_dir.length() < 0.01:
+		facing_dir = Vector3(0, 0, -1)
+	facing_dir = facing_dir.normalized()
 	var half_arc: float = deg_to_rad(NIGHT_GOD_SPAWN_ARC_DEGREES) * 0.5
-	var spawn_dir: Vector3 = dir_to_house.rotated(Vector3.UP, randf_range(-half_arc, half_arc))
+	var spawn_dir: Vector3 = facing_dir.rotated(Vector3.UP, randf_range(-half_arc, half_arc))
 
 	var god := NightGodScene.instantiate()
 	add_child(god)
