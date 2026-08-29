@@ -16,6 +16,13 @@ extends RefCounted
 # Per aggiungere un nuovo scenario in futuro: aggiungere una voce a DATA col
 # prossimo indice, stesso schema delle altre. Nessun'altra modifica al
 # codice è necessaria.
+#
+# "enemy_head_color" tinge la testa (pelle/capelli, un'unica mesh/texture nei
+# modelli Kenney) allo stesso modo in cui "enemy_colors" tinge il corpo
+# (vestiti): uguale per tutti gli archetipi in questo scenario, a differenza
+# di "enemy_colors" che varia per archetipo. Dà più varietà visiva ai nemici
+# che non hanno (ancora) un modello 3D dedicato per lo scenario (vedi
+# enemy.gd, SCENARIO_MODEL_OVERRIDE) senza bisogno di nuovi personaggi.
 
 const TIER1_INTERVAL := 20
 const TIER1_END := 100
@@ -40,6 +47,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.3, 0.2, 0.12, 1),
 		"tree_foliage_color": Color(0.15, 0.45, 0.18, 1),
 		"tree_shape": "sphere",
+		"enemy_head_color": Color(1.0, 1.0, 1.0, 1),
 		"enemy_colors": {
 			"balordo": Color(0.54, 0.45, 0.33),
 			"nervoso": Color(0.88, 0.44, 0.24),
@@ -61,6 +69,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.18, 0.12, 0.08, 1),
 		"tree_foliage_color": Color(0.08, 0.28, 0.14, 1),
 		"tree_shape": "cone",
+		"enemy_head_color": Color(0.85, 0.95, 0.8, 1),
 		"enemy_colors": {
 			"balordo": Color(0.34, 0.38, 0.22),
 			"nervoso": Color(0.62, 0.34, 0.18),
@@ -82,6 +91,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.24, 0.20, 0.16, 1),
 		"tree_foliage_color": Color(0.42, 0.40, 0.22, 1),
 		"tree_shape": "sparse",
+		"enemy_head_color": Color(0.75, 0.9, 0.7, 1),
 		"enemy_colors": {
 			"balordo": Color(0.42, 0.44, 0.30),
 			"nervoso": Color(0.58, 0.42, 0.20),
@@ -103,6 +113,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.40, 0.28, 0.15, 1),
 		"tree_foliage_color": Color(0.55, 0.50, 0.25, 1),
 		"tree_shape": "sparse",
+		"enemy_head_color": Color(1.0, 0.85, 0.65, 1),
 		"enemy_colors": {
 			"balordo": Color(0.65, 0.55, 0.35),
 			"nervoso": Color(0.85, 0.40, 0.15),
@@ -124,6 +135,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.22, 0.15, 0.08, 1),
 		"tree_foliage_color": Color(0.10, 0.50, 0.20, 1),
 		"tree_shape": "sphere",
+		"enemy_head_color": Color(0.9, 0.85, 0.6, 1),
 		"enemy_colors": {
 			"balordo": Color(0.40, 0.45, 0.25),
 			"nervoso": Color(0.65, 0.35, 0.15),
@@ -145,6 +157,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.25, 0.22, 0.20, 1),
 		"tree_foliage_color": Color(0.30, 0.42, 0.25, 1),
 		"tree_shape": "sparse",
+		"enemy_head_color": Color(0.85, 0.85, 0.9, 1),
 		"enemy_colors": {
 			"balordo": Color(0.50, 0.50, 0.52),
 			"nervoso": Color(0.75, 0.35, 0.20),
@@ -166,6 +179,7 @@ const DATA := {
 		"tree_trunk_color": Color(0.5, 0.3, 0.5, 1),
 		"tree_foliage_color": Color(0.95, 0.4, 0.6, 1),
 		"tree_shape": "sphere",
+		"enemy_head_color": Color(1.0, 0.8, 0.95, 1),
 		"enemy_colors": {
 			"balordo": Color(0.70, 0.55, 0.75),
 			"nervoso": Color(0.95, 0.50, 0.35),

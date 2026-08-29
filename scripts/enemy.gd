@@ -32,6 +32,7 @@ const CHARACTER_MODELS := {
 	"character-female-b": preload("res://assets/models/characters/character-female-b.glb"),
 	"character-female-c": preload("res://assets/models/characters/character-female-c.glb"),
 	"character-female-d": preload("res://assets/models/characters/character-female-d.glb"),
+	"character-female-e": preload("res://assets/models/characters/character-female-e.glb"),
 	"character-female-f": preload("res://assets/models/characters/character-female-f.glb"),
 }
 const ARCHETYPE_MODEL := {
@@ -41,18 +42,21 @@ const ARCHETYPE_MODEL := {
 	"bruto": "character-male-b",
 	"tiratore": "character-female-c",
 }
-# Nello scenario indicato, l'archetipo "balordo" (il più comune, sempre
-# presente) usa un altro personaggio dello stesso pacchetto Mini
-# Characters invece di quello di default, per dare un colpo d'occhio
-# diverso zona per zona oltre al semplice ricolorare (vedi
-# apply_scenario_model, chiamata da main.gd dopo configure()). Gli altri
-# archetipi restano invariati in ogni scenario.
+# Per ogni scenario elencato, gli archetipi qui dentro usano un altro
+# personaggio dello stesso pacchetto Mini Characters invece di quello di
+# default, per dare un colpo d'occhio diverso zona per zona oltre al
+# semplice ricolorare (vedi apply_scenario_model, chiamata da main.gd
+# dopo configure()). Il pacchetto ha solo 12 personaggi in tutto (11 per i
+# nemici, uno riservato al player): "balordo" (il più comune, sempre
+# presente) cambia in 5 scenari su 7, "tiratore" in uno solo — non ne resta
+# più nessuno libero per gli altri due archetipi (nervoso, imprevedibile,
+# bruto), che restano sempre con lo stesso personaggio in ogni scenario.
 const SCENARIO_MODEL_OVERRIDE := {
 	1: {"balordo": "character-male-d"},
 	2: {"balordo": "character-female-d"},
 	3: {"balordo": "character-male-e"},
 	4: {"balordo": "character-female-f"},
-	5: {"balordo": "character-male-c"},
+	5: {"balordo": "character-male-c", "tiratore": "character-female-e"},
 }
 const MODEL_ROTATION_Y := 180.0
 const MODEL_SCALE := 1.8
@@ -64,6 +68,7 @@ signal died
 @onready var visual_root: Node3D = $FacingPivot/VisualRoot
 var anim_player: AnimationPlayer = null
 var body_mesh: MeshInstance3D = null
+var head_mesh: MeshInstance3D = null
 
 var speed := BASE_SPEED
 var max_hp := BASE_MAX_HP
@@ -194,6 +199,7 @@ func _instantiate_model(model_name: String) -> void:
 			char_node = c
 			break
 	body_mesh = char_node.get_node("Skeleton3D/body-mesh")
+	head_mesh = char_node.get_node("Skeleton3D/head-mesh")
 
 # Usata da main.gd per applicare il colore dello scenario attuale (o, in
 # transizione, di quello successivo) al posto del colore fisso
@@ -224,6 +230,19 @@ func _apply_color(color: Color) -> void:
 	var mat: StandardMaterial3D = base_mat.duplicate()
 	mat.albedo_color = color
 	body_mesh.set_surface_override_material(0, mat)
+
+# Usata da main.gd insieme ad apply_color_override: tinge testa/pelle/capelli
+# (un'unica mesh/texture, vedi head_mesh) con un colore uguale per tutti gli
+# archetipi nello stesso scenario (a differenza del colore del corpo, che
+# varia per archetipo) — vedi Scenarios.DATA, "enemy_head_color". Dà più
+# varietà ai nemici che restano con lo stesso personaggio in ogni scenario.
+func apply_head_color_override(color: Color) -> void:
+	if head_mesh == null:
+		return
+	var base_mat: StandardMaterial3D = head_mesh.mesh.surface_get_material(0)
+	var mat: StandardMaterial3D = base_mat.duplicate()
+	mat.albedo_color = color
+	head_mesh.set_surface_override_material(0, mat)
 
 func _find_player() -> void:
 	var players := get_tree().get_nodes_in_group("player")

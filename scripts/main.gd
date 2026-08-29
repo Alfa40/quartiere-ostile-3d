@@ -1146,6 +1146,7 @@ func _spawn_enemy() -> void:
 	enemy.apply_scenario_model(_scenario_index_for_spawn(), archetype_id)
 	var sdata := _scenario_data_for_spawn()
 	enemy.apply_color_override(sdata.enemy_colors.get(archetype_id, EnemyArchetypes.DATA[archetype_id].color))
+	enemy.apply_head_color_override(sdata.get("enemy_head_color", Color.WHITE))
 	enemy.died.connect(_on_enemy_died.bind(enemy))
 
 	zone_enemies_spawned += 1
