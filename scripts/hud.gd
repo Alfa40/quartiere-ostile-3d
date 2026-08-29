@@ -568,9 +568,16 @@ func show_storm_warning() -> void:
 func set_house_vignette_visible(value: bool) -> void:
 	darkness_vignette.visible = value
 
-func set_house_vignette(screen_pos: Vector2, radius: float) -> void:
-	darkness_vignette.material.set_shader_parameter("house_center_px", screen_pos)
-	darkness_vignette.material.set_shader_parameter("house_visible_radius", radius)
+func set_house_vignette(cam_origin: Vector3, ray_tl: Vector3, ray_tr: Vector3, ray_bl: Vector3, ray_br: Vector3, house_xz: Vector2, ground_y: float, radius: float) -> void:
+	var mat := darkness_vignette.material
+	mat.set_shader_parameter("cam_origin", cam_origin)
+	mat.set_shader_parameter("ray_tl", ray_tl)
+	mat.set_shader_parameter("ray_tr", ray_tr)
+	mat.set_shader_parameter("ray_bl", ray_bl)
+	mat.set_shader_parameter("ray_br", ray_br)
+	mat.set_shader_parameter("house_xz", house_xz)
+	mat.set_shader_parameter("ground_y", ground_y)
+	mat.set_shader_parameter("visible_radius", radius)
 
 func update_zone(zone: int, zone_name: String) -> void:
 	zone_label.text = "Zona %d — %s" % [zone, zone_name]

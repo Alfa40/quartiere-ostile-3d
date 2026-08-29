@@ -200,7 +200,6 @@ var storm_full_closed := false
 var storm_elapsed := 0.0
 var _time_outside := 0.0
 var _storm_mesh: Node3D = null
-var _house_vignette_scale := 0.0
 
 var in_darkness := false
 var _night_god_spawn_timer := 0.0
@@ -881,25 +880,33 @@ func _storm_progress() -> float:
 func _current_storm_radius() -> float:
 	return lerp(STORM_START_RADIUS, _storm_safe_radius(), _storm_progress())
 
-# Vignetta a schermo centrata sulla casa (non sul player): la posizione
-# segue la casa proiettata sulla telecamera attiva, aggiornata ogni frame
-# (corretto: è un punto del mondo, deve muoversi a schermo come qualunque
-# altro indicatore quando il player si sposta). Il raggio invece va diviso
-# per una scala di conversione mondo->schermo fissata una sola volta a
-# inizio tempesta (_house_vignette_scale, calcolata in _start_storm): se la
-# si ricalcolasse ogni frame dalla distanza telecamera-casa corrente, il
-# cerchio cambierebbe visibilmente dimensione ogni volta che il player si
-# avvicina o si allontana dalla casa, indipendentemente da quanto la
-# tempesta sia davvero avanzata — l'unica cosa che deve far cambiare la
-# dimensione del cerchio è il progresso della tempesta, non la posizione
-# del player.
+# Vignetta a schermo centrata sulla casa, calcolata con un vero raycast dal
+# piano di terra invece di un cerchio 2D approssimato: per ogni pixel, lo
+# shader ricostruisce a quale punto del terreno corrisponde (intersecando il
+# raggio telecamera-pixel col piano orizzontale all'altezza della casa) e lo
+# confronta con la vera distanza orizzontale dalla casa — lo stesso identico
+# calcolo già usato per la meccanica (_horizontal_distance_to_house), non
+# un'approssimazione. Questo garantisce che il confine visibile coincida
+# sempre esattamente con quello reale: il player non vede mai il buio finché
+# non lo ha davvero superato, qualunque sia la sua posizione o distanza
+# dalla casa, e il cerchio resta corretto anche visto da lontano.
+#
+# I quattro raggi (uno per angolo dello schermo) bastano perché per una
+# proiezione prospettica la direzione del raggio varia linearmente con la
+# posizione a schermo: lo shader interpola bilinearmente tra i quattro per
+# ottenere la direzione esatta di ogni pixel, senza bisogno di passare le
+# matrici di camera/proiezione.
 func _update_house_vignette(radius: float) -> void:
 	var cam := get_viewport().get_camera_3d()
-	if cam == null or _house_vignette_scale <= 0.0:
+	if cam == null:
 		return
+	var vp := get_viewport().get_visible_rect().size
+	var ray_tl: Vector3 = cam.project_ray_normal(Vector2(0.0, 0.0))
+	var ray_tr: Vector3 = cam.project_ray_normal(Vector2(vp.x, 0.0))
+	var ray_bl: Vector3 = cam.project_ray_normal(Vector2(0.0, vp.y))
+	var ray_br: Vector3 = cam.project_ray_normal(Vector2(vp.x, vp.y))
 	var house_pos: Vector3 = _storm_mesh.global_position
-	var house_screen: Vector2 = cam.unproject_position(house_pos)
-	hud.set_house_vignette(house_screen, radius / _house_vignette_scale)
+	hud.set_house_vignette(cam.global_position, ray_tl, ray_tr, ray_bl, ray_br, Vector2(house_pos.x, house_pos.z), house_pos.y, radius)
 
 func _update_storm(delta: float) -> void:
 	# Deve funzionare (e potersi testare) anche in Modalità Creator: l'unico
@@ -935,13 +942,6 @@ func _start_storm() -> void:
 		return
 	storm_active = true
 	storm_elapsed = 0.0
-	# Scala mondo->schermo per il cerchio della casa, fissata qui una sola
-	# volta (vedi _update_house_vignette): usa la distanza telecamera-casa
-	# di questo istante come riferimento per tutta la tempesta.
-	var cam := get_viewport().get_camera_3d()
-	if cam != null:
-		var cam_to_house_dist: float = cam.global_position.distance_to(_storm_mesh.global_position)
-		_house_vignette_scale = cam_to_house_dist * tan(deg_to_rad(cam.fov) * 0.5)
 	hud.set_house_vignette_visible(true)
 	hud.show_storm_warning()
 
