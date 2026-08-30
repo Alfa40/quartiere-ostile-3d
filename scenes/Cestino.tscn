@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
+[ext_resource type="PackedScene" path="res://assets/models/custom/cestino_parco.glb" id="0_realmodel_parco"]
 [ext_resource type="PackedScene" path="res://assets/models/props/dungeon/cestino-debris.glb" id="2_realmodel_palude"]
 [ext_resource type="PackedScene" path="res://assets/models/props/nature_bosco/cestino-mushrooms.glb" id="3_realmodel_bosco"]
 [ext_resource type="PackedScene" path="res://assets/models/props/pirate/cestino-bottles.glb" id="4_realmodel_deserto"]
@@ -37,6 +38,10 @@ position = Vector3(0, 0.3, 0)
 mesh = SubResource("CestinoMesh")
 surface_material_override/0 = SubResource("CestinoMaterial")
 position = Vector3(0, 0.3, 0)
+
+[node name="RealModel_0" parent="." instance=ExtResource("0_realmodel_parco")]
+visible = false
+position = Vector3(0, 0.31, 0)
 
 [node name="RealModel_2" parent="." instance=ExtResource("2_realmodel_palude")]
 visible = false

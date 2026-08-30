@@ -34,12 +34,20 @@ const CHARACTER_MODELS := {
 	"character-female-d": preload("res://assets/models/characters/character-female-d.glb"),
 	"character-female-e": preload("res://assets/models/characters/character-female-e.glb"),
 	"character-female-f": preload("res://assets/models/characters/character-female-f.glb"),
+	# Primo personaggio "fatto in casa" (vedi assets/models/custom/, creato
+	# con Blender invece di un pacchetto Kenney): gerarchia rigida di parti
+	# semplici (testa/busto/braccia/gambe), nessuno scheletro/skinning, con
+	# le stesse identiche 4 animazioni (idle/walk/attack-melee-left/right)
+	# degli altri personaggi. _instantiate_model() lo riconosce dall'assenza
+	# di un nodo Skeleton3D e cerca "Torso"/"Head" per nome invece che al
+	# solito percorso fisso.
+	"enemy_base_custom": preload("res://assets/models/custom/enemy_base.glb"),
 }
 const ARCHETYPE_MODEL := {
 	"balordo": "character-male-f",
 	"nervoso": "character-female-b",
 	"imprevedibile": "character-female-a",
-	"bruto": "character-male-b",
+	"bruto": "enemy_base_custom",
 	"tiratore": "character-female-c",
 }
 # Per ogni scenario elencato, gli archetipi qui dentro usano un altro
@@ -198,8 +206,24 @@ func _instantiate_model(model_name: String) -> void:
 		if c.has_node("Skeleton3D"):
 			char_node = c
 			break
-	body_mesh = char_node.get_node("Skeleton3D/body-mesh")
-	head_mesh = char_node.get_node("Skeleton3D/head-mesh")
+	if char_node != null:
+		body_mesh = char_node.get_node("Skeleton3D/body-mesh")
+		head_mesh = char_node.get_node("Skeleton3D/head-mesh")
+	else:
+		# Personaggi "fatti in casa" (gerarchia rigida di parti, niente
+		# Skeleton3D/skinning): busto e testa si cercano per nome ovunque
+		# nell'albero invece che a un percorso fisso.
+		body_mesh = _find_mesh_by_name(inst, "Torso")
+		head_mesh = _find_mesh_by_name(inst, "Head")
+
+func _find_mesh_by_name(node: Node, target_name: String) -> MeshInstance3D:
+	if node is MeshInstance3D and node.name == target_name:
+		return node
+	for c in node.get_children():
+		var found: MeshInstance3D = _find_mesh_by_name(c, target_name)
+		if found != null:
+			return found
+	return null
 
 # Usata da main.gd per applicare il colore dello scenario attuale (o, in
 # transizione, di quello successivo) al posto del colore fisso
