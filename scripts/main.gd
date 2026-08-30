@@ -873,6 +873,13 @@ func _start_zone() -> void:
 	_apply_scenario_visuals()
 	if zone > 1:
 		_regenerate_objects()
+	else:
+		# Gli oggetti della zona 1 sono già piazzati a mano nella scena
+		# iniziale (non vengono mai rigenerati): senza questo passaggio non
+		# riceverebbero mai apply_scenario_visual/apply_scenario_appearance
+		# e resterebbero bloccati sulle forme primitive per sempre, anche
+		# in Parco dove esiste già un modello vero.
+		_apply_scenario_visual_to_existing_objects(Scenarios.scenario_index_for_zone(zone))
 	_spawn_mushrooms()
 	zone_enemies_total = min(BASE_ENEMIES + PER_ZONE * (zone - 1), MAX_ENEMIES_PER_ZONE)
 	zone_enemies_spawned = 0
@@ -1298,6 +1305,18 @@ func _regenerate_objects() -> void:
 		elif obj.has_method("apply_scenario_visual"):
 			obj.apply_scenario_visual(scenario_idx)
 		obj.destroyed.connect(_on_object_destroyed.bind(obj))
+
+# Usata solo per la zona 1 (mai rigenerata, vedi _start_zone): gli oggetti
+# già piazzati a mano nella scena iniziale devono comunque ricevere il
+# vestito giusto per lo scenario corrente, esattamente come farebbe
+# _regenerate_objects() per una zona qualunque.
+func _apply_scenario_visual_to_existing_objects(scenario_idx: int) -> void:
+	var sdata: Dictionary = Scenarios.scenario_data(scenario_idx)
+	for obj in get_tree().get_nodes_in_group("park_objects"):
+		if obj.has_method("apply_scenario_appearance"):
+			obj.apply_scenario_appearance(sdata.tree_trunk_color, sdata.tree_foliage_color, sdata.tree_shape, scenario_idx)
+		elif obj.has_method("apply_scenario_visual"):
+			obj.apply_scenario_visual(scenario_idx)
 
 const OBJECT_SPAWN_POINT_CLEARANCE := 3.5
 # Margine minimo oltre l'ingombro reale della casa (_house_half_extents, già

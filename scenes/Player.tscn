@@ -82,7 +82,9 @@ rotation_degrees = Vector3(0, 180, 0)
 scale = Vector3(1.8, 1.8, 1.8)
 
 [node name="Zaino" parent="FacingPivot/VisualRoot" instance=ExtResource("3_zaino")]
-position = Vector3(0, 0.75, 0.28)
+rotation_degrees = Vector3(-90, 0, 0)
+scale = Vector3(1.8, 1.8, 1.8)
+position = Vector3(0, 1.1, 0.2)
 
 [node name="AttackArea" type="Area3D" parent="FacingPivot"]
 position = Vector3(0, 1.0, -1.0)
