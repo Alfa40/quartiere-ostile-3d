@@ -69,6 +69,8 @@ const ATTACK_ANIMS := ["attack-melee-left", "attack-melee-right"]
 
 signal died
 
+# Stessa convenzione del player (vedi scripts/character_sides.gd): lo
+# spazio locale di FacingPivot è -Z fronte, +Z retro, +X destra, -X sinistra.
 @onready var facing_pivot: Node3D = $FacingPivot
 @onready var visual_root: Node3D = $FacingPivot/VisualRoot
 var anim_player: AnimationPlayer = null

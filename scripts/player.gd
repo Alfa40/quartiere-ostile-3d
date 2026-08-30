@@ -18,6 +18,10 @@ signal died
 # ascolta per consumare un po' più fame (vedi HUNGER_HEAVY_HIT_COST).
 signal heavy_hit_landed
 
+# Lo spazio locale di questo nodo è il "fronte/retro/destra/sinistra" del
+# personaggio (vedi scripts/character_sides.gd): -Z fronte, +Z retro, +X
+# destra, -X sinistra, sempre valido a prescindere da come look_at() lo
+# orienta nel mondo in un dato istante.
 @onready var facing_pivot: Node3D = $FacingPivot
 @onready var attack_area: Area3D = $FacingPivot/AttackArea
 @onready var attack_flash: MeshInstance3D = $FacingPivot/AttackArea/Flash
