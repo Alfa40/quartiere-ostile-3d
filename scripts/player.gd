@@ -31,8 +31,17 @@ signal heavy_hit_landed
 const STATUS_BAR_WIDTH := 0.7
 
 @onready var anim_player: AnimationPlayer = $FacingPivot/VisualRoot/CharacterModel/AnimationPlayer
-@onready var body_mesh: MeshInstance3D = get_node("FacingPivot/VisualRoot/CharacterModel/character-male-a/Skeleton3D/body-mesh")
+# Personaggio "fatto in casa" (vedi assets/models/custom/enemy_base.glb,
+# stesso modello base usato dal nemico "bruto" in enemy.gd): gerarchia rigida
+# di parti semplici, niente Skeleton3D/skinning, quindi il mesh del busto va
+# cercato per nome invece che a un percorso fisso (stesso approccio di
+# enemy.gd/_find_mesh_by_name, così un futuro cambio di modello/skin non
+# richiede di aggiornare anche questo percorso a mano).
+var body_mesh: MeshInstance3D
 @onready var zaino: Node3D = get_node_or_null("FacingPivot/VisualRoot/Zaino")
+# Il modello attuale (enemy_base.glb) non ha uno Skeleton3D: questo resta
+# sempre null e lo zaino (nascosto, vedi Player.tscn) non segue nessun osso.
+# Percorso lasciato per quando lo zaino verrà riadattato al nuovo personaggio.
 @onready var _zaino_skeleton: Skeleton3D = get_node_or_null("FacingPivot/VisualRoot/CharacterModel/character-male-a/Skeleton3D")
 var _zaino_torso_bone_idx := -1
 
@@ -277,11 +286,21 @@ func _on_grenade_stuck(proj: Node3D) -> void:
 
 func _ready() -> void:
 	add_to_group("player")
+	body_mesh = _find_mesh_by_name($FacingPivot/VisualRoot/CharacterModel, "Torso")
 	hp_changed.emit(hp, max_hp)
 	if CheckpointData.player_body_color != "":
 		apply_body_color(Color(CheckpointData.player_body_color))
 	if _zaino_skeleton != null:
 		_zaino_torso_bone_idx = _zaino_skeleton.find_bone("torso")
+
+func _find_mesh_by_name(node: Node, target_name: String) -> MeshInstance3D:
+	if node is MeshInstance3D and node.name == target_name:
+		return node
+	for c in node.get_children():
+		var found: MeshInstance3D = _find_mesh_by_name(c, target_name)
+		if found != null:
+			return found
+	return null
 
 # Solo il mesh del corpo (non della testa, che condivide la stessa texture
 # "colormap" del modello Kenney): un duplicato del materiale originale così
