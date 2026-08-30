@@ -23,6 +23,7 @@ const EnemyArchetypes := preload("res://scripts/enemy_archetypes.gd")
 # senza guardare il colore. Tutti condividono un unico set di animazioni
 # (idle/walk/attack-melee-left/right) e la stessa scala/rotazione del player.
 const CHARACTER_MODELS := {
+	"character-male-a": preload("res://assets/models/characters/character-male-a.glb"),
 	"character-male-b": preload("res://assets/models/characters/character-male-b.glb"),
 	"character-male-c": preload("res://assets/models/characters/character-male-c.glb"),
 	"character-male-d": preload("res://assets/models/characters/character-male-d.glb"),
@@ -34,20 +35,16 @@ const CHARACTER_MODELS := {
 	"character-female-d": preload("res://assets/models/characters/character-female-d.glb"),
 	"character-female-e": preload("res://assets/models/characters/character-female-e.glb"),
 	"character-female-f": preload("res://assets/models/characters/character-female-f.glb"),
-	# Primo personaggio "fatto in casa" (vedi assets/models/custom/, creato
-	# con Blender invece di un pacchetto Kenney): gerarchia rigida di parti
-	# semplici (testa/busto/braccia/gambe), nessuno scheletro/skinning, con
-	# le stesse identiche 4 animazioni (idle/walk/attack-melee-left/right)
-	# degli altri personaggi. _instantiate_model() lo riconosce dall'assenza
-	# di un nodo Skeleton3D e cerca "Torso"/"Head" per nome invece che al
-	# solito percorso fisso.
-	"enemy_base_custom": preload("res://assets/models/custom/enemy_base.glb"),
 }
 const ARCHETYPE_MODEL := {
 	"balordo": "character-male-f",
 	"nervoso": "character-female-b",
 	"imprevedibile": "character-female-a",
-	"bruto": "enemy_base_custom",
+	# Il personaggio "fatto in casa" (assets/models/custom/enemy_base.glb,
+	# creato con Blender) è ora usato dal PLAYER (vedi player.gd/Player.tscn),
+	# non più dal "bruto": gli stili restano invertiti/distinti (bruto = Kenney,
+	# player = custom) invece di condividere lo stesso modello.
+	"bruto": "character-male-a",
 	"tiratore": "character-female-c",
 }
 # Per ogni scenario elencato, gli archetipi qui dentro usano un altro
