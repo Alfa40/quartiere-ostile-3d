@@ -331,7 +331,7 @@ const ZAINO_TORSO_OFFSET := Transform3D(
 	Vector3(-0.555556, 0.0, 0.0),
 	Vector3(0.0, 0.555556, 0.0),
 	Vector3(0.0, 0.0, -0.555556),
-	Vector3(0.0, 0.379306, -0.060139),
+	Vector3(0.0, 0.34, -0.09),
 )
 
 func _update_zaino_transform() -> void:
