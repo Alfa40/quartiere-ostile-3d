@@ -45,6 +45,7 @@ const OBJECT_SCENES := {
 	"barile": preload("res://scenes/Barile.tscn"),
 	"cestino": preload("res://scenes/Cestino.tscn"),
 	"recinzione": preload("res://scenes/Recinzione.tscn"),
+	"cassa": preload("res://scenes/CassaLegno.tscn"),
 }
 const ARENA_HALF := 38.0
 const OBJECT_CLEAR_RADIUS := 6.0

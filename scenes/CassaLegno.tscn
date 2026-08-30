@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/park_object.gd" id="1_object"]
+[ext_resource type="PackedScene" path="res://assets/models/custom/cassa_legno.glb" id="2_realmodel"]
+
+[sub_resource type="BoxShape3D" id="CassaShape"]
+size = Vector3(0.95, 0.9, 0.95)
+
+[sub_resource type="BoxMesh" id="CassaMesh"]
+size = Vector3(0.95, 0.9, 0.95)
+
+[sub_resource type="StandardMaterial3D" id="CassaMaterial"]
+albedo_color = Color(0.45, 0.3, 0.16, 1)
+roughness = 0.85
+
+[node name="CassaLegno" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_object")
+max_hp = 150.0
+material_drops = {"legno": 2, "metallo": 1}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CassaShape")
+position = Vector3(0, 0.45, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CassaMesh")
+surface_material_override/0 = SubResource("CassaMaterial")
+position = Vector3(0, 0.45, 0)
+
+[node name="RealModel_0" parent="." instance=ExtResource("2_realmodel")]
+visible = false
+
+[node name="RealModel_1" parent="." instance=ExtResource("2_realmodel")]
+visible = false
+
+[node name="RealModel_2" parent="." instance=ExtResource("2_realmodel")]
+visible = false
+
+[node name="RealModel_3" parent="." instance=ExtResource("2_realmodel")]
+visible = false
+
+[node name="RealModel_4" parent="." instance=ExtResource("2_realmodel")]
+visible = false
+
+[node name="RealModel_5" parent="." instance=ExtResource("2_realmodel")]
+visible = false
