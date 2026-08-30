@@ -32,6 +32,9 @@ const STATUS_BAR_WIDTH := 0.7
 
 @onready var anim_player: AnimationPlayer = $FacingPivot/VisualRoot/CharacterModel/AnimationPlayer
 @onready var body_mesh: MeshInstance3D = get_node("FacingPivot/VisualRoot/CharacterModel/character-male-a/Skeleton3D/body-mesh")
+@onready var zaino: Node3D = get_node_or_null("FacingPivot/VisualRoot/Zaino")
+@onready var _zaino_skeleton: Skeleton3D = get_node_or_null("FacingPivot/VisualRoot/CharacterModel/character-male-a/Skeleton3D")
+var _zaino_torso_bone_idx := -1
 
 var max_hp := 100.0
 var hp := 100.0
@@ -277,6 +280,8 @@ func _ready() -> void:
 	hp_changed.emit(hp, max_hp)
 	if CheckpointData.player_body_color != "":
 		apply_body_color(Color(CheckpointData.player_body_color))
+	if _zaino_skeleton != null:
+		_zaino_torso_bone_idx = _zaino_skeleton.find_bone("torso")
 
 # Solo il mesh del corpo (non della testa, che condivide la stessa texture
 # "colormap" del modello Kenney): un duplicato del materiale originale così
@@ -312,6 +317,28 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= GRAVITY * delta
 
 	move_and_slide()
+	_update_zaino_transform()
+
+# Lo zaino (accessorio "fatto in casa", vedi assets/models/custom/) non è
+# parte dello scheletro del personaggio: da solo resterebbe fermo mentre
+# le animazioni (camminata, attacco) muovono il busto. Ricalcolare la sua
+# trasformazione ogni frame a partire dalla posa CORRENTE dell'osso
+# "torso" lo fa seguire il busto in ogni animazione. Nota: agganciarlo con
+# un vero BoneAttachment3D (l'approccio "giusto" su carta) lo rende
+# invisibile nell'export Web per un bug di culling — farlo così, a mano,
+# evita il problema perché resta un nodo normale come qualsiasi altro.
+const ZAINO_TORSO_OFFSET := Transform3D(
+	Vector3(-0.555556, 0.0, 0.0),
+	Vector3(0.0, 0.555556, 0.0),
+	Vector3(0.0, 0.0, -0.555556),
+	Vector3(0.0, 0.379306, -0.060139),
+)
+
+func _update_zaino_transform() -> void:
+	if zaino == null or _zaino_skeleton == null or _zaino_torso_bone_idx == -1:
+		return
+	var torso_global: Transform3D = _zaino_skeleton.global_transform * _zaino_skeleton.get_bone_global_pose(_zaino_torso_bone_idx)
+	zaino.global_transform = torso_global * ZAINO_TORSO_OFFSET
 
 func _handle_movement(_delta: float) -> void:
 	var input_dir := Vector3.ZERO
