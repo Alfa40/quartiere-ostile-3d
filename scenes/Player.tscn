@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://assets/models/custom/enemy_base.glb" id="2_charmodel"]
+[ext_resource type="PackedScene" path="res://assets/models/protagonist/protagonist_saeedd.glb" id="2_charmodel"]
 [ext_resource type="PackedScene" path="res://assets/models/custom/zaino_survival.glb" id="3_zaino"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape"]
@@ -79,7 +79,7 @@ position = Vector3(0, 0.9, 0)
 
 [node name="CharacterModel" parent="FacingPivot/VisualRoot" instance=ExtResource("2_charmodel")]
 rotation_degrees = Vector3(0, 180, 0)
-scale = Vector3(1.8, 1.8, 1.8)
+scale = Vector3(0.9667, 0.9667, 0.9667)
 
 [node name="Zaino" parent="FacingPivot/VisualRoot" instance=ExtResource("3_zaino")]
 visible = false

@@ -290,7 +290,15 @@ func _on_grenade_stuck(proj: Node3D) -> void:
 
 func _ready() -> void:
 	add_to_group("player")
-	body_mesh = _find_mesh_by_name($FacingPivot/VisualRoot/CharacterModel, "Torso")
+	# "Torso" per il personaggio "fatto in casa"; "Wolf3D_Outfit_Top" per un
+	# personaggio Ready Player Me (dove il busto vero e proprio, sotto ai
+	# vestiti, è sempre presente ma non va ricolorato — l'equivalente della
+	# "maglietta" li è la mesh dei vestiti superiori).
+	var char_model: Node3D = $FacingPivot/VisualRoot/CharacterModel
+	for candidate_name in ["Torso", "Wolf3D_Outfit_Top"]:
+		body_mesh = _find_mesh_by_name(char_model, candidate_name)
+		if body_mesh != null:
+			break
 	hp_changed.emit(hp, max_hp)
 	if CheckpointData.player_body_color != "":
 		apply_body_color(Color(CheckpointData.player_body_color))
