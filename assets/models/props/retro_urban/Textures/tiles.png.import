@@ -3,19 +3,20 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d00xtbjnlkwlc"
-path="res://.godot/imported/tiles.png-50e382d1f66aa8d38f8488000d026e3b.ctex"
+path.s3tc="res://.godot/imported/tiles.png-50e382d1f66aa8d38f8488000d026e3b.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/models/props/retro_urban/Textures/tiles.png"
-dest_files=["res://.godot/imported/tiles.png-50e382d1f66aa8d38f8488000d026e3b.ctex"]
+dest_files=["res://.godot/imported/tiles.png-50e382d1f66aa8d38f8488000d026e3b.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

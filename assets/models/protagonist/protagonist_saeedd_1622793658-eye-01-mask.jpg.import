@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c184n0daukx45"
-path="res://.godot/imported/protagonist_saeedd_1622793658-eye-01-mask.jpg-0e391ee0bdd80c65325b14bef5647903.ctex"
+path.s3tc="res://.godot/imported/protagonist_saeedd_1622793658-eye-01-mask.jpg-0e391ee0bdd80c65325b14bef5647903.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "159da309d93eb3502c81ca9200ec9009"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/protagonist/protagonist_saeedd_1622793658-eye-01-mask.jpg"
-dest_files=["res://.godot/imported/protagonist_saeedd_1622793658-eye-01-mask.jpg-0e391ee0bdd80c65325b14bef5647903.ctex"]
+dest_files=["res://.godot/imported/protagonist_saeedd_1622793658-eye-01-mask.jpg-0e391ee0bdd80c65325b14bef5647903.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

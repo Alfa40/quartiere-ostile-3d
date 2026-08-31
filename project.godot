@@ -35,6 +35,17 @@ CheckpointData="*res://scripts/checkpoint_data.gd"
 GameSettings="*res://scripts/game_settings.gd"
 Leaderboard="*res://scripts/leaderboard.gd"
 
+[importer_defaults]
+
+; Prima di questa impostazione OGNI texture del progetto veniva importata
+; senza compressione VRAM (peso GPU/banda inutilmente alto, specialmente
+; sull'export Web/mobile a cui punta il gioco): d'ora in poi le nuove
+; texture importate usano di default la compressione VRAM invece di
+; restare "Lossless".
+texture={
+"compress/mode": 2
+}
+
 [rendering]
 
 renderer/rendering_method="mobile"
