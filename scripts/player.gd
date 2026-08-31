@@ -693,7 +693,8 @@ func _finish_reload() -> void:
 	if main != null and main.has_method("consume_firearm_reserve_ammo"):
 		main.consume_firearm_reserve_ammo(firearm_id, loaded)
 
-const ATTACK_ANIMS := ["attack-melee-left", "attack-melee-right"]
+const ATTACK_ANIMS := ["attack-melee-straight-left", "attack-melee-straight-right",
+	"attack-melee-hook-left", "attack-melee-hook-right"]
 
 func _play_attack_swing() -> void:
 	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()])
