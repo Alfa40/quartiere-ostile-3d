@@ -593,6 +593,7 @@ func _on_controls_editor_finished() -> void:
 	touch_controls.end_edit_mode()
 
 func _on_interact_pressed() -> void:
+	player.play_interact_anim()
 	if _current_interact == "casa":
 		_open_house_menu()
 	elif _current_interact == "armi_bianche":

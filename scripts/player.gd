@@ -695,16 +695,26 @@ func _finish_reload() -> void:
 
 const ATTACK_ANIMS := ["attack-melee-straight-left", "attack-melee-straight-right",
 	"attack-melee-hook-left", "attack-melee-hook-right"]
+const INTERACT_ANIM := "interact-workbench"
 
 func _play_attack_swing() -> void:
 	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()])
 
+# Chiamata da home.gd quando si tocca un banco (si apre il relativo menu):
+# una breve animazione non in loop, il personaggio si china in avanti verso
+# il banco. Non va richiamata se il personaggio si sta già muovendo verso
+# un attacco (vedi guardia in _animate_body).
+func play_interact_anim() -> void:
+	anim_player.play(INTERACT_ANIM)
+
 # Un solo AnimationPlayer guida tutto lo scheletro: mentre un'animazione di
-# attacco è in corso non va interrotta per tornare a cammino/riposo, che
-# riprende da soli non appena l'attacco finisce (le clip di attacco non
-# sono in loop, vedi ATTACK_ANIMS).
+# attacco o di interazione è in corso non va interrotta per tornare a
+# cammino/riposo, che riprende da solo non appena finisce (le clip non sono
+# in loop, vedi ATTACK_ANIMS/INTERACT_ANIM).
 func _animate_body(_delta: float) -> void:
 	if anim_player.current_animation in ATTACK_ANIMS and anim_player.is_playing():
+		return
+	if anim_player.current_animation == INTERACT_ANIM and anim_player.is_playing():
 		return
 	var horiz := Vector2(velocity.x, velocity.z).length()
 	anim_player.play("walk" if horiz > 0.3 else "idle")
