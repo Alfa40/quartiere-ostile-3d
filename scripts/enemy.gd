@@ -504,18 +504,31 @@ func _fire_projectile(dir: Vector3) -> void:
 	proj.damage = attack_damage
 	proj.source = self
 
+const ANIM_BLEND := 0.15
+const ATTACK_ANIM_BLEND := 0.08
+const WALK_ANIM_SPEED_MIN := 0.6
+const WALK_ANIM_SPEED_MAX := 1.8
+
 func _play_attack_swing() -> void:
-	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()])
+	anim_player.speed_scale = 1.0
+	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()], ATTACK_ANIM_BLEND)
 
 # Un solo AnimationPlayer guida tutto lo scheletro: mentre un'animazione di
 # attacco è in corso non va interrotta per tornare a cammino/riposo, che
 # riprende da solo non appena l'attacco finisce (le clip di attacco non sono
-# in loop, vedi ATTACK_ANIMS). Stesso approccio di player.gd.
+# in loop, vedi ATTACK_ANIMS). Stesso approccio di player.gd: blend invece di
+# cambio secco, e velocità di "walk" scalata sulla velocità reale (vedi
+# `speed`, che varia per archetipo/potenziamenti) così i piedi non slittano.
 func _animate_body(_delta: float) -> void:
 	if anim_player.current_animation in ATTACK_ANIMS and anim_player.is_playing():
 		return
 	var horiz := Vector2(velocity.x, velocity.z).length()
-	anim_player.play("walk" if horiz > 0.3 else "idle")
+	if horiz > 0.3:
+		anim_player.speed_scale = clamp(horiz / BASE_SPEED, WALK_ANIM_SPEED_MIN, WALK_ANIM_SPEED_MAX)
+		anim_player.play("walk", ANIM_BLEND)
+	else:
+		anim_player.speed_scale = 1.0
+		anim_player.play("idle", ANIM_BLEND)
 
 func take_damage(amount: float, _source = null) -> void:
 	if dead:

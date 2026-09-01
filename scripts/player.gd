@@ -697,27 +697,42 @@ const ATTACK_ANIMS := ["attack-melee-straight-left", "attack-melee-straight-righ
 	"attack-melee-hook-left", "attack-melee-hook-right"]
 const INTERACT_ANIM := "interact-workbench"
 
+const ANIM_BLEND := 0.15
+const ATTACK_ANIM_BLEND := 0.08
+const WALK_ANIM_SPEED_MIN := 0.6
+const WALK_ANIM_SPEED_MAX := 1.8
+
 func _play_attack_swing() -> void:
-	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()])
+	anim_player.speed_scale = 1.0
+	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()], ATTACK_ANIM_BLEND)
 
 # Chiamata da home.gd quando si tocca un banco (si apre il relativo menu):
 # una breve animazione non in loop, il personaggio si china in avanti verso
 # il banco. Non va richiamata se il personaggio si sta già muovendo verso
 # un attacco (vedi guardia in _animate_body).
 func play_interact_anim() -> void:
-	anim_player.play(INTERACT_ANIM)
+	anim_player.speed_scale = 1.0
+	anim_player.play(INTERACT_ANIM, ATTACK_ANIM_BLEND)
 
 # Un solo AnimationPlayer guida tutto lo scheletro: mentre un'animazione di
 # attacco o di interazione è in corso non va interrotta per tornare a
 # cammino/riposo, che riprende da solo non appena finisce (le clip non sono
-# in loop, vedi ATTACK_ANIMS/INTERACT_ANIM).
+# in loop, vedi ATTACK_ANIMS/INTERACT_ANIM). Le transizioni usano un breve
+# blend (ANIM_BLEND/ATTACK_ANIM_BLEND) invece di un cambio secco, e la
+# velocità di riproduzione di "walk" segue quella reale di movimento
+# (speed_mult/hunger_speed_mult, scarpe, ecc.) così i piedi non slittano.
 func _animate_body(_delta: float) -> void:
 	if anim_player.current_animation in ATTACK_ANIMS and anim_player.is_playing():
 		return
 	if anim_player.current_animation == INTERACT_ANIM and anim_player.is_playing():
 		return
 	var horiz := Vector2(velocity.x, velocity.z).length()
-	anim_player.play("walk" if horiz > 0.3 else "idle")
+	if horiz > 0.3:
+		anim_player.speed_scale = clamp(horiz / BASE_SPEED, WALK_ANIM_SPEED_MIN, WALK_ANIM_SPEED_MAX)
+		anim_player.play("walk", ANIM_BLEND)
+	else:
+		anim_player.speed_scale = 1.0
+		anim_player.play("idle", ANIM_BLEND)
 
 func _update_status_bars() -> void:
 	if touch != null:
