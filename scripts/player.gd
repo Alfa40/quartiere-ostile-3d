@@ -35,6 +35,9 @@ signal heavy_hit_landed
 const STATUS_BAR_WIDTH := 0.7
 
 @onready var anim_player: AnimationPlayer = $FacingPivot/VisualRoot/CharacterModel/AnimationPlayer
+@onready var char_skeleton: Skeleton3D = $FacingPivot/VisualRoot/CharacterModel/Armature/Skeleton3D
+var anim_tree: AnimationTree
+var _attack_anim_node: AnimationNodeAnimation
 # Personaggio "fatto in casa" (vedi assets/models/custom/enemy_base.glb,
 # stesso modello base usato dal nemico "bruto" in enemy.gd): gerarchia rigida
 # di parti semplici, niente Skeleton3D/skinning, quindi il mesh del busto va
@@ -304,6 +307,7 @@ func _ready() -> void:
 		apply_body_color(Color(CheckpointData.player_body_color))
 	if _zaino_skeleton != null:
 		_zaino_torso_bone_idx = _zaino_skeleton.find_bone("torso")
+	_setup_anim_tree()
 
 func _find_mesh_by_name(node: Node, target_name: String) -> MeshInstance3D:
 	if node is MeshInstance3D and node.name == target_name:
@@ -702,37 +706,155 @@ const ATTACK_ANIM_BLEND := 0.08
 const WALK_ANIM_SPEED_MIN := 0.6
 const WALK_ANIM_SPEED_MAX := 1.8
 
+# Ossa della parte inferiore (bacino/gambe/piedi): restano SEMPRE guidate
+# dal layer di locomozione (idle/walk in base al movimento reale), anche
+# mentre un attacco o un'interazione è in corso sopra di esse — vedi
+# _setup_anim_tree. Tutte le altre ossa (busto, testa, braccia, mani) sono
+# invece nel filtro di AttackShot e vengono sovrascritte durante l'attacco.
+const LOWER_BODY_BONES := ["Hips", "LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToeBase", "LeftToe_End",
+	"RightUpLeg", "RightLeg", "RightFoot", "RightToeBase", "RightToe_End"]
+
+const ELBOW_BEND_TARGET_ANIM := "_runtime_elbow_bend_target"
+const ELBOW_BEND_MAX_DEG := 90.0
+
+# Piccola Animation costruita a runtime (non richiede toccare il .glb): un
+# solo fotogramma con l'avambraccio piegato al massimo (~90°, stessa
+# convenzione -Z=piega usata per le altre clip del protagonista), usata come
+# bersaglio da ArmBend. Nessun'altra traccia: essendo un bersaglio filtrato
+# (solo LeftForeArm/RightForeArm), il resto della posa è ignorato.
+func _register_elbow_bend_target_anim() -> void:
+	var lib_name := anim_player.get_animation_library_list()[0]
+	var lib := anim_player.get_animation_library(lib_name)
+	if lib.has_animation(ELBOW_BEND_TARGET_ANIM):
+		return
+	var anim := Animation.new()
+	for bone in ["LeftForeArm", "RightForeArm"]:
+		var rest := char_skeleton.get_bone_rest(char_skeleton.find_bone(bone)).basis.get_euler()
+		var target := Vector3(rest.x, rest.y, rest.z - deg_to_rad(ELBOW_BEND_MAX_DEG))
+		var idx := anim.add_track(Animation.TYPE_ROTATION_3D)
+		anim.track_set_path(idx, NodePath("Armature/Skeleton3D:" + bone))
+		anim.track_insert_key(idx, 0.0, Quaternion.from_euler(target))
+	lib.add_animation(ELBOW_BEND_TARGET_ANIM, anim)
+
+# Costruisce un AnimationTree via codice (invece di anim_player.play() diretto)
+# con due layer indipendenti:
+#  - "Locomotion": transizione idle/walk, sempre attiva, velocità di "walk"
+#    legata a quella reale di movimento (speed_mult/hunger_speed_mult, ecc.).
+#  - "AttackShot"/"InteractShot": AnimationNodeOneShot sopra a Locomotion.
+#    AttackShot è filtrato (solo busto/testa/braccia/mani, vedi
+#    LOWER_BODY_BONES): le gambe continuano quindi a camminare/fermarsi in
+#    base al movimento reale anche durante un attacco, come richiesto — si
+#    fermano solo quando il giocatore lascia il joystick di movimento.
+#    InteractShot non è filtrato (interazione = fermo, corpo intero).
+func _setup_anim_tree() -> void:
+	var root := AnimationNodeBlendTree.new()
+
+	var idle_node := AnimationNodeAnimation.new()
+	idle_node.animation = "idle"
+	var walk_node := AnimationNodeAnimation.new()
+	walk_node.animation = "walk"
+	var walk_scale := AnimationNodeTimeScale.new()
+	root.add_node("Idle", idle_node)
+	root.add_node("Walk", walk_node)
+	root.add_node("WalkScale", walk_scale)
+	root.connect_node("WalkScale", 0, "Walk")
+
+	var locomotion := AnimationNodeTransition.new()
+	locomotion.add_input("idle")
+	locomotion.add_input("walk")
+	locomotion.xfade_time = ANIM_BLEND
+	root.add_node("Locomotion", locomotion)
+	root.connect_node("Locomotion", 0, "Idle")
+	root.connect_node("Locomotion", 1, "WalkScale")
+
+	# Il gomito piegato "da corsetta" non è un valore fisso: più il
+	# personaggio si muove veloce, più si piega (fino a ~90°), invece di
+	# restare sempre alla stessa angolazione indipendentemente dalla
+	# velocità. "walk" ora tiene l'avambraccio a riposo (nessuna piega
+	# fissa); ArmBend lo sovrappone verso una posa a gomito piegato, in base
+	# a parameters/ArmBend/blend_amount (0 = riposo, 1 = piega massima),
+	# aggiornato ogni frame in _animate_body in base alla velocità reale.
+	_register_elbow_bend_target_anim()
+	var elbow_bend_node := AnimationNodeAnimation.new()
+	elbow_bend_node.animation = ELBOW_BEND_TARGET_ANIM
+	root.add_node("ElbowBendTarget", elbow_bend_node)
+
+	var arm_bend := AnimationNodeBlend2.new()
+	arm_bend.filter_enabled = true
+	arm_bend.set_filter_path(NodePath("Armature/Skeleton3D:LeftForeArm"), true)
+	arm_bend.set_filter_path(NodePath("Armature/Skeleton3D:RightForeArm"), true)
+	root.add_node("ArmBend", arm_bend)
+	root.connect_node("ArmBend", 0, "Locomotion")
+	root.connect_node("ArmBend", 1, "ElbowBendTarget")
+
+	var attack_shot := AnimationNodeOneShot.new()
+	attack_shot.fadein_time = ATTACK_ANIM_BLEND
+	attack_shot.fadeout_time = ATTACK_ANIM_BLEND
+	attack_shot.filter_enabled = true
+	for bone_name in _upper_body_bone_names():
+		attack_shot.set_filter_path(NodePath("Armature/Skeleton3D:" + bone_name), true)
+	root.add_node("AttackShot", attack_shot)
+	root.connect_node("AttackShot", 0, "ArmBend")
+
+	_attack_anim_node = AnimationNodeAnimation.new()
+	_attack_anim_node.animation = ATTACK_ANIMS[0]
+	root.add_node("AttackAnim", _attack_anim_node)
+	root.connect_node("AttackShot", 1, "AttackAnim")
+
+	var interact_shot := AnimationNodeOneShot.new()
+	interact_shot.fadein_time = ATTACK_ANIM_BLEND
+	interact_shot.fadeout_time = ATTACK_ANIM_BLEND
+	root.add_node("InteractShot", interact_shot)
+	root.connect_node("InteractShot", 0, "AttackShot")
+
+	var interact_anim_node := AnimationNodeAnimation.new()
+	interact_anim_node.animation = INTERACT_ANIM
+	root.add_node("InteractAnim", interact_anim_node)
+	root.connect_node("InteractShot", 1, "InteractAnim")
+
+	root.connect_node("output", 0, "InteractShot")
+
+	anim_tree = AnimationTree.new()
+	add_child(anim_tree)
+	anim_tree.tree_root = root
+	anim_tree.anim_player = anim_tree.get_path_to(anim_player)
+	anim_tree.active = true
+
+func _upper_body_bone_names() -> Array[String]:
+	var names: Array[String] = []
+	for i in range(char_skeleton.get_bone_count()):
+		var bone_name := char_skeleton.get_bone_name(i)
+		if bone_name not in LOWER_BODY_BONES:
+			names.append(bone_name)
+	return names
+
 func _play_attack_swing() -> void:
-	anim_player.speed_scale = 1.0
-	anim_player.play(ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()], ATTACK_ANIM_BLEND)
+	_attack_anim_node.animation = ATTACK_ANIMS[randi() % ATTACK_ANIMS.size()]
+	anim_tree.set("parameters/AttackShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
 # Chiamata da home.gd quando si tocca un banco (si apre il relativo menu):
 # una breve animazione non in loop, il personaggio si china in avanti verso
-# il banco. Non va richiamata se il personaggio si sta già muovendo verso
-# un attacco (vedi guardia in _animate_body).
+# il banco (corpo intero, non filtrata: vedi _setup_anim_tree).
 func play_interact_anim() -> void:
-	anim_player.speed_scale = 1.0
-	anim_player.play(INTERACT_ANIM, ATTACK_ANIM_BLEND)
+	anim_tree.set("parameters/InteractShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
-# Un solo AnimationPlayer guida tutto lo scheletro: mentre un'animazione di
-# attacco o di interazione è in corso non va interrotta per tornare a
-# cammino/riposo, che riprende da solo non appena finisce (le clip non sono
-# in loop, vedi ATTACK_ANIMS/INTERACT_ANIM). Le transizioni usano un breve
-# blend (ANIM_BLEND/ATTACK_ANIM_BLEND) invece di un cambio secco, e la
-# velocità di riproduzione di "walk" segue quella reale di movimento
-# (speed_mult/hunger_speed_mult, scarpe, ecc.) così i piedi non slittano.
+# La locomozione (idle/walk) è un layer indipendente da attacco/interazione
+# (vedi _setup_anim_tree): le gambe seguono sempre il movimento reale, anche
+# mentre le braccia sono impegnate in uno swing d'attacco sopra di esse, e si
+# fermano solo quando velocity torna vicino a zero (joystick di movimento
+# rilasciato). La velocità di "walk" segue quella reale di movimento
+# (speed_mult/hunger_speed_mult, scarpe, ecc.) così i piedi non slittano, e
+# lo stesso rapporto pilota ArmBend: più veloce ci si muove, più il gomito
+# si piega verso ELBOW_BEND_MAX_DEG invece di restare a un angolo fisso.
 func _animate_body(_delta: float) -> void:
-	if anim_player.current_animation in ATTACK_ANIMS and anim_player.is_playing():
-		return
-	if anim_player.current_animation == INTERACT_ANIM and anim_player.is_playing():
-		return
 	var horiz := Vector2(velocity.x, velocity.z).length()
+	var speed_frac: float = clamp(horiz / BASE_SPEED, 0.0, 1.0)
+	anim_tree.set("parameters/ArmBend/blend_amount", speed_frac)
 	if horiz > 0.3:
-		anim_player.speed_scale = clamp(horiz / BASE_SPEED, WALK_ANIM_SPEED_MIN, WALK_ANIM_SPEED_MAX)
-		anim_player.play("walk", ANIM_BLEND)
+		anim_tree.set("parameters/WalkScale/scale", clamp(horiz / BASE_SPEED, WALK_ANIM_SPEED_MIN, WALK_ANIM_SPEED_MAX))
+		anim_tree.set("parameters/Locomotion/transition_request", "walk")
 	else:
-		anim_player.speed_scale = 1.0
-		anim_player.play("idle", ANIM_BLEND)
+		anim_tree.set("parameters/Locomotion/transition_request", "idle")
 
 func _update_status_bars() -> void:
 	if touch != null:
