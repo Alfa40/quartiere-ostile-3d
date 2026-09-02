@@ -801,6 +801,10 @@ func _setup_anim_tree() -> void:
 	idle_node.animation = REST_ANIM
 	var walk_node := AnimationNodeAnimation.new()
 	walk_node.animation = JOG_ANIM
+	# AnimationNodeAnimation NON eredita il loop_mode della clip: senza questo la
+	# corsa parte una volta e si ferma sull'ultimo fotogramma (un braccio resta
+	# indietro). Va forzato sul nodo.
+	walk_node.loop_mode = Animation.LOOP_LINEAR
 	var walk_scale := AnimationNodeTimeScale.new()
 	root.add_node("Idle", idle_node)
 	root.add_node("Walk", walk_node)
