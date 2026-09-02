@@ -4,6 +4,8 @@ Godot 4.7.2, gioco pensato per telefono (vedi sotto), export web in `docs/` per 
 
 ## Animazioni del personaggio (protagonist_saeedd.glb)
 
+> Conoscenze di riferimento su retargeting / rest fixer / loop / trappole FBX: **`RETARGETING.md`**.
+
 ### Pipeline attuale: Mixamo APPLICATO ALL'AVATAR + rename in Godot (usa questa per ogni clip nuova)
 
 Dal 2026-09-02. Le clip **non** si retargettano più (né a mano in GDScript, né col fix silhouette dell'importer): si applicano direttamente allo scheletro dell'avatar dentro Mixamo, così arrivano già montate sul rig giusto. In Godot si fa solo un **rename delle ossa** al profilo + una correzione di rest per un'unica ragione tecnica (sotto).
