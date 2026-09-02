@@ -711,30 +711,72 @@ const WALK_ANIM_SPEED_MAX := 1.8
 # mentre un attacco o un'interazione è in corso sopra di esse — vedi
 # _setup_anim_tree. Tutte le altre ossa (busto, testa, braccia, mani) sono
 # invece nel filtro di AttackShot e vengono sovrascritte durante l'attacco.
-const LOWER_BODY_BONES := ["Hips", "LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToeBase", "LeftToe_End",
-	"RightUpLeg", "RightLeg", "RightFoot", "RightToeBase", "RightToe_End"]
+# Nomi ossa = profilo umanoide standard di Godot (SkeletonProfileHumanoid):
+# lo scheletro del protagonista viene rinominato a questi nomi in fase di
+# import dal retargeting nativo (vedi assets/models/protagonist/*_bonemap.tres
+# e il blocco retarget in protagonist_saeedd.glb.import), lo stesso profilo
+# usato per retargettare le clip Mixamo. LeftToe_End/RightToe_End non sono nel
+# profilo e mantengono il nome originale.
+const LOWER_BODY_BONES := ["Hips", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "LeftToes", "LeftToe_End",
+	"RightUpperLeg", "RightLowerLeg", "RightFoot", "RightToes", "RightToe_End"]
 
 const ELBOW_BEND_TARGET_ANIM := "_runtime_elbow_bend_target"
 const ELBOW_BEND_MAX_DEG := 90.0
+const REST_ANIM := "_runtime_rest"
+# Libreria con la clip di corsa (jog): Mixamo "Jogging" applicato allo scheletro
+# dell'avatar, poi in Godot solo rename ossa + correzione rest (vedi il bake in
+# assets/animations/jog_lib.res e la sezione "Pipeline attuale" in CLAUDE.md).
+const JOG_LIB_PATH := "res://assets/animations/jog_lib.res"
+const JOG_ANIM := "mix/jog"
 
 # Piccola Animation costruita a runtime (non richiede toccare il .glb): un
 # solo fotogramma con l'avambraccio piegato al massimo (~90°, stessa
 # convenzione -Z=piega usata per le altre clip del protagonista), usata come
 # bersaglio da ArmBend. Nessun'altra traccia: essendo un bersaglio filtrato
-# (solo LeftForeArm/RightForeArm), il resto della posa è ignorato.
+# (solo LeftLowerArm/RightLowerArm), il resto della posa è ignorato.
 func _register_elbow_bend_target_anim() -> void:
 	var lib_name := anim_player.get_animation_library_list()[0]
 	var lib := anim_player.get_animation_library(lib_name)
 	if lib.has_animation(ELBOW_BEND_TARGET_ANIM):
 		return
 	var anim := Animation.new()
-	for bone in ["LeftForeArm", "RightForeArm"]:
+	for bone in ["LeftLowerArm", "RightLowerArm"]:
 		var rest := char_skeleton.get_bone_rest(char_skeleton.find_bone(bone)).basis.get_euler()
 		var target := Vector3(rest.x, rest.y, rest.z - deg_to_rad(ELBOW_BEND_MAX_DEG))
 		var idx := anim.add_track(Animation.TYPE_ROTATION_3D)
 		anim.track_set_path(idx, NodePath("Armature/Skeleton3D:" + bone))
 		anim.track_insert_key(idx, 0.0, Quaternion.from_euler(target))
 	lib.add_animation(ELBOW_BEND_TARGET_ANIM, anim)
+
+# Clip di riposo di un fotogramma, usata come stato "fermo" della locomozione.
+# Per ora, da fermo, il personaggio non ha alcuna animazione (solo la corsa
+# quando si muove): questa clip congela il primo fotogramma della vecchia clip
+# "idle" (una posa in piedi naturale) invece di far ciclare l'idle. Meglio del
+# rest pose dello scheletro, che è una A/T-pose a braccia larghe.
+func _register_rest_anim() -> void:
+	var lib_name := anim_player.get_animation_library_list()[0]
+	var lib := anim_player.get_animation_library(lib_name)
+	if lib.has_animation(REST_ANIM):
+		return
+	var src: Animation = lib.get_animation("idle") if lib.has_animation("idle") else null
+	var anim := Animation.new()
+	anim.length = 0.1
+	if src != null:
+		for t in range(src.get_track_count()):
+			var idx := anim.add_track(src.track_get_type(t))
+			anim.track_set_path(idx, src.track_get_path(t))
+			if src.track_get_type(t) == Animation.TYPE_ROTATION_3D:
+				anim.rotation_track_insert_key(idx, 0.0, src.rotation_track_interpolate(t, 0.0))
+			elif src.track_get_type(t) == Animation.TYPE_POSITION_3D:
+				anim.position_track_insert_key(idx, 0.0, src.position_track_interpolate(t, 0.0))
+			elif src.track_get_type(t) == Animation.TYPE_SCALE_3D:
+				anim.scale_track_insert_key(idx, 0.0, src.scale_track_interpolate(t, 0.0))
+	else:
+		for i in range(char_skeleton.get_bone_count()):
+			var idx := anim.add_track(Animation.TYPE_ROTATION_3D)
+			anim.track_set_path(idx, NodePath("Armature/Skeleton3D:" + char_skeleton.get_bone_name(i)))
+			anim.rotation_track_insert_key(idx, 0.0, char_skeleton.get_bone_rest(i).basis.get_rotation_quaternion())
+	lib.add_animation(REST_ANIM, anim)
 
 # Costruisce un AnimationTree via codice (invece di anim_player.play() diretto)
 # con due layer indipendenti:
@@ -747,12 +789,18 @@ func _register_elbow_bend_target_anim() -> void:
 #    fermano solo quando il giocatore lascia il joystick di movimento.
 #    InteractShot non è filtrato (interazione = fermo, corpo intero).
 func _setup_anim_tree() -> void:
+	# La clip di corsa vive in una libreria a parte ("mix"), caricata qui prima
+	# di costruire l'albero così i nodi possono riferirla come "mix/jog".
+	if not anim_player.has_animation_library("mix"):
+		anim_player.add_animation_library("mix", load(JOG_LIB_PATH))
+	_register_rest_anim()
+
 	var root := AnimationNodeBlendTree.new()
 
 	var idle_node := AnimationNodeAnimation.new()
-	idle_node.animation = "idle"
+	idle_node.animation = REST_ANIM
 	var walk_node := AnimationNodeAnimation.new()
-	walk_node.animation = "walk"
+	walk_node.animation = JOG_ANIM
 	var walk_scale := AnimationNodeTimeScale.new()
 	root.add_node("Idle", idle_node)
 	root.add_node("Walk", walk_node)
@@ -767,13 +815,10 @@ func _setup_anim_tree() -> void:
 	root.connect_node("Locomotion", 0, "Idle")
 	root.connect_node("Locomotion", 1, "WalkScale")
 
-	# Il gomito piegato "da corsetta" non è un valore fisso: più il
-	# personaggio si muove veloce, più si piega (fino a ~90°), invece di
-	# restare sempre alla stessa angolazione indipendentemente dalla
-	# velocità. "walk" ora tiene l'avambraccio a riposo (nessuna piega
-	# fissa); ArmBend lo sovrappone verso una posa a gomito piegato, in base
-	# a parameters/ArmBend/blend_amount (0 = riposo, 1 = piega massima),
-	# aggiornato ogni frame in _animate_body in base alla velocità reale.
+	# ArmBend (piega extra del gomito "da corsetta") non serve più con una clip
+	# di corsa mocap vera: la clip Mixamo ha già la sua oscillazione di braccia
+	# e gomiti. Il nodo resta nel grafo per non riscrivere l'albero, ma
+	# blend_amount è tenuto a 0 in _animate_body (nessun contributo).
 	_register_elbow_bend_target_anim()
 	var elbow_bend_node := AnimationNodeAnimation.new()
 	elbow_bend_node.animation = ELBOW_BEND_TARGET_ANIM
@@ -781,8 +826,8 @@ func _setup_anim_tree() -> void:
 
 	var arm_bend := AnimationNodeBlend2.new()
 	arm_bend.filter_enabled = true
-	arm_bend.set_filter_path(NodePath("Armature/Skeleton3D:LeftForeArm"), true)
-	arm_bend.set_filter_path(NodePath("Armature/Skeleton3D:RightForeArm"), true)
+	arm_bend.set_filter_path(NodePath("Armature/Skeleton3D:LeftLowerArm"), true)
+	arm_bend.set_filter_path(NodePath("Armature/Skeleton3D:RightLowerArm"), true)
 	root.add_node("ArmBend", arm_bend)
 	root.connect_node("ArmBend", 0, "Locomotion")
 	root.connect_node("ArmBend", 1, "ElbowBendTarget")
@@ -842,14 +887,13 @@ func play_interact_anim() -> void:
 # (vedi _setup_anim_tree): le gambe seguono sempre il movimento reale, anche
 # mentre le braccia sono impegnate in uno swing d'attacco sopra di esse, e si
 # fermano solo quando velocity torna vicino a zero (joystick di movimento
-# rilasciato). La velocità di "walk" segue quella reale di movimento
-# (speed_mult/hunger_speed_mult, scarpe, ecc.) così i piedi non slittano, e
-# lo stesso rapporto pilota ArmBend: più veloce ci si muove, più il gomito
-# si piega verso ELBOW_BEND_MAX_DEG invece di restare a un angolo fisso.
+# rilasciato). La velocità di "walk" (ora la clip di corsa "mix/jog") segue
+# quella reale di movimento (speed_mult/hunger_speed_mult, scarpe, ecc.) così i
+# piedi non slittano. Da fermo la locomozione passa alla clip di riposo
+# (_runtime_rest): per ora nessuna animazione di idle.
 func _animate_body(_delta: float) -> void:
 	var horiz := Vector2(velocity.x, velocity.z).length()
-	var speed_frac: float = clamp(horiz / BASE_SPEED, 0.0, 1.0)
-	anim_tree.set("parameters/ArmBend/blend_amount", speed_frac)
+	anim_tree.set("parameters/ArmBend/blend_amount", 0.0)
 	if horiz > 0.3:
 		anim_tree.set("parameters/WalkScale/scale", clamp(horiz / BASE_SPEED, WALK_ANIM_SPEED_MIN, WALK_ANIM_SPEED_MAX))
 		anim_tree.set("parameters/Locomotion/transition_request", "walk")

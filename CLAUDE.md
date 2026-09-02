@@ -4,7 +4,37 @@ Godot 4.7.2, gioco pensato per telefono (vedi sotto), export web in `docs/` per 
 
 ## Animazioni del personaggio (protagonist_saeedd.glb)
 
-Queste regole esistono perché violarle ha causato più round di modifiche sbagliate/insoddisfacenti nella stessa sessione.
+### Pipeline attuale: Mixamo APPLICATO ALL'AVATAR + rename in Godot (usa questa per ogni clip nuova)
+
+Dal 2026-09-02. Le clip **non** si retargettano più (né a mano in GDScript, né col fix silhouette dell'importer): si applicano direttamente allo scheletro dell'avatar dentro Mixamo, così arrivano già montate sul rig giusto. In Godot si fa solo un **rename delle ossa** al profilo + una correzione di rest per un'unica ragione tecnica (sotto).
+
+**Conseguenza — le ossa dello scheletro in gioco sono rinominate al profilo umanoide** (`SkeletonProfileHumanoid`): `LeftArm→LeftUpperArm`, `LeftForeArm→LeftLowerArm`, `LeftUpLeg→LeftUpperLeg`, `LeftLeg→LeftLowerLeg`, `LeftToeBase→LeftToes`, `Spine1→Chest`, `Spine2→UpperChest`, ecc. (`*Toe_End` non nel profilo, invariati). `player.gd` usa già i nomi nuovi; le clip dentro il `.glb` sono rinominate in automatico dall'importer.
+
+**File coinvolti:**
+- `assets/models/protagonist/protagonist_saeedd.glb.import` — blocco `_subresources`, **chiave nodo `"PATH:Armature/Skeleton3D"`** (il prefisso `PATH:` è obbligatorio, senza l'importer ignora tutto in silenzio). Attivo solo `retarget/bone_map` (→ `protagonist_bonemap.tres`) + `retarget/bone_renamer/rename_bones: true` + `retarget/rest_fixer/apply_node_transforms: true`. **`fix_silhouette/enable`, `overwrite_axis`, `reset_all_bone_poses_after_import` sono `false`**: la posa di rest dell'avatar va tenuta com'è (le clip Mixamo-su-avatar e quelle già nel `.glb` la assumono; il fix silhouette la trasformava in T-pose e rompeva tutto).
+- `assets/models/protagonist/protagonist_bonemap.tres` — BoneMap profilo→nomi ossa dell'avatar (senza prefisso).
+- `assets/animations/mixamo_bonemap.tres` — resta solo per l'eventuale via "clip generica `mixamorig_`", non usata dalla pipeline attuale.
+- `assets/animations/_src_jog_avatar.fbx` — sorgente: **Mixamo "Jogging" applicato all'avatar caricato** (vedi passi sotto). 67 ossa, nomi identici all'avatar, niente `mixamorig_`.
+- `assets/animations/jog_lib.res` — `AnimationLibrary` con la clip `jog`: bake da `_src_jog_avatar.fbx` (rename ossa + correzione rest + no root motion + loop). Nessun hack di abduzione spalle: l'apertura delle braccia si regola con lo slider **Arm Space** in Mixamo.
+
+**Preparare l'avatar per Mixamo (una tantum):** esporta `protagonist_saeedd.glb` → FBX con Blender (`import_scene.gltf` poi `export_scene.fbx` con `add_leaf_bones=False`, `bake_anim=False`, `path_mode='COPY'`, `embed_textures=True`). Su mixamo.com: **Upload Character** → quell'FBX → posiziona i marker se richiesto.
+
+**Aggiungere una clip Mixamo nuova (walk, pugno, hit…):**
+1. Su mixamo.com, con l'avatar caricato: scegli la clip, alza **Arm Space** finché le braccia sono staccate dal busto, **In Place** ON per le locomozioni. Download: **FBX Binary**, **Without Skin**, **30 fps**, no keyframe reduction.
+2. `cp <download>.fbx assets/animations/_src_<clip>.fbx`, poi `godot --headless --editor --quit-after 600 --path <PROG>` per generare il `.import` (nessun `_subresources` da aggiungere: la clip è già sul rig giusto).
+3. Bake in `<clip>_lib.res` con uno script `SceneTree` usa-e-getta (vedi la logica di `jog_lib.res` qui sotto). Il `.res` è autonomo; dopo puoi cancellare `_src_<clip>.fbx` + `.import`.
+4. In `player.gd`: `anim_player.add_animation_library("mix", load(...))`, riferisci come `"mix/<clip>"` nei nodi dell'`AnimationTree`.
+
+**Logica del bake (`_src_jog_avatar.fbx` → `jog_lib.res`), da rifare uguale per ogni clip:**
+- Istanzia la scena FBX + `protagonist_saeedd.glb`; prendi la clip il cui nome contiene `mixamo` (mai `Take 001`), `.duplicate()`, `loop_mode = LOOP_LINEAR`.
+- **Correzione rest per-osso** (obbligatoria): l'importer FBX di Godot ripiega una conversione Y-up→Z-up dentro le pose di rest della sorgente, quindi le rotazioni grezze fanno "cadere" il personaggio. Per ogni traccia di rotazione, chiave per chiave: `q' = Rrest_prot(osso) * Rrest_fbx(osso).inverse() * q` (solo `Basis`, ossa abbinate per nome — l'osso protagonista è lo stesso sotto il nome-profilo). Senza questo: personaggio sdraiato / rannicchiato.
+- Rimuovi le tracce `TYPE_POSITION_3D` (movimento sul posto), rinomina il suffisso osso di ogni traccia al nome-profilo, metti in un `AnimationLibrary` come `"jog"`, `ResourceSaver.save(... "res://assets/animations/jog_lib.res")`.
+
+**Locomozione** (`_setup_anim_tree` in `player.gd`): transizione `Locomotion`, input `walk` = `"mix/jog"`, input `idle` = `"_runtime_rest"` (fotogramma 0 congelato della vecchia clip `idle`, posa in piedi naturale — non la rest pose dello scheletro). `ArmBend` tenuto a `blend_amount = 0`. Da fermo: nessuna animazione, solo la posa statica.
+
+**Verifica:** render CON finestra (non `--headless`, vedi §3 e §5ter) dalla camera reale di gioco + top-down + laterale, su tutto il ciclo — controllare che **nessuna parte del corpo compenetri un'altra** (tipico punto critico: la mano nello swing indietro contro zona lombare/glutei).
+
+### Storico: retarget manuale (NON usare per clip nuove)
 
 1. **Non inventare/derivare animazioni a mano.** Prima di costruire una curva di rotazione a occhio (o dedurla da angoli biomeccanici stimati), controlla `~/Desktop/animazioni/` — è una libreria di clip Mixamo reali (Locomotion Pack: idle/walk/run/strafe/turn/jump; più Punching-2..5, Hook Punch, Elbow Punch, Mutant Punch, Hit On Side/Back of Body). Se esiste una clip adatta o vicina, usala via retargeting (vedi sotto) invece di costruire keyframe a mano.
 
